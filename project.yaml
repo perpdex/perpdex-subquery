@@ -1,0 +1,39 @@
+specVersion: 1.0.0
+name: perpdex-subquery
+version: 1.0.0
+runner:
+  node:
+    name: '@subql/node'
+    version: '>=0.35.0'
+  query:
+    name: '@subql/query'
+    version: '>=0.16.0'
+description: >-
+  The SubQuery project for PerpDEX
+repository: 'https://github.com/perpdex/perpdex-subquery'
+schema:
+  file: ./schema.graphql
+network:
+  chainId: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019'
+  endpoint: wss://rpc.shibuya.astar.network
+  chaintypes:
+    file: ./dist/chaintypes.js
+dataSources:
+  - kind: substrate/FrontierEvm
+    startBlock: 1540913
+    processor:
+      file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
+      options:
+        abi: perpdexExchange
+        address: '0x8e7D0c43FE0DF3597cFA3fC4C6B40f9BAD30270d'
+    assets:
+      perpdexExchange:
+        file: ./abi/PerpdexExchange.abi.json
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleDeposited
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - Deposited(address,uint256)
