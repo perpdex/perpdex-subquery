@@ -74,7 +74,7 @@ type ProtocolFeeTransferred @entity {
   timestamp: BigInt!
 }
 
-type PositionChanged @entity {
+type LiquidityAddedExchange @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
@@ -84,38 +84,57 @@ type PositionChanged @entity {
   trader: String!
   "market address"
   market: String!
-  "exchanged position size"
-  exchangedPositionSize: BigInt!
-  "exchanged position notional"
-  exchangedPositionNotional: BigInt!
-  "open positon notional"
-  openNotional: BigInt!
-  "realized pnl of this tx"
-  realizedPnl: BigInt!
-  "market price after this tx"
+  "base"
+  base: BigInt!
+  "quote"
+  quote: BigInt!
+  "liquidity"
+  liquidity: BigInt!
+  "baseBalancePerShare"
+  baseBalancePerShare: BigInt!
+  "priceAfterX96"
   priceAfterX96: BigInt!
-  "trading fee"
-  fee: BigInt!
-  "isBaseToQuote"
-  isBaseToQuote: Bool!
-  "isExactInput"
-  isExactInput: Bool!
-  "oppositeAmountBound"
-  oppositeAmountBound: BigInt!
-  "deadline"
-  deadline: BigInt!
-  "maxMarketsPerAccount"
-  maxMarketsPerAccount: Int!
-  "protocolFeeRatio"
-  protocolFeeRatio: Int!
-  "priceLimitNormalOrderRatio"
-  priceLimitNormalOrderRatio: Int!
-  "priceLimitLiquidationRatio"
-  priceLimitLiquidationRatio: Int!
-  "mmRatio"
-  mmRatio: Int!
-  "imRatio"
-  imRatio: Int!
+  # "cumDeleveragedBaseSharePerLiquidityX96"
+  # cumDeleveragedBaseSharePerLiquidityX96: BigInt!
+  # "cumDeleveragedQuotePerLiquidityX96"
+  # cumDeleveragedQuotePerLiquidityX96: BigInt!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
+type LiquidityRemovedExchange @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "transaction hash"
+  txHash: String!
+  "trader address"
+  trader: String!
+  "market address"
+  market: String!
+  "liquidator address"
+  liquidator: String!
+  "base"
+  base: BigInt!
+  "quote"
+  quote: BigInt!
+  "liquidity"
+  liquidity: BigInt!
+  "takerBase"
+  takerBase: BigInt!
+  "takerQuote"
+  takerQuote: BigInt!
+  "realizedPnl"
+  realizedPnl: BigInt!
+  "baseBalancePerShare"
+  baseBalancePerShare: BigInt!
+  "priceAfterX96"
+  priceAfterX96: BigInt!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
@@ -135,38 +154,22 @@ type PositionLiquidated @entity {
   trader: String!
   "market address"
   market: String!
-  "amount"
-  amount: BigInt!
-  "positionSize"
-  positionSize: BigInt!
-  "positionNotional"
-  positionNotional: BigInt!
-  "liquidationFee"
-  liquidationFee: BigInt!
-  "liquidator"
+  "liquidator address"
   liquidator: String!
-  "isBaseToQuote"
-  isBaseToQuote: Bool!
-  "isExactInput"
-  isExactInput: Bool!
-  "oppositeAmountBound"
-  oppositeAmountBound: BigInt!
-  "deadline"
-  deadline: BigInt!
-  "maxMarketsPerAccount"
-  maxMarketsPerAccount: Int!
-  "protocolFeeRatio"
-  protocolFeeRatio: Int!
-  "priceLimitNormalOrderRatio"
-  priceLimitNormalOrderRatio: Int!
-  "priceLimitLiquidationRatio"
-  priceLimitLiquidationRatio: Int!
-  "mmRatio"
-  mmRatio: Int!
-  "penalty"
-  penalty: BigInt!
-  "intliquidatorReward"
-  intliquidatorReward: BigInt!
+  "base"
+  base: BigInt!
+  "quote"
+  quote: BigInt!
+  "realizedPnl"
+  realizedPnl: BigInt!
+  "protocolFee"
+  protocolFee: BigInt!
+  "baseBalancePerShare"
+  baseBalancePerShare: BigInt!
+  "priceAfterX96"
+  priceAfterX96: BigInt!
+  "liquidationReward"
+  liquidationReward: BigInt!
   "insuranceFundReward"
   insuranceFundReward: BigInt!
 
@@ -178,7 +181,7 @@ type PositionLiquidated @entity {
   timestamp: BigInt!
 }
 
-type LiquidityChanged @entity {
+type PositionChanged @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
@@ -192,22 +195,14 @@ type LiquidityChanged @entity {
   base: BigInt!
   "quote"
   quote: BigInt!
-  "liquidity"
-  liquidity: BigInt!
-  "minBase"
-  minBase: BigInt!
-  "minQuote"
-  minQuote: BigInt!
-  "deadline"
-  deadline: BigInt!
-  "imRatio"
-  imRatio: BigInt!
-  "maxMarketsPerAccount"
-  maxMarketsPerAccount: Int!
-  "cumDeleveragedBaseSharePerLiquidityX96"
-  cumDeleveragedBaseSharePerLiquidityX96: BigInt!
-  "cumDeleveragedQuotePerLiquidityX96"
-  cumDeleveragedQuotePerLiquidityX96: BigInt!
+  "realizedPnl"
+  realizedPnl: BigInt!
+  "protocolFee"
+  protocolFee: BigInt!
+  "baseBalancePerShare"
+  baseBalancePerShare: BigInt!
+  "priceAfterX96"
+  priceAfterX96: BigInt!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
@@ -223,29 +218,8 @@ type IsMarketAllowedChanged @entity {
 
   "market"
   market: String!
-  "value"
-  value: Bool!
-
-  "(block number * 1000 + tx log index) for sorting"
-  blockNumberLogIndex: BigInt!
-  "block number"
-  blockNumber: BigInt!
-  "block timestamp"
-  timestamp: BigInt!
-}
-
-type Swapped @entity {
-  "format: <tx hash>-<tx log index>"
-  id: ID!
-
-  "isBaseToQuote"
-  isBaseToQuote: Bool!
-  "isExactInput"
-  isExactInput: Bool!
-  "amount"
-  amount: BigInt!
-  "oppositeAmount"
-  oppositeAmount: BigInt!
+  "isMarketAllowed"
+  isMarketAllowed: Boolean!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
@@ -270,7 +244,7 @@ type FundingPaid @entity {
   timestamp: BigInt!
 }
 
-type LiquidityAdded @entity {
+type LiquidityAddedMarket @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
@@ -289,7 +263,7 @@ type LiquidityAdded @entity {
   timestamp: BigInt!
 }
 
-type LiquidityRemoved @entity {
+type LiquidityRemovedMarket @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
@@ -299,6 +273,27 @@ type LiquidityRemoved @entity {
   quote: BigInt!
   "liquidity"
   liquidity: BigInt!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
+type Swapped @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "isBaseToQuote"
+  isBaseToQuote: Boolean!
+  "isExactInput"
+  isExactInput: Boolean!
+  "amount"
+  amount: BigInt!
+  "oppositeAmount"
+  oppositeAmount: BigInt!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
@@ -312,8 +307,10 @@ type Trader @entity {
   "format: trader address"
   id: ID!
 
-  "collateralBalance(int256)"
+  "collateralBalance"
   collateralBalance: BigInt!
+  "markets"
+  markets: [String!]!
 
   "last updated block number"
   blockNumber: BigInt!
@@ -329,12 +326,14 @@ type TraderTakerInfo @entity {
   trader: String!
   "market address"
   market: String!
-  "baseBalanceShare(int256)"
+  "baseBalanceShare"
   baseBalanceShare: BigInt!
-  "quoteBalance(int256)"
+  "quoteBalance"
   quoteBalance: BigInt!
   "positions"
   positions: [Position!]! @derivedFrom(field: "traderRef")
+
+  dayData: [TraderDayData!] @derivedFrom(field: "trader")
 
   "last updated block number"
   blockNumber: BigInt!
@@ -350,21 +349,24 @@ type TraderMakerInfo @entity {
   trader: String!
   "market address"
   market: String!
-  "baseDebtShare(uint256)"
+  "baseDebtShare"
   baseDebtShare: BigInt!
-  "quoteDebt(uint256)"
+  "quoteDebt"
   quoteDebt: BigInt!
-  "liquidity(uint256)"
+  "liquidity"
   liquidity: BigInt!
-  "cumDeleveragedBaseSharePerLiquidityX96(uint256)"
-  cumDeleveragedBaseSharePerLiquidityX96: BigInt!
-  "cumDeleveragedQuotePerLiquidityX96(uint256)"
-  cumDeleveragedQuotePerLiquidityX96: BigInt!
+  # "cumDeleveragedBaseSharePerLiquidityX96"
+  # cumDeleveragedBaseSharePerLiquidityX96: BigInt!
+  # "cumDeleveragedQuotePerLiquidityX96"
+  # cumDeleveragedQuotePerLiquidityX96: BigInt!
 
   "last updated block number"
   blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
+
+  "open orders"
+  openOrders: [OpenOrder!]! @derivedFrom(field: "traderMakerInfoRef")
 }
 
 type Protocol @entity {
@@ -381,13 +383,11 @@ type Protocol @entity {
   publicMarketCount: BigInt!
   "cumulative trading volume"
   tradingVolume: BigInt!
-  "cumulative trading fee"
-  tradingFee: BigInt!
   "total value locked"
   totalValueLocked: BigInt!
-  "protocolFee(uint256)"
+  "protocolFee"
   protocolFee: BigInt!
-  "insuranceFundBalance(int256)"
+  "insuranceFundBalance"
   insuranceFundBalance: BigInt!
 
   "last updated block number"
@@ -404,40 +404,22 @@ type Position @entity {
   trader: String!
   "market address"
   market: String!
-  "PositionSize(int256)"
-  PositionSize: BigInt!
-  "OpenNotional(int256)"
-  OpenNotional: BigInt!
-  "average entry price of the current position = abs(openNotional / positionSize)"
+  "baseShare"
+  baseShare: BigInt!
+  "baseBalance"
+  baseBalance: BigInt!
+  "average open notional after this tx"
+  openNotional: BigInt!
+  "average entry price of the current position = abs(openNotional / baseBalance)"
   entryPrice: BigInt!
-  "realize pnl"
+  "realized pnl of this tx"
   realizedPnl: BigInt!
   "isBaseToQuote"
-  isBaseToQuote: Bool!
+  isBaseToQuote: Boolean!
   "isExactInput"
-  isExactInput: Bool!
-  "oppositeAmountBound(uint256)"
-  oppositeAmountBound: BigInt!
-  "deadline(uint256)"
-  deadline: BigInt!
-  "maxMarketsPerAccount(uint8)"
-  maxMarketsPerAccount: Int!
-  "protocolFeeRatio(uint24)"
-  protocolFeeRatio: Int!
-  "priceLimitNormalOrderRatio(uint24)"
-  priceLimitNormalOrderRatio: Int!
-  "priceLimitLiquidationRatio(uint24)"
-  priceLimitLiquidationRatio: Int!
-  "mmRatio(uint24)"
-  mmRatio: Int!
-  "imRatio(uint24)"
-  imRatio: Int!
+  isExactInput: Boolean!
   "cumulative trading volume"
   tradingVolume: BigInt!
-  "cumulative trading fee"
-  tradingFee: BigInt!
-  "cumulative liquidation fee"
-  liquidationFee: BigInt!
 
   "last updated block number"
   blockNumber: BigInt!
@@ -446,6 +428,33 @@ type Position @entity {
 
   "foreign key to Trader"
   traderRef: Trader!
+  "foreign key to Market"
+  marketRef: Market!
+}
+
+type OpenOrder @entity {
+  "format: <maker address>-<market address>"
+  id: ID!
+  "maker address"
+  maker: String!
+  "market address"
+  market: String!
+  "provided liquidity base"
+  baseShare: BigInt!
+  "provided liquidity quote"
+  quote: BigInt!
+  "current liquidity"
+  liquidity: BigInt!
+  "realizedPnl"
+  realizedPnl: BigInt!
+
+  "last updated block number"
+  blockNumber: BigInt!
+  "last updated block timestamp"
+  timestamp: BigInt!
+
+  "foreign key to traderMakerInfo"
+  traderMakerInfoRef: TraderMakerInfo!
   "foreign key to Market"
   marketRef: Market!
 }
@@ -460,40 +469,39 @@ type Market @entity {
   quoteToken: String!
   "pool address"
   pool: String!
-  "fee ratio"
-  feeRatio: BigInt!
   "cumulative trading volume"
   tradingVolume: BigInt!
-  "cumulative trading fee"
-  tradingFee: BigInt!
   "provided liquidity base amount"
   baseAmount: BigInt!
   "provided liquidity quote amount"
   quoteAmount: BigInt!
   "total liquidity"
   liquidity: BigInt!
+
   "block number when the pool was added "
   blockNumberAdded: BigInt!
   "block timestamp when the pool was added "
   timestampAdded: BigInt!
-  "positions"
-  positions: [Position!]! @derivedFrom(field: "marketRef")
-
   "last updated block number"
   blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
+
+  "positions"
+  positions: [Position!]! @derivedFrom(field: "marketRef")
+  "open orders"
+  openOrders: [OpenOrder!]! @derivedFrom(field: "marketRef")
 }
 
 type Candle @entity {
-  "format: <market address>-<timeframe>-<time>"
+  "format: <market address>-<timeSecond>-<time>"
   id: ID!
 
   "market address"
   market: String!
-  "time frame"
-  #example of timeframe: 5m, 15m, 1d
-  timeFrame: String!
+  "time second"
+  #example of timeSecond: 300s(5m), 86400s(=1d)
+  timeSecond: String!
   "time"
   time: Date!
   "open"
@@ -520,8 +528,6 @@ type TraderDayData @entity {
   date: BigInt!
   "trading volume aggregated per day for trader"
   tradingVolume: BigInt!
-  "trading fee aggregated per day for trader"
-  fee: BigInt!
   "total pnl aggregated per day for trader"
   realizedPnl: BigInt!
 
