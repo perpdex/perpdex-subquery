@@ -1,4 +1,4 @@
-import { Deposited, Withdrawn, InsuranceFundTransferred } from '../types';
+import { Deposited, Withdrawn, InsuranceFundTransferred, ProtocolFeeTransferred } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
 import { getOrCreateTrader, getOrCreateProtocol } from '../utils/store';
@@ -8,6 +8,7 @@ import { str_plus, str_minus } from '../utils/number';
 type DepositedArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type WithdrawnArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type InsuranceFundTransferredArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
+type ProtocolFeeTransferredArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 
 export async function handleDeposited(event: FrontierEvmEvent<DepositedArgs>): Promise<void> {
   const deposited = new Deposited(`${event.transactionHash}-${event.logIndex.toString()}`);
@@ -79,6 +80,30 @@ export async function handleInsuranceFundTransferred(
   protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await insuranceFundTransferred.save();
+  await trader.save();
+  await protocol.save();
+}
+
+export async function handleProtocolFeeTransferred(event: FrontierEvmEvent<ProtocolFeeTransferredArgs>): Promise<void> {
+  const protocolFeeTransferred = new ProtocolFeeTransferred(`${event.transactionHash}-${event.logIndex.toString()}`);
+  protocolFeeTransferred.txHash = event.transactionHash;
+  protocolFeeTransferred.trader = event.args.trader;
+  protocolFeeTransferred.amount = event.args.amount.toBigInt();
+  protocolFeeTransferred.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  protocolFeeTransferred.blockNumber = BigInt(event.blockNumber);
+  protocolFeeTransferred.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const trader = await getOrCreateTrader(event.args.trader);
+  trader.collateralBalance = trader.collateralBalance + protocolFeeTransferred.amount;
+  trader.blockNumber = BigInt(event.blockNumber);
+  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.insuranceFundBalance = protocol.insuranceFundBalance - protocolFeeTransferred.amount;
+  protocol.blockNumber = BigInt(event.blockNumber);
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await protocolFeeTransferred.save();
   await trader.save();
   await protocol.save();
 }

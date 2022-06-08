@@ -47,3 +47,8 @@ dataSources:
           filter:
             topics:
               - InsuranceFundTransferred(address,uint256)
+        - handler: handleProtocolFeeTransferred
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - ProtocolFeeTransferred(address,uint256)
