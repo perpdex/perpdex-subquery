@@ -20,12 +20,12 @@ network:
     file: ./dist/chaintypes.js
 dataSources:
   - kind: substrate/FrontierEvm
-    startBlock: 1606369
+    startBlock: 1607062
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
         abi: perpdexExchange
-        address: '0x8e7D0c43FE0DF3597cFA3fC4C6B40f9BAD30270d'
+        address: '0xb7b1cbBf913D60C6BB9E5839C68B2ff632CD9FC9'
     assets:
       perpdexExchange:
         file: ./abi/PerpdexExchange.abi.json

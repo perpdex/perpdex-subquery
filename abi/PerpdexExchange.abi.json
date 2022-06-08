@@ -33,9 +33,73 @@
         "anonymous": false,
         "inputs": [
             {
+                "indexed": false,
+                "internalType": "uint24",
+                "name": "value",
+                "type": "uint24"
+            }
+        ],
+        "name": "ImRatioChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": true,
                 "internalType": "address",
-                "name": "maker",
+                "name": "trader",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "InsuranceFundTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "market",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isMarketAllowed",
+                "type": "bool"
+            }
+        ],
+        "name": "IsMarketAllowedChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint24",
+                "name": "value",
+                "type": "uint24"
+            }
+        ],
+        "name": "LiquidationRewardRatioChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "trader",
                 "type": "address"
             },
             {
@@ -46,24 +110,135 @@
             },
             {
                 "indexed": false,
-                "internalType": "int256",
+                "internalType": "uint256",
                 "name": "base",
-                "type": "int256"
+                "type": "uint256"
             },
             {
                 "indexed": false,
-                "internalType": "int256",
+                "internalType": "uint256",
                 "name": "quote",
-                "type": "int256"
+                "type": "uint256"
             },
             {
                 "indexed": false,
-                "internalType": "int256",
+                "internalType": "uint256",
                 "name": "liquidity",
-                "type": "int256"
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "baseBalancePerShareX96",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "sharePriceAfterX96",
+                "type": "uint256"
             }
         ],
-        "name": "LiquidityChanged",
+        "name": "LiquidityAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "trader",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "market",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "liquidator",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "base",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "quote",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "liquidity",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "int256",
+                "name": "takerBase",
+                "type": "int256"
+            },
+            {
+                "indexed": false,
+                "internalType": "int256",
+                "name": "takerQuote",
+                "type": "int256"
+            },
+            {
+                "indexed": false,
+                "internalType": "int256",
+                "name": "realizedPnl",
+                "type": "int256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "baseBalancePerShareX96",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "sharePriceAfterX96",
+                "type": "uint256"
+            }
+        ],
+        "name": "LiquidityRemoved",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint8",
+                "name": "value",
+                "type": "uint8"
+            }
+        ],
+        "name": "MaxMarketsPerAccountChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint24",
+                "name": "value",
+                "type": "uint24"
+            }
+        ],
+        "name": "MmRatioChanged",
         "type": "event"
     },
     {
@@ -103,19 +278,13 @@
             {
                 "indexed": false,
                 "internalType": "int256",
-                "name": "exchangedPositionSize",
+                "name": "base",
                 "type": "int256"
             },
             {
                 "indexed": false,
                 "internalType": "int256",
-                "name": "exchangedPositionNotional",
-                "type": "int256"
-            },
-            {
-                "indexed": false,
-                "internalType": "int256",
-                "name": "openNotional",
+                "name": "quote",
                 "type": "int256"
             },
             {
@@ -127,7 +296,19 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "priceAfterX96",
+                "name": "protocolFee",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "baseBalancePerShareX96",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "sharePriceAfterX96",
                 "type": "uint256"
             }
         ],
@@ -150,31 +331,112 @@
                 "type": "address"
             },
             {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "positionNotional",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "positionSize",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "liquidationFee",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
+                "indexed": true,
                 "internalType": "address",
                 "name": "liquidator",
                 "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "int256",
+                "name": "base",
+                "type": "int256"
+            },
+            {
+                "indexed": false,
+                "internalType": "int256",
+                "name": "quote",
+                "type": "int256"
+            },
+            {
+                "indexed": false,
+                "internalType": "int256",
+                "name": "realizedPnl",
+                "type": "int256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "protocolFee",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "baseBalancePerShareX96",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "sharePriceAfterX96",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "liquidationReward",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "insuranceFundReward",
+                "type": "uint256"
             }
         ],
         "name": "PositionLiquidated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint24",
+                "name": "normalOrderRatio",
+                "type": "uint24"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint24",
+                "name": "liquidationRatio",
+                "type": "uint24"
+            }
+        ],
+        "name": "PriceLimitConfigChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint24",
+                "name": "value",
+                "type": "uint24"
+            }
+        ],
+        "name": "ProtocolFeeRatioChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "trader",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "ProtocolFeeTransferred",
         "type": "event"
     },
     {
@@ -265,26 +527,19 @@
         "name": "addLiquidity",
         "outputs": [
             {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "base",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "quote",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "liquidity",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct IPerpdexExchange.AddLiquidityResponse",
-                "name": "",
-                "type": "tuple"
+                "internalType": "uint256",
+                "name": "base",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "quote",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "liquidity",
+                "type": "uint256"
             }
         ],
         "stateMutability": "nonpayable",
@@ -300,7 +555,7 @@
         ],
         "name": "deposit",
         "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "payable",
         "type": "function"
     },
     {
@@ -319,7 +574,7 @@
                 "type": "address[]"
             }
         ],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -340,18 +595,28 @@
             {
                 "components": [
                     {
-                        "internalType": "uint256",
+                        "internalType": "int256",
                         "name": "baseDebtShare",
-                        "type": "uint256"
+                        "type": "int256"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "int256",
                         "name": "quoteDebt",
-                        "type": "uint256"
+                        "type": "int256"
                     },
                     {
                         "internalType": "uint256",
                         "name": "liquidity",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "cumDeleveragedBaseSharePerLiquidityX96",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "cumDeleveragedQuotePerLiquidityX96",
                         "type": "uint256"
                     }
                 ],
@@ -360,7 +625,7 @@
                 "type": "tuple"
             }
         ],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -400,7 +665,7 @@
                 "type": "address"
             }
         ],
-        "name": "getOpenPositionSize",
+        "name": "getOpenPositionShare",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -448,7 +713,7 @@
                 "type": "address"
             }
         ],
-        "name": "getPositionSize",
+        "name": "getPositionShare",
         "outputs": [
             {
                 "internalType": "int256",
@@ -492,7 +757,7 @@
                 "type": "tuple"
             }
         ],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -636,57 +901,6 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "trader",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "market",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "oppositeAmountBound",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "deadline",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct IPerpdexExchange.LiquidateParams",
-                "name": "params",
-                "type": "tuple"
-            }
-        ],
-        "name": "liquidate",
-        "outputs": [
-            {
-                "internalType": "int256",
-                "name": "base",
-                "type": "int256"
-            },
-            {
-                "internalType": "int256",
-                "name": "quote",
-                "type": "int256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "liquidationRewardRatio",
         "outputs": [
@@ -729,6 +943,11 @@
         "inputs": [
             {
                 "components": [
+                    {
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
                     {
                         "internalType": "address",
                         "name": "market",
@@ -782,6 +1001,67 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "market",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "caller",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isBaseToQuote",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isExactInput",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "oppositeAmountBound",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct IPerpdexExchange.OpenPositionDryParams",
+                "name": "params",
+                "type": "tuple"
+            }
+        ],
+        "name": "openPositionDry",
+        "outputs": [
+            {
+                "internalType": "int256",
+                "name": "base",
+                "type": "int256"
+            },
+            {
+                "internalType": "int256",
+                "name": "quote",
+                "type": "int256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "owner",
         "outputs": [
@@ -800,12 +1080,12 @@
         "outputs": [
             {
                 "internalType": "uint24",
-                "name": "priceLimitNormalOrderRatio",
+                "name": "normalOrderRatio",
                 "type": "uint24"
             },
             {
                 "internalType": "uint24",
-                "name": "priceLimitLiquidationRatio",
+                "name": "liquidationRatio",
                 "type": "uint24"
             }
         ],
@@ -829,7 +1109,33 @@
             },
             {
                 "internalType": "uint256",
-                "name": "referenceTimestamp",
+                "name": "referenceBlockNumber",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "protocolFeeRatio",
+        "outputs": [
+            {
+                "internalType": "uint24",
+                "name": "",
+                "type": "uint24"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "protocolInfo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "protocolFee",
                 "type": "uint256"
             }
         ],
@@ -842,67 +1148,9 @@
                 "components": [
                     {
                         "internalType": "address",
-                        "name": "market",
+                        "name": "trader",
                         "type": "address"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "liquidity",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "minBase",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "minQuote",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "deadline",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct IPerpdexExchange.RemoveLiquidityParams",
-                "name": "params",
-                "type": "tuple"
-            },
-            {
-                "internalType": "address",
-                "name": "maker",
-                "type": "address"
-            }
-        ],
-        "name": "removeLiquidity",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "base",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "quote",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct IPerpdexExchange.RemoveLiquidityResponse",
-                "name": "",
-                "type": "tuple"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "components": [
                     {
                         "internalType": "address",
                         "name": "market",
@@ -937,21 +1185,14 @@
         "name": "removeLiquidity",
         "outputs": [
             {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "base",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "quote",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct IPerpdexExchange.RemoveLiquidityResponse",
-                "name": "",
-                "type": "tuple"
+                "internalType": "uint256",
+                "name": "base",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "quote",
+                "type": "uint256"
             }
         ],
         "stateMutability": "nonpayable",
@@ -1040,12 +1281,12 @@
                 "components": [
                     {
                         "internalType": "uint24",
-                        "name": "priceLimitNormalOrderRatio",
+                        "name": "normalOrderRatio",
                         "type": "uint24"
                     },
                     {
                         "internalType": "uint24",
-                        "name": "priceLimitLiquidationRatio",
+                        "name": "liquidationRatio",
                         "type": "uint24"
                     }
                 ],
@@ -1055,6 +1296,19 @@
             }
         ],
         "name": "setPriceLimitConfig",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint24",
+                "name": "value",
+                "type": "uint24"
+            }
+        ],
+        "name": "setProtocolFeeRatio",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1075,12 +1329,38 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "transferInsuranceFund",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "newOwner",
                 "type": "address"
             }
         ],
         "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "transferProtocolFee",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
