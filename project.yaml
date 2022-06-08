@@ -42,3 +42,8 @@ dataSources:
           filter:
             topics:
               - Withdrawn(address,uint256)
+        - handler: handleInsuranceFundTransferred
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - InsuranceFundTransferred(address,uint256)
