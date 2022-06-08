@@ -310,7 +310,7 @@ type Trader @entity {
   "collateralBalance"
   collateralBalance: BigInt!
   "markets"
-  markets: [String!]!
+  markets: [String]!
 
   "last updated block number"
   blockNumber: BigInt!
