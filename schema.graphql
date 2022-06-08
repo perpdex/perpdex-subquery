@@ -328,6 +328,8 @@ type TraderTakerInfo @entity {
   market: String!
   "baseBalanceShare"
   baseBalanceShare: BigInt!
+  "baseBalance"
+  baseBalance: BigInt!
   "quoteBalance"
   quoteBalance: BigInt!
   "positions"
@@ -351,6 +353,8 @@ type TraderMakerInfo @entity {
   market: String!
   "baseDebtShare"
   baseDebtShare: BigInt!
+  "baseDebtBalance"
+  baseDebtBalance: BigInt!
   "quoteDebt"
   quoteDebt: BigInt!
   "liquidity"
@@ -477,6 +481,8 @@ type Market @entity {
   quoteAmount: BigInt!
   "total liquidity"
   liquidity: BigInt!
+  "priceAfterX96"
+  priceAfterX96: BigInt!
 
   "block number when the pool was added "
   blockNumberAdded: BigInt!
@@ -500,8 +506,8 @@ type Candle @entity {
   "market address"
   market: String!
   "time second"
-  #example of timeSecond: 300s(5m), 86400s(=1d)
-  timeSecond: String!
+  #example of timeSecond: 300(5m), 86400(=1d)
+  timeSecond: Int!
   "time"
   time: Date!
   "open"

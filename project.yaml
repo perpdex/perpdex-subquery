@@ -52,3 +52,8 @@ dataSources:
           filter:
             topics:
               - ProtocolFeeTransferred(address,uint256)
+        - handler: handleLiquidityAddedExchange
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - LiquidityAdded(address,address,uint256,uint256,uint256,uint256,uint256)
