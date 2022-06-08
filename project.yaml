@@ -20,7 +20,7 @@ network:
     file: ./dist/chaintypes.js
 dataSources:
   - kind: substrate/FrontierEvm
-    startBlock: 1540913
+    startBlock: 1606369
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
@@ -37,3 +37,8 @@ dataSources:
           filter:
             topics:
               - Deposited(address,uint256)
+        - handler: handleWithdrawn
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - Withdrawn(address,uint256)
