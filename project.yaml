@@ -100,3 +100,8 @@ dataSources:
           filter:
             topics:
               - LiquidityRemoved(uint256,uint256,uint256)
+        - handler: handleSwapped
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - Swapped(bool,bool,uint256,uint256)

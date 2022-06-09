@@ -1,4 +1,4 @@
-import { FundingPaid, LiquidityAddedMarket, LiquidityRemovedMarket } from '../types';
+import { FundingPaid, LiquidityAddedMarket, LiquidityRemovedMarket, Swapped } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
 
@@ -12,6 +12,12 @@ type LiquidityRemovedMarketArgs = [BigNumber, BigNumber, BigNumber] & {
   base: BigNumber;
   quote: BigNumber;
   liquidity: BigNumber;
+};
+type SwappedArgs = [boolean, boolean, BigNumber, BigNumber] & {
+  isBaseToQuote: boolean;
+  isExactInput: boolean;
+  amount: BigNumber;
+  oppositeAmount: BigNumber;
 };
 
 export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>): Promise<void> {
@@ -53,4 +59,20 @@ export async function handleLiquidityRemovedMarket(event: FrontierEvmEvent<Liqui
   // (Todo): Market Save
 
   await liquidityRemovedMarket.save();
+}
+
+export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promise<void> {
+  const swapped = new Swapped(`${event.transactionHash}-${event.logIndex.toString()}`);
+  swapped.txHash = event.transactionHash;
+  swapped.isBaseToQuote = event.args.isBaseToQuote;
+  swapped.isExactInput = event.args.isBaseToQuote;
+  swapped.amount = event.args.amount.toBigInt();
+  swapped.oppositeAmount = event.args.oppositeAmount.toBigInt();
+  swapped.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  swapped.blockNumber = BigInt(event.blockNumber);
+  swapped.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  // (Todo): Market Save
+
+  await swapped.save();
 }
