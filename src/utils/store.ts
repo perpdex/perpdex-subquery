@@ -125,7 +125,12 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
   return market;
 }
 
-export async function getOrCreateCandle5m(marketAddr: string, time: Date, price: bigint): Promise<Candle> {
+export async function getOrCreateCandle5m(
+  marketAddr: string,
+  time: Date,
+  price: bigint,
+  blockNumber: bigint
+): Promise<void> {
   time.setMinutes(Math.floor(time.getMinutes() / 5) * 5);
   time.setSeconds(0);
   let candle = await Candle.get(`${marketAddr}-${300}-${time}`);
@@ -141,7 +146,6 @@ export async function getOrCreateCandle5m(marketAddr: string, time: Date, price:
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
     await candle.save();
-    return candle;
   }
   if (candle.high <= price) {
     candle.high = price;
@@ -149,10 +153,17 @@ export async function getOrCreateCandle5m(marketAddr: string, time: Date, price:
     candle.low = price;
   }
   candle.close = price;
-  return candle;
+  candle.blockNumber = blockNumber;
+  candle.timestamp = BigInt(time.getTime());
+  await candle.save();
 }
 
-export async function getOrCreateCandle15m(marketAddr: string, time: Date, price: bigint): Promise<Candle> {
+export async function getOrCreateCandle15m(
+  marketAddr: string,
+  time: Date,
+  price: bigint,
+  blockNumber: bigint
+): Promise<void> {
   time.setMinutes(Math.floor(time.getMinutes() / 15) * 15);
   time.setSeconds(0);
   let candle = await Candle.get(`${marketAddr}-${900}-${time}`);
@@ -168,7 +179,6 @@ export async function getOrCreateCandle15m(marketAddr: string, time: Date, price
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
     await candle.save();
-    return candle;
   }
   if (candle.high <= price) {
     candle.high = price;
@@ -176,10 +186,17 @@ export async function getOrCreateCandle15m(marketAddr: string, time: Date, price
     candle.low = price;
   }
   candle.close = price;
-  return candle;
+  candle.blockNumber = blockNumber;
+  candle.timestamp = BigInt(time.getTime());
+  await candle.save();
 }
 
-export async function getOrCreateCandle1h(marketAddr: string, time: Date, price: bigint): Promise<Candle> {
+export async function getOrCreateCandle1h(
+  marketAddr: string,
+  time: Date,
+  price: bigint,
+  blockNumber: bigint
+): Promise<void> {
   time.setMinutes(0);
   time.setSeconds(0);
   let candle = await Candle.get(`${marketAddr}-${3600}-${time}`);
@@ -195,7 +212,6 @@ export async function getOrCreateCandle1h(marketAddr: string, time: Date, price:
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
     await candle.save();
-    return candle;
   }
   if (candle.high <= price) {
     candle.high = price;
@@ -203,10 +219,17 @@ export async function getOrCreateCandle1h(marketAddr: string, time: Date, price:
     candle.low = price;
   }
   candle.close = price;
-  return candle;
+  candle.blockNumber = blockNumber;
+  candle.timestamp = BigInt(time.getTime());
+  await candle.save();
 }
 
-export async function getOrCreateCandle1d(marketAddr: string, time: Date, price: bigint): Promise<Candle> {
+export async function getOrCreateCandle1d(
+  marketAddr: string,
+  time: Date,
+  price: bigint,
+  blockNumber: bigint
+): Promise<void> {
   time.setHours(0);
   time.setMinutes(0);
   time.setSeconds(0);
@@ -223,7 +246,6 @@ export async function getOrCreateCandle1d(marketAddr: string, time: Date, price:
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
     await candle.save();
-    return candle;
   }
   if (candle.high <= price) {
     candle.high = price;
@@ -231,5 +253,19 @@ export async function getOrCreateCandle1d(marketAddr: string, time: Date, price:
     candle.low = price;
   }
   candle.close = price;
-  return candle;
+  candle.blockNumber = blockNumber;
+  candle.timestamp = BigInt(time.getTime());
+  await candle.save();
+}
+
+export async function getOrCreateCandle(
+  marketAddr: string,
+  time: Date,
+  price: bigint,
+  blockNumber: bigint
+): Promise<void> {
+  await getOrCreateCandle5m(marketAddr, time, price, blockNumber);
+  await getOrCreateCandle15m(marketAddr, time, price, blockNumber);
+  await getOrCreateCandle1h(marketAddr, time, price, blockNumber);
+  await getOrCreateCandle1d(marketAddr, time, price, blockNumber);
 }

@@ -18,10 +18,7 @@ import {
   getOrCreatePosition,
   getOrCreateOpenOrder,
   getOrCreateMarket,
-  getOrCreateCandle5m,
-  getOrCreateCandle15m,
-  getOrCreateCandle1h,
-  getOrCreateCandle1d,
+  getOrCreateCandle,
 } from '../utils/store';
 import { getBadDebt } from '../utils/model';
 import { str_plus, str_minus } from '../utils/number';
@@ -253,44 +250,18 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const candle5m = await getOrCreateCandle5m(
+  await getOrCreateCandle(
     event.args.market,
     event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
+    event.args.priceAfterX96.toBigInt(),
+    BigInt(event.blockNumber)
   );
-  candle5m.blockNumber = BigInt(event.blockNumber);
-  candle5m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle15m = await getOrCreateCandle15m(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
-  );
-  candle15m.blockNumber = BigInt(event.blockNumber);
-  candle15m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1h = await getOrCreateCandle1h(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
-  );
-  candle1h.blockNumber = BigInt(event.blockNumber);
-  candle1h.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1d = await getOrCreateCandle1d(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
-  );
-  candle1d.blockNumber = BigInt(event.blockNumber);
-  candle1d.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidityAddedExchange.save();
   await trader.save();
   await traderMakerInfo.save();
   await openOrder.save();
   await market.save();
-  await candle5m.save();
-  await candle15m.save();
-  await candle1h.save();
-  await candle1d.save();
 }
 
 export async function handleLiquidityRemovedExchange(
@@ -357,34 +328,12 @@ export async function handleLiquidityRemovedExchange(
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const candle5m = await getOrCreateCandle5m(
+  await getOrCreateCandle(
     event.args.market,
     event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
+    event.args.priceAfterX96.toBigInt(),
+    BigInt(event.blockNumber)
   );
-  candle5m.blockNumber = BigInt(event.blockNumber);
-  candle5m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle15m = await getOrCreateCandle15m(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
-  );
-  candle15m.blockNumber = BigInt(event.blockNumber);
-  candle15m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1h = await getOrCreateCandle1h(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
-  );
-  candle1h.blockNumber = BigInt(event.blockNumber);
-  candle1h.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1d = await getOrCreateCandle1d(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt()
-  );
-  candle1d.blockNumber = BigInt(event.blockNumber);
-  candle1d.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidityRemovedExchange.save();
   await trader.save();
@@ -392,10 +341,6 @@ export async function handleLiquidityRemovedExchange(
   await traderMakerInfo.save();
   await openOrder.save();
   await market.save();
-  await candle5m.save();
-  await candle15m.save();
-  await candle1h.save();
-  await candle1d.save();
 }
 
 export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionLiquidatedArgs>): Promise<void> {
@@ -452,34 +397,12 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   traderTakerInfo.blockNumber = BigInt(event.blockNumber);
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const candle5m = await getOrCreateCandle5m(
+  await getOrCreateCandle(
     event.args.market,
     event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
+    event.args.sharePriceAfterX96.toBigInt(),
+    BigInt(event.blockNumber)
   );
-  candle5m.blockNumber = BigInt(event.blockNumber);
-  candle5m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle15m = await getOrCreateCandle15m(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
-  );
-  candle15m.blockNumber = BigInt(event.blockNumber);
-  candle15m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1h = await getOrCreateCandle1h(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
-  );
-  candle1h.blockNumber = BigInt(event.blockNumber);
-  candle1h.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1d = await getOrCreateCandle1d(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
-  );
-  candle1d.blockNumber = BigInt(event.blockNumber);
-  candle1d.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await positionLiquidated.save();
   await protocol.save();
@@ -487,10 +410,6 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   await liquidator.save();
   await position.save();
   await traderTakerInfo.save();
-  await candle5m.save();
-  await candle15m.save();
-  await candle1h.save();
-  await candle1d.save();
 }
 
 export async function handlePositionChanged(event: FrontierEvmEvent<PositionChangedArgs>): Promise<void> {
@@ -531,41 +450,15 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   traderTakerInfo.blockNumber = BigInt(event.blockNumber);
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const candle5m = await getOrCreateCandle5m(
+  await getOrCreateCandle(
     event.args.market,
     event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
+    event.args.sharePriceAfterX96.toBigInt(),
+    BigInt(event.blockNumber)
   );
-  candle5m.blockNumber = BigInt(event.blockNumber);
-  candle5m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle15m = await getOrCreateCandle15m(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
-  );
-  candle15m.blockNumber = BigInt(event.blockNumber);
-  candle15m.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1h = await getOrCreateCandle1h(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
-  );
-  candle1h.blockNumber = BigInt(event.blockNumber);
-  candle1h.timestamp = BigInt(event.blockTimestamp.getTime());
-  const candle1d = await getOrCreateCandle1d(
-    event.args.market,
-    event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt()
-  );
-  candle1d.blockNumber = BigInt(event.blockNumber);
-  candle1d.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await positionChanged.save();
   await trader.save();
   await position.save();
   await traderTakerInfo.save();
-  await candle5m.save();
-  await candle15m.save();
-  await candle1h.save();
-  await candle1d.save();
 }
