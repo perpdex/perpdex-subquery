@@ -1,4 +1,4 @@
-import { Trader, Protocol, TraderMakerInfo, OpenOrder, Market, Candle } from '../types';
+import { Trader, Protocol, TraderTakerInfo, TraderMakerInfo, OpenOrder, Market, Candle } from '../types';
 import { BI_ZERO, STR_ZERO, DATE_ZERO } from './number';
 import { ChainId, Network, Version } from '../constants/index';
 
@@ -34,6 +34,22 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
     await protocol.save();
   }
   return protocol;
+}
+
+export async function getOrCreateTraderTakerInfo(traderAddr: string, marketAddr: string): Promise<TraderTakerInfo> {
+  let traderTakerInfo = await TraderTakerInfo.get(`${traderAddr}-${marketAddr}`);
+  if (typeof traderTakerInfo === 'undefined') {
+    traderTakerInfo = new TraderTakerInfo(`${traderAddr}-${marketAddr}`);
+    traderTakerInfo.trader = traderAddr;
+    traderTakerInfo.market = marketAddr;
+    traderTakerInfo.baseBalanceShare = BI_ZERO;
+    traderTakerInfo.baseBalance = BI_ZERO;
+    traderTakerInfo.quoteBalance = BI_ZERO;
+    traderTakerInfo.blockNumber = BI_ZERO;
+    traderTakerInfo.timestamp = BI_ZERO;
+    await traderTakerInfo.save();
+  }
+  return traderTakerInfo;
 }
 
 export async function getOrCreateTraderMakerInfo(traderAddr: string, marketAddr: string): Promise<TraderMakerInfo> {
