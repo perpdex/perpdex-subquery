@@ -62,3 +62,8 @@ dataSources:
           filter:
             topics:
               - LiquidityRemoved(address,address,address,uint256,uint256,uint256,int256,int256,int256,uint256,uint256)
+        - handler: handlePositionLiquidatedExchange
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PositionLiquidated(address,address,address,int256,int256,int256,uint256,uint256,uint256,uint256,uint256)

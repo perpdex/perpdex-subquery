@@ -164,10 +164,10 @@ type PositionLiquidated @entity {
   realizedPnl: BigInt!
   "protocolFee"
   protocolFee: BigInt!
-  "baseBalancePerShare"
-  baseBalancePerShare: BigInt!
-  "priceAfterX96"
-  priceAfterX96: BigInt!
+  "baseBalancePerShareX96"
+  baseBalancePerShareX96: BigInt!
+  "sharePriceAfterX96"
+  sharePriceAfterX96: BigInt!
   "liquidationReward"
   liquidationReward: BigInt!
   "insuranceFundReward"
