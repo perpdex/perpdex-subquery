@@ -199,10 +199,10 @@ type PositionChanged @entity {
   realizedPnl: BigInt!
   "protocolFee"
   protocolFee: BigInt!
-  "baseBalancePerShare"
-  baseBalancePerShare: BigInt!
-  "priceAfterX96"
-  priceAfterX96: BigInt!
+  "baseBalancePerShareX96"
+  baseBalancePerShareX96: BigInt!
+  "sharePriceAfterX96"
+  sharePriceAfterX96: BigInt!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!

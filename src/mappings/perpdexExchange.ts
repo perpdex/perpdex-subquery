@@ -6,6 +6,7 @@ import {
   LiquidityAddedExchange,
   LiquidityRemovedExchange,
   PositionLiquidated,
+  PositionChanged,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -87,6 +88,26 @@ type PositionLiquidatedArgs = [
   sharePriceAfterX96: BigNumber;
   liquidationReward: BigNumber;
   insuranceFundReward: BigNumber;
+};
+type PositionChangedArgs = [
+  string,
+  string,
+  string,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber
+] & {
+  trader: string;
+  market: string;
+  base: BigNumber;
+  quote: BigNumber;
+  realizedPnl: BigNumber;
+  protocolFee: BigNumber;
+  baseBalancePerShareX96: BigNumber;
+  sharePriceAfterX96: BigNumber;
 };
 
 export async function handleDeposited(event: FrontierEvmEvent<DepositedArgs>): Promise<void> {
@@ -464,6 +485,83 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   await protocol.save();
   await trader.save();
   await liquidator.save();
+  await position.save();
+  await traderTakerInfo.save();
+  await candle5m.save();
+  await candle15m.save();
+  await candle1h.save();
+  await candle1d.save();
+}
+
+export async function handlePositionChanged(event: FrontierEvmEvent<PositionChangedArgs>): Promise<void> {
+  const positionChanged = new PositionChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  positionChanged.txHash = event.transactionHash;
+  positionChanged.trader = event.args.trader;
+  positionChanged.market = event.args.market;
+  positionChanged.base = event.args.base.toBigInt();
+  positionChanged.quote = event.args.quote.toBigInt();
+  positionChanged.realizedPnl = event.args.realizedPnl.toBigInt();
+  positionChanged.protocolFee = event.args.protocolFee.toBigInt();
+  positionChanged.baseBalancePerShareX96 = event.args.baseBalancePerShareX96.toBigInt();
+  positionChanged.sharePriceAfterX96 = event.args.sharePriceAfterX96.toBigInt();
+  positionChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  positionChanged.blockNumber = BigInt(event.blockNumber);
+  positionChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const trader = await getOrCreateTrader(event.args.trader);
+  trader.markets.push(positionChanged.market);
+  trader.markets = [...new Set(trader.markets)]; // duplicate deletion
+  trader.collateralBalance = trader.collateralBalance + event.args.realizedPnl.toBigInt();
+  trader.blockNumber = BigInt(event.blockNumber);
+  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const position = await getOrCreatePosition(event.args.trader, event.args.market);
+  position.baseShare = position.baseShare + event.args.base.toBigInt();
+  position.baseBalance = position.baseBalance * event.args.baseBalancePerShareX96.toBigInt();
+  position.openNotional = position.openNotional + event.args.quote.toBigInt() - event.args.realizedPnl.toBigInt();
+  position.entryPrice = position.openNotional / position.baseBalance;
+  position.blockNumber = BigInt(event.blockNumber);
+  position.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const traderTakerInfo = await getOrCreateTraderTakerInfo(event.args.trader, event.args.market);
+  traderTakerInfo.baseBalanceShare = traderTakerInfo.baseBalanceShare + event.args.base.toBigInt();
+  traderTakerInfo.baseBalance = traderTakerInfo.baseBalanceShare * event.args.baseBalancePerShareX96.toBigInt();
+  traderTakerInfo.quoteBalance =
+    traderTakerInfo.quoteBalance + event.args.quote.toBigInt() - event.args.realizedPnl.toBigInt();
+  traderTakerInfo.blockNumber = BigInt(event.blockNumber);
+  traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const candle5m = await getOrCreateCandle5m(
+    event.args.market,
+    event.blockTimestamp,
+    event.args.sharePriceAfterX96.toBigInt()
+  );
+  candle5m.blockNumber = BigInt(event.blockNumber);
+  candle5m.timestamp = BigInt(event.blockTimestamp.getTime());
+  const candle15m = await getOrCreateCandle15m(
+    event.args.market,
+    event.blockTimestamp,
+    event.args.sharePriceAfterX96.toBigInt()
+  );
+  candle15m.blockNumber = BigInt(event.blockNumber);
+  candle15m.timestamp = BigInt(event.blockTimestamp.getTime());
+  const candle1h = await getOrCreateCandle1h(
+    event.args.market,
+    event.blockTimestamp,
+    event.args.sharePriceAfterX96.toBigInt()
+  );
+  candle1h.blockNumber = BigInt(event.blockNumber);
+  candle1h.timestamp = BigInt(event.blockTimestamp.getTime());
+  const candle1d = await getOrCreateCandle1d(
+    event.args.market,
+    event.blockTimestamp,
+    event.args.sharePriceAfterX96.toBigInt()
+  );
+  candle1d.blockNumber = BigInt(event.blockNumber);
+  candle1d.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await positionChanged.save();
+  await trader.save();
   await position.save();
   await traderTakerInfo.save();
   await candle5m.save();

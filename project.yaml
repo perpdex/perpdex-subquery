@@ -67,3 +67,8 @@ dataSources:
           filter:
             topics:
               - PositionLiquidated(address,address,address,int256,int256,int256,uint256,uint256,uint256,uint256,uint256)
+        - handler: handlePositionChangedExchange
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PositionChanged(address,address,int256,int256,int256,uint256,uint256,uint256)
