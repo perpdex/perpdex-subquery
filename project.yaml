@@ -90,3 +90,13 @@ dataSources:
           filter:
             topics:
               - FundingPaid(int256)
+        - handler: handleLiquidityAddedMarket
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - LiquidityAdded(uint256,uint256,uint256)
+        - handler: handleLiquidityRemovedMarket
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - LiquidityRemoved(uint256,uint256,uint256)
