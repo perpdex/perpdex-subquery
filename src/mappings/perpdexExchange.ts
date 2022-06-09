@@ -213,8 +213,8 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   liquidityAddedExchange.base = event.args.base.toBigInt();
   liquidityAddedExchange.quote = event.args.quote.toBigInt();
   liquidityAddedExchange.liquidity = event.args.liquidity.toBigInt();
-  liquidityAddedExchange.baseBalancePerShare = event.args.baseBalancePerShare.toBigInt();
-  liquidityAddedExchange.priceAfterX96 = event.args.priceAfterX96.toBigInt();
+  liquidityAddedExchange.baseBalancePerShareX96 = event.args.baseBalancePerShare.toBigInt();
+  liquidityAddedExchange.sharePriceAfterX96 = event.args.priceAfterX96.toBigInt();
   liquidityAddedExchange.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
   liquidityAddedExchange.blockNumber = BigInt(event.blockNumber);
   liquidityAddedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
@@ -280,8 +280,8 @@ export async function handleLiquidityRemovedExchange(
   liquidityRemovedExchange.takerBase = event.args.takerBase.toBigInt();
   liquidityRemovedExchange.takerQuote = event.args.takerQuote.toBigInt();
   liquidityRemovedExchange.realizedPnl = event.args.realizedPnl.toBigInt();
-  liquidityRemovedExchange.baseBalancePerShare = event.args.baseBalancePerShare.toBigInt();
-  liquidityRemovedExchange.priceAfterX96 = event.args.priceAfterX96.toBigInt();
+  liquidityRemovedExchange.baseBalancePerShareX96 = event.args.baseBalancePerShare.toBigInt();
+  liquidityRemovedExchange.sharePriceAfterX96 = event.args.priceAfterX96.toBigInt();
   liquidityRemovedExchange.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
   liquidityRemovedExchange.blockNumber = BigInt(event.blockNumber);
   liquidityRemovedExchange.timestamp = BigInt(event.blockTimestamp.getTime());

@@ -90,10 +90,10 @@ type LiquidityAddedExchange @entity {
   quote: BigInt!
   "liquidity"
   liquidity: BigInt!
-  "baseBalancePerShare"
-  baseBalancePerShare: BigInt!
-  "priceAfterX96"
-  priceAfterX96: BigInt!
+  "baseBalancePerShareX96"
+  baseBalancePerShareX96: BigInt!
+  "sharePriceAfterX96"
+  sharePriceAfterX96: BigInt!
   # "cumDeleveragedBaseSharePerLiquidityX96"
   # cumDeleveragedBaseSharePerLiquidityX96: BigInt!
   # "cumDeleveragedQuotePerLiquidityX96"
@@ -131,10 +131,10 @@ type LiquidityRemovedExchange @entity {
   takerQuote: BigInt!
   "realizedPnl"
   realizedPnl: BigInt!
-  "baseBalancePerShare"
-  baseBalancePerShare: BigInt!
-  "priceAfterX96"
-  priceAfterX96: BigInt!
+  "baseBalancePerShareX96"
+  baseBalancePerShareX96: BigInt!
+  "sharePriceAfterX96"
+  sharePriceAfterX96: BigInt!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
