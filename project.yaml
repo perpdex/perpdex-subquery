@@ -72,3 +72,21 @@ dataSources:
           filter:
             topics:
               - PositionChanged(address,address,int256,int256,int256,uint256,uint256,uint256)
+  - kind: substrate/FrontierEvm
+    startBlock: 1607062
+    processor:
+      file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
+      options:
+        abi: perpdexMarketEth
+        address: '0x2AD5903cEEdf9fb8AfA70F2cB65384afb37708d0'
+    assets:
+      perpdexMarketEth:
+        file: ./abi/PerpdexMarketEth.abi.json
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleFundingPaid
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingPaid(int256)

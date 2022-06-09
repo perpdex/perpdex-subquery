@@ -20,8 +20,6 @@ import {
   getOrCreateMarket,
   getOrCreateCandle,
 } from '../utils/store';
-import { getBadDebt } from '../utils/model';
-import { str_plus, str_minus } from '../utils/number';
 
 type DepositedArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type WithdrawnArgs = [string, BigNumber] & { trader: string; amount: BigNumber };

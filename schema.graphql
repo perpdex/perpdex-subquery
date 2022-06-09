@@ -216,6 +216,8 @@ type IsMarketAllowedChanged @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
+  "transaction hash"
+  txHash: String!
   "market"
   market: String!
   "isMarketAllowed"
@@ -233,6 +235,8 @@ type FundingPaid @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
+  "transaction hash"
+  txHash: String!
   "fundingRateX96"
   fundingRateX96: BigInt!
 
@@ -248,6 +252,8 @@ type LiquidityAddedMarket @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
+  "transaction hash"
+  txHash: String!
   "base"
   base: BigInt!
   "quote"
@@ -267,6 +273,8 @@ type LiquidityRemovedMarket @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
+  "transaction hash"
+  txHash: String!
   "base"
   base: BigInt!
   "quote"
@@ -286,6 +294,8 @@ type Swapped @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
 
+  "transaction hash"
+  txHash: String!
   "isBaseToQuote"
   isBaseToQuote: Boolean!
   "isExactInput"
@@ -481,6 +491,8 @@ type Market @entity {
   quoteAmount: BigInt!
   "total liquidity"
   liquidity: BigInt!
+  "baseBalancePerShareX96"
+  baseBalancePerShareX96: BigInt
   "priceAfterX96"
   priceAfterX96: BigInt!
 
