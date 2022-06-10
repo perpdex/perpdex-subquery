@@ -239,12 +239,7 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   openOrder.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.args.market);
-  market.baseAmount = market.baseAmount + event.args.base.toBigInt(); // (wip): will be handled by perpDexMarket's events
-  market.quoteAmount = market.quoteAmount + event.args.quote.toBigInt(); // (wip): will be handled by perpDexMarket's events
-  market.liquidity = market.liquidity + event.args.liquidity.toBigInt(); // (wip): will be handled by perpDexMarket's events
   market.priceAfterX96 = event.args.priceAfterX96.toBigInt();
-  market.blockNumberAdded = BigInt(event.blockNumber);
-  market.timestampAdded = BigInt(event.blockTimestamp.getTime());
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -317,12 +312,7 @@ export async function handleLiquidityRemovedExchange(
   openOrder.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.args.market);
-  market.baseAmount = market.baseAmount + event.args.base.toBigInt(); // (wip): will be handled by perpDexMarket's events
-  market.quoteAmount = market.quoteAmount + event.args.quote.toBigInt(); // (wip): will be handled by perpDexMarket's events
-  market.liquidity = market.liquidity + event.args.liquidity.toBigInt(); // (wip): will be handled by perpDexMarket's events
   market.priceAfterX96 = event.args.priceAfterX96.toBigInt();
-  market.blockNumberAdded = BigInt(event.blockNumber);
-  market.timestampAdded = BigInt(event.blockTimestamp.getTime());
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 

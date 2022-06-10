@@ -1,6 +1,7 @@
 import { FundingPaid, LiquidityAddedMarket, LiquidityRemovedMarket, Swapped } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
+import { getOrCreateMarket } from '../utils/store';
 
 type FundingPaidArgs = [BigNumber] & { fundingRateX96: BigNumber };
 type LiquidityAddedMarketArgs = [BigNumber, BigNumber, BigNumber] & {
@@ -41,9 +42,17 @@ export async function handleLiquidityAddedMarket(event: FrontierEvmEvent<Liquidi
   liquidityAddedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityAddedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  // (Todo): Market Save
+  const market = await getOrCreateMarket(event.address);
+  market.baseAmount = market.baseAmount + event.args.base.toBigInt();
+  market.quoteAmount = market.quoteAmount + event.args.quote.toBigInt();
+  market.liquidity = market.liquidity + event.args.liquidity.toBigInt();
+  market.blockNumberAdded = BigInt(event.blockNumber);
+  market.timestampAdded = BigInt(event.blockTimestamp.getTime());
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidityAddedMarket.save();
+  await market.save();
 }
 
 export async function handleLiquidityRemovedMarket(event: FrontierEvmEvent<LiquidityRemovedMarketArgs>): Promise<void> {
@@ -56,9 +65,15 @@ export async function handleLiquidityRemovedMarket(event: FrontierEvmEvent<Liqui
   liquidityRemovedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityRemovedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  // (Todo): Market Save
+  const market = await getOrCreateMarket(event.address);
+  market.baseAmount = market.baseAmount - event.args.base.toBigInt();
+  market.quoteAmount = market.quoteAmount - event.args.quote.toBigInt();
+  market.liquidity = market.liquidity - event.args.liquidity.toBigInt();
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidityRemovedMarket.save();
+  await market.save();
 }
 
 export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promise<void> {
@@ -72,7 +87,27 @@ export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promi
   swapped.blockNumber = BigInt(event.blockNumber);
   swapped.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  // (Todo): Market Save
+  const market = await getOrCreateMarket(event.address);
+  if (event.args.isExactInput) {
+    if (event.args.isBaseToQuote) {
+      market.baseAmount = market.baseAmount + event.args.amount.toBigInt();
+      market.quoteAmount = market.quoteAmount - event.args.oppositeAmount.toBigInt();
+    } else {
+      market.baseAmount = market.baseAmount - event.args.oppositeAmount.toBigInt();
+      market.quoteAmount = market.quoteAmount + event.args.amount.toBigInt();
+    }
+  } else {
+    if (event.args.isBaseToQuote) {
+      market.baseAmount = market.baseAmount + event.args.oppositeAmount.toBigInt();
+      market.quoteAmount = market.quoteAmount - event.args.amount.toBigInt();
+    } else {
+      market.baseAmount = market.baseAmount - event.args.amount.toBigInt();
+      market.quoteAmount = market.quoteAmount + event.args.oppositeAmount.toBigInt();
+    }
+  }
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await swapped.save();
+  await market.save();
 }

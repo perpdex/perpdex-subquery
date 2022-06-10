@@ -110,7 +110,6 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market = new Market(marketAddr);
     market.baseToken = STR_ZERO;
     market.quoteToken = STR_ZERO;
-    market.pool = STR_ZERO;
     market.tradingVolume = BI_ZERO;
     market.baseAmount = BI_ZERO;
     market.quoteAmount = BI_ZERO;

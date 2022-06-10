@@ -481,8 +481,6 @@ type Market @entity {
   baseToken: String!
   "quoteToken address"
   quoteToken: String!
-  "pool address"
-  pool: String!
   "cumulative trading volume"
   tradingVolume: BigInt!
   "provided liquidity base amount"
