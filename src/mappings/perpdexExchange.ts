@@ -10,6 +10,7 @@ import {
   MaxMarketsPerAccountChanged,
   ImRatioChanged,
   MmRatioChanged,
+  LiquidationRewardConfigChanged,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -115,6 +116,10 @@ type ImRatioChangedArgs = [number] & {
 };
 type MmRatioChangedArgs = [number] & {
   value: number;
+};
+type LiquidationRewardConfigChangedArgs = [number, number] & {
+  rewardRatio: number;
+  smoothEmaTime: number;
 };
 
 export async function handleDeposited(event: FrontierEvmEvent<DepositedArgs>): Promise<void> {
@@ -515,5 +520,29 @@ export async function handleMmRatioChanged(event: FrontierEvmEvent<MmRatioChange
   protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await mmRatioChanged.save();
+  await protocol.save();
+}
+
+export async function handleLiquidationRewardConfigChanged(
+  event: FrontierEvmEvent<LiquidationRewardConfigChangedArgs>
+): Promise<void> {
+  const liquidationRewardConfigChanged = new LiquidationRewardConfigChanged(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
+  liquidationRewardConfigChanged.txHash = event.transactionHash;
+  liquidationRewardConfigChanged.rewardRatio = event.args.rewardRatio;
+  liquidationRewardConfigChanged.smoothEmaTime = event.args.smoothEmaTime;
+  liquidationRewardConfigChanged.blockNumberLogIndex =
+    BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  liquidationRewardConfigChanged.blockNumber = BigInt(event.blockNumber);
+  liquidationRewardConfigChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.rewardRatio = liquidationRewardConfigChanged.rewardRatio;
+  protocol.smoothEmaTime = liquidationRewardConfigChanged.smoothEmaTime;
+  protocol.blockNumber = BigInt(event.blockNumber);
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await liquidationRewardConfigChanged.save();
   await protocol.save();
 }
