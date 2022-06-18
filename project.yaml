@@ -77,6 +77,16 @@ dataSources:
           filter:
             topics:
               - MaxMarketsPerAccountChanged(uint8)
+        - handler: handleImRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - ImRatioChanged(uint24)
+        - handler: handleMmRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - MmRatioChanged(uint24)
   - kind: substrate/FrontierEvm
     startBlock: 1607062
     processor:

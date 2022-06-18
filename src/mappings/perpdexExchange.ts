@@ -8,6 +8,8 @@ import {
   PositionLiquidated,
   PositionChanged,
   MaxMarketsPerAccountChanged,
+  ImRatioChanged,
+  MmRatioChanged,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -106,6 +108,12 @@ type PositionChangedArgs = [
   sharePriceAfterX96: BigNumber;
 };
 type MaxMarketsPerAccountChangedArgs = [number] & {
+  value: number;
+};
+type ImRatioChangedArgs = [number] & {
+  value: number;
+};
+type MmRatioChangedArgs = [number] & {
   value: number;
 };
 
@@ -473,5 +481,39 @@ export async function handleMaxMarketsPerAccountChanged(
   protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await maxMarketsPerAccountChanged.save();
+  await protocol.save();
+}
+
+export async function handleImRatioChanged(event: FrontierEvmEvent<ImRatioChangedArgs>): Promise<void> {
+  const imRatioChanged = new ImRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  imRatioChanged.txHash = event.transactionHash;
+  imRatioChanged.value = event.args.value;
+  imRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  imRatioChanged.blockNumber = BigInt(event.blockNumber);
+  imRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.imRatio = imRatioChanged.value;
+  protocol.blockNumber = BigInt(event.blockNumber);
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await imRatioChanged.save();
+  await protocol.save();
+}
+
+export async function handleMmRatioChanged(event: FrontierEvmEvent<MmRatioChangedArgs>): Promise<void> {
+  const mmRatioChanged = new MmRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  mmRatioChanged.txHash = event.transactionHash;
+  mmRatioChanged.value = event.args.value;
+  mmRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  mmRatioChanged.blockNumber = BigInt(event.blockNumber);
+  mmRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.mmRatio = mmRatioChanged.value;
+  protocol.blockNumber = BigInt(event.blockNumber);
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await mmRatioChanged.save();
   await protocol.save();
 }

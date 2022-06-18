@@ -229,6 +229,40 @@ type MaxMarketsPerAccountChanged @entity {
   timestamp: BigInt!
 }
 
+type ImRatioChanged @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "transaction hash"
+  txHash: String!
+  "value"
+  value: Int!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
+type MmRatioChanged @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "transaction hash"
+  txHash: String!
+  "value"
+  value: Int!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
 type IsMarketAllowedChanged @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
@@ -422,6 +456,10 @@ type Protocol @entity {
   insuranceFundBalance: BigInt!
   "maxMarketsPerAccount"
   maxMarketsPerAccount: Int!
+  "imRatio"
+  imRatio: Int!
+  "mmRatio"
+  mmRatio: Int!
 
   "last updated block number"
   blockNumber: BigInt!
