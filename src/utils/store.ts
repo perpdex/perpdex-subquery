@@ -29,6 +29,7 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
     protocol.totalValueLocked = BI_ZERO;
     protocol.protocolFee = BI_ZERO;
     protocol.insuranceFundBalance = BI_ZERO;
+    protocol.maxMarketsPerAccount = 0;
     protocol.blockNumber = BI_ZERO;
     protocol.timestamp = BI_ZERO;
     await protocol.save();

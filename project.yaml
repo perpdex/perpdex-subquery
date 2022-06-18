@@ -72,6 +72,11 @@ dataSources:
           filter:
             topics:
               - PositionChanged(address,address,int256,int256,int256,uint256,uint256,uint256)
+        - handler: handleMaxMarketsPerAccountChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - MaxMarketsPerAccountChanged(uint8)
   - kind: substrate/FrontierEvm
     startBlock: 1607062
     processor:

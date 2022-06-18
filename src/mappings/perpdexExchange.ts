@@ -7,6 +7,7 @@ import {
   LiquidityRemovedExchange,
   PositionLiquidated,
   PositionChanged,
+  MaxMarketsPerAccountChanged,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -103,6 +104,9 @@ type PositionChangedArgs = [
   protocolFee: BigNumber;
   baseBalancePerShareX96: BigNumber;
   sharePriceAfterX96: BigNumber;
+};
+type MaxMarketsPerAccountChangedArgs = [number] & {
+  value: number;
 };
 
 export async function handleDeposited(event: FrontierEvmEvent<DepositedArgs>): Promise<void> {
@@ -449,4 +453,25 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   await trader.save();
   await position.save();
   await traderTakerInfo.save();
+}
+
+export async function handleMaxMarketsPerAccountChanged(
+  event: FrontierEvmEvent<MaxMarketsPerAccountChangedArgs>
+): Promise<void> {
+  const maxMarketsPerAccountChanged = new MaxMarketsPerAccountChanged(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
+  maxMarketsPerAccountChanged.txHash = event.transactionHash;
+  maxMarketsPerAccountChanged.value = event.args.value;
+  maxMarketsPerAccountChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  maxMarketsPerAccountChanged.blockNumber = BigInt(event.blockNumber);
+  maxMarketsPerAccountChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.maxMarketsPerAccount = maxMarketsPerAccountChanged.value;
+  protocol.blockNumber = BigInt(event.blockNumber);
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await maxMarketsPerAccountChanged.save();
+  await protocol.save();
 }

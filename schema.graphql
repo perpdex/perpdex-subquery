@@ -212,6 +212,23 @@ type PositionChanged @entity {
   timestamp: BigInt!
 }
 
+type MaxMarketsPerAccountChanged @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "transaction hash"
+  txHash: String!
+  "value"
+  value: Int!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
 type IsMarketAllowedChanged @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
@@ -403,6 +420,8 @@ type Protocol @entity {
   protocolFee: BigInt!
   "insuranceFundBalance"
   insuranceFundBalance: BigInt!
+  "maxMarketsPerAccount"
+  maxMarketsPerAccount: Int!
 
   "last updated block number"
   blockNumber: BigInt!
