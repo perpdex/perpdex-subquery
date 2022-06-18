@@ -34,6 +34,7 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
     protocol.mmRatio = 0;
     protocol.rewardRatio = 0;
     protocol.smoothEmaTime = 0;
+    protocol.protocolFeeRatio = 0;
     protocol.blockNumber = BI_ZERO;
     protocol.timestamp = BI_ZERO;
     await protocol.save();

@@ -11,6 +11,7 @@ import {
   ImRatioChanged,
   MmRatioChanged,
   LiquidationRewardConfigChanged,
+  ProtocolFeeRatioChanged,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -120,6 +121,9 @@ type MmRatioChangedArgs = [number] & {
 type LiquidationRewardConfigChangedArgs = [number, number] & {
   rewardRatio: number;
   smoothEmaTime: number;
+};
+type ProtocolFeeRatioChangedArgs = [number] & {
+  value: number;
 };
 
 export async function handleDeposited(event: FrontierEvmEvent<DepositedArgs>): Promise<void> {
@@ -544,5 +548,24 @@ export async function handleLiquidationRewardConfigChanged(
   protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidationRewardConfigChanged.save();
+  await protocol.save();
+}
+
+export async function handleProtocolFeeRatioChanged(
+  event: FrontierEvmEvent<ProtocolFeeRatioChangedArgs>
+): Promise<void> {
+  const protocolFeeRatioChanged = new ProtocolFeeRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  protocolFeeRatioChanged.txHash = event.transactionHash;
+  protocolFeeRatioChanged.value = event.args.value;
+  protocolFeeRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  protocolFeeRatioChanged.blockNumber = BigInt(event.blockNumber);
+  protocolFeeRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.protocolFeeRatio = protocolFeeRatioChanged.value;
+  protocol.blockNumber = BigInt(event.blockNumber);
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await protocolFeeRatioChanged.save();
   await protocol.save();
 }

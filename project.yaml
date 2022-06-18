@@ -92,6 +92,11 @@ dataSources:
           filter:
             topics:
               - LiquidationRewardConfigChanged(uint24,uint16)
+        - handler: handleProtocolFeeRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - ProtocolFeeRatioChanged(uint24)
   - kind: substrate/FrontierEvm
     startBlock: 1607062
     processor:
