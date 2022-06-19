@@ -417,6 +417,23 @@ type PoolFeeRatioChanged @entity {
   timestamp: BigInt!
 }
 
+type FundingMaxPremiumRatioChanged @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "transaction hash"
+  txHash: String!
+  "value"
+  value: Int!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
 type Trader @entity {
   "format: trader address"
   id: ID!
@@ -611,6 +628,8 @@ type Market @entity {
   priceAfterX96: BigInt!
   "poolFeeRatio"
   poolFeeRatio: Int!
+  "maxPremiumRatio"
+  maxPremiumRatio: Int!
 
   "block number when the pool was added "
   blockNumberAdded: BigInt!

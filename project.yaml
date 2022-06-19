@@ -135,3 +135,8 @@ dataSources:
           filter:
             topics:
               - PoolFeeRatioChanged(uint24)
+        - handler: handleFundingMaxPremiumRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingMaxPremiumRatioChanged(uint24)
