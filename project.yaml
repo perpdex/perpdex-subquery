@@ -97,6 +97,11 @@ dataSources:
           filter:
             topics:
               - ProtocolFeeRatioChanged(uint24)
+        - handler: handleIsMarketAllowedChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - IsMarketAllowedChanged(address,bool)
   - kind: substrate/FrontierEvm
     startBlock: 1607062
     processor:
@@ -106,6 +111,64 @@ dataSources:
         address: '0x2AD5903cEEdf9fb8AfA70F2cB65384afb37708d0'
     assets:
       perpdexMarketEth:
+        file: ./abi/PerpdexMarketEth.abi.json
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleFundingPaid
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingPaid(int256,uint32,int256,uint256,uint256,uint256)
+        - handler: handleLiquidityAddedMarket
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - LiquidityAdded(uint256,uint256,uint256)
+        - handler: handleLiquidityRemovedMarket
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - LiquidityRemoved(uint256,uint256,uint256)
+        - handler: handleSwapped
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - Swapped(bool,bool,uint256,uint256)
+        - handler: handlePoolFeeRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PoolFeeRatioChanged(uint24)
+        - handler: handleFundingMaxPremiumRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingMaxPremiumRatioChanged(uint24)
+        - handler: handleFundingMaxElapsedSecChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingMaxElapsedSecChanged(uint32)
+        - handler: handleFundingRolloverSecChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingRolloverSecChanged(uint32)
+        - handler: handlePriceLimitConfigChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PriceLimitConfigChanged(uint24,uint24,uint24,uint24,uint32)
+templates:
+  - name: NewMarket
+    kind: substrate/FrontierEvm
+    processor:
+      file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
+      options:
+        abi: perpdexMarket
+    assets:
+      perpdexMarket:
         file: ./abi/PerpdexMarketEth.abi.json
     mapping:
       file: ./dist/index.js

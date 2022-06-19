@@ -12,6 +12,8 @@ import {
   MmRatioChanged,
   LiquidationRewardConfigChanged,
   ProtocolFeeRatioChanged,
+  IsMarketAllowedChanged,
+  createNewMarketDatasource,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -138,6 +140,10 @@ type LiquidationRewardConfigChangedArgs = [number, number] & {
 };
 type ProtocolFeeRatioChangedArgs = [number] & {
   value: number;
+};
+type IsMarketAllowedChangedArgs = [string, boolean] & {
+  market: string;
+  isMarketAllowed: boolean;
 };
 
 export async function handleDeposited(event: FrontierEvmEvent<DepositedArgs>): Promise<void> {
@@ -588,4 +594,23 @@ export async function handleProtocolFeeRatioChanged(
 
   await protocolFeeRatioChanged.save();
   await protocol.save();
+}
+
+export async function handleIsMarketAllowedChanged(event: FrontierEvmEvent<IsMarketAllowedChangedArgs>): Promise<void> {
+  const isMarketAllowedChanged = new IsMarketAllowedChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  isMarketAllowedChanged.txHash = event.transactionHash;
+  isMarketAllowedChanged.market = event.args.market;
+  isMarketAllowedChanged.isMarketAllowed = event.args.isMarketAllowed;
+  isMarketAllowedChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  isMarketAllowedChanged.blockNumber = BigInt(event.blockNumber);
+  isMarketAllowedChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const market = await getOrCreateMarket(event.args.market);
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await createNewMarketDatasource({ address: event.args.market });
+
+  await isMarketAllowedChanged.save();
+  await market.save();
 }
