@@ -12,8 +12,16 @@ import {
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
 import { getOrCreateMarket } from '../utils/store';
+import { Q96 } from '../utils/number';
 
-type FundingPaidArgs = [BigNumber] & { fundingRateX96: BigNumber };
+type FundingPaidArgs = [BigNumber, number, BigNumber, BigNumber, BigNumber, BigNumber] & {
+  fundingRateX96: BigNumber;
+  elapsedSec: number;
+  premiumX96: BigNumber;
+  markPriceX96: BigNumber;
+  cumBasePerLiquidityX96: BigNumber;
+  cumQuotePerLiquidityX96: BigNumber;
+};
 type LiquidityAddedMarketArgs = [BigNumber, BigNumber, BigNumber] & {
   base: BigNumber;
   quote: BigNumber;
@@ -54,9 +62,25 @@ export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>
   const fundingPaid = new FundingPaid(`${event.transactionHash}-${event.logIndex.toString()}`);
   fundingPaid.txHash = event.transactionHash;
   fundingPaid.fundingRateX96 = event.args.fundingRateX96.toBigInt();
+  fundingPaid.elapsedSec = event.args.elapsedSec;
+  fundingPaid.premiumX96 = event.args.premiumX96.toBigInt();
+  fundingPaid.markPriceX96 = event.args.markPriceX96.toBigInt();
+  fundingPaid.cumBasePerLiquidityX96 = event.args.cumBasePerLiquidityX96.toBigInt();
+  fundingPaid.cumQuotePerLiquidityX96 = event.args.cumQuotePerLiquidityX96.toBigInt();
+
   fundingPaid.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
   fundingPaid.blockNumber = BigInt(event.blockNumber);
   fundingPaid.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const market = await getOrCreateMarket(event.address);
+  market.baseBalancePerShareX96 = (market.baseBalancePerShareX96 * (Q96 - fundingPaid.fundingRateX96)) / Q96; // Wip
+  market.markPriceX96 = fundingPaid.markPriceX96;
+  market.cumBasePerLiquidityX96 = fundingPaid.cumBasePerLiquidityX96;
+  market.cumQuotePerLiquidityX96 = fundingPaid.cumQuotePerLiquidityX96;
+  market.blockNumberAdded = BigInt(event.blockNumber);
+  market.timestampAdded = BigInt(event.blockTimestamp.getTime());
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await fundingPaid.save();
 }

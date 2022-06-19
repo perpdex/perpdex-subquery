@@ -326,6 +326,16 @@ type FundingPaid @entity {
   txHash: String!
   "fundingRateX96"
   fundingRateX96: BigInt!
+  "elapsedSec"
+  elapsedSec: Int!
+  "premiumX96"
+  premiumX96: BigInt!
+  "markPriceX96"
+  markPriceX96: BigInt!
+  "cumBasePerLiquidityX96"
+  cumBasePerLiquidityX96: BigInt!
+  "cumQuotePerLiquidityX96"
+  cumQuotePerLiquidityX96: BigInt!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
@@ -684,7 +694,13 @@ type Market @entity {
   "baseBalancePerShareX96"
   baseBalancePerShareX96: BigInt
   "priceAfterX96"
-  priceAfterX96: BigInt!
+  priceAfterX96: BigInt! #Wip
+  "markPriceX96"
+  markPriceX96: BigInt!
+  "cumBasePerLiquidityX96"
+  cumBasePerLiquidityX96: BigInt!
+  "cumQuotePerLiquidityX96"
+  cumQuotePerLiquidityX96: BigInt!
   "poolFeeRatio"
   poolFeeRatio: Int!
   "maxPremiumRatio"
