@@ -87,6 +87,7 @@ type PositionLiquidatedArgs = [
   BigNumber,
   BigNumber,
   BigNumber,
+  BigNumber,
   BigNumber
 ] & {
   trader: string;
@@ -98,6 +99,7 @@ type PositionLiquidatedArgs = [
   protocolFee: BigNumber;
   baseBalancePerShareX96: BigNumber;
   sharePriceAfterX96: BigNumber;
+  liquidationPenalty: BigNumber;
   liquidationReward: BigNumber;
   insuranceFundReward: BigNumber;
 };
@@ -380,6 +382,7 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   positionLiquidated.protocolFee = event.args.protocolFee.toBigInt();
   positionLiquidated.baseBalancePerShareX96 = event.args.baseBalancePerShareX96.toBigInt();
   positionLiquidated.sharePriceAfterX96 = event.args.sharePriceAfterX96.toBigInt();
+  positionLiquidated.liquidationPenalty = event.args.liquidationPenalty.toBigInt();
   positionLiquidated.insuranceFundReward = event.args.insuranceFundReward.toBigInt();
   positionLiquidated.liquidationReward = event.args.liquidationReward.toBigInt();
   positionLiquidated.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
@@ -395,7 +398,8 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   const trader = await getOrCreateTrader(event.args.trader);
   trader.markets.push(positionLiquidated.market);
   trader.markets = [...new Set(trader.markets)]; // duplicate deletion
-  trader.collateralBalance = trader.collateralBalance + event.args.realizedPnl.toBigInt();
+  trader.collateralBalance =
+    trader.collateralBalance + event.args.realizedPnl.toBigInt() - positionLiquidated.liquidationPenalty;
   trader.blockNumber = BigInt(event.blockNumber);
   trader.timestamp = BigInt(event.blockTimestamp.getTime());
 

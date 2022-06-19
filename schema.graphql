@@ -168,6 +168,8 @@ type PositionLiquidated @entity {
   baseBalancePerShareX96: BigInt!
   "sharePriceAfterX96"
   sharePriceAfterX96: BigInt!
+  "liquidationPenalty"
+  liquidationPenalty: BigInt!
   "liquidationReward"
   liquidationReward: BigInt!
   "insuranceFundReward"
