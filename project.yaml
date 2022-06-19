@@ -130,3 +130,8 @@ dataSources:
           filter:
             topics:
               - Swapped(bool,bool,uint256,uint256)
+        - handler: handlePoolFeeRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PoolFeeRatioChanged(uint24)

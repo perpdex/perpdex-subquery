@@ -1,4 +1,4 @@
-import { FundingPaid, LiquidityAddedMarket, LiquidityRemovedMarket, Swapped } from '../types';
+import { FundingPaid, LiquidityAddedMarket, LiquidityRemovedMarket, Swapped, PoolFeeRatioChanged } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
 import { getOrCreateMarket } from '../utils/store';
@@ -19,6 +19,9 @@ type SwappedArgs = [boolean, boolean, BigNumber, BigNumber] & {
   isExactInput: boolean;
   amount: BigNumber;
   oppositeAmount: BigNumber;
+};
+type PoolFeeRatioChangedArgs = [number] & {
+  value: number;
 };
 
 export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>): Promise<void> {
@@ -109,5 +112,22 @@ export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promi
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await swapped.save();
+  await market.save();
+}
+
+export async function handlePoolFeeRatioChanged(event: FrontierEvmEvent<PoolFeeRatioChangedArgs>): Promise<void> {
+  const poolFeeRatioChanged = new PoolFeeRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  poolFeeRatioChanged.txHash = event.transactionHash;
+  poolFeeRatioChanged.value = event.args.value;
+  poolFeeRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  poolFeeRatioChanged.blockNumber = BigInt(event.blockNumber);
+  poolFeeRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const market = await getOrCreateMarket(event.address);
+  market.poolFeeRatio = poolFeeRatioChanged.value;
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await poolFeeRatioChanged.save();
   await market.save();
 }

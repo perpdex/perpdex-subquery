@@ -121,6 +121,7 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market.quoteAmount = BI_ZERO;
     market.liquidity = BI_ZERO;
     market.priceAfterX96 = BI_ZERO;
+    market.poolFeeRatio = 0;
     market.blockNumberAdded = BI_ZERO;
     market.timestampAdded = BI_ZERO;
     market.blockNumber = BI_ZERO;
