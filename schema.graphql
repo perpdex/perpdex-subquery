@@ -434,6 +434,40 @@ type FundingMaxPremiumRatioChanged @entity {
   timestamp: BigInt!
 }
 
+type FundingMaxElapsedSecChanged @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "transaction hash"
+  txHash: String!
+  "value"
+  value: Int!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
+type FundingRolloverSecChanged @entity {
+  "format: <tx hash>-<tx log index>"
+  id: ID!
+
+  "transaction hash"
+  txHash: String!
+  "value"
+  value: Int!
+
+  "(block number * 1000 + tx log index) for sorting"
+  blockNumberLogIndex: BigInt!
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
 type Trader @entity {
   "format: trader address"
   id: ID!
@@ -630,6 +664,10 @@ type Market @entity {
   poolFeeRatio: Int!
   "maxPremiumRatio"
   maxPremiumRatio: Int!
+  "fundingMaxElapsedSec"
+  fundingMaxElapsedSec: Int!
+  "fundingRolloverSec"
+  fundingRolloverSec: Int!
 
   "block number when the pool was added "
   blockNumberAdded: BigInt!

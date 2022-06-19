@@ -140,3 +140,13 @@ dataSources:
           filter:
             topics:
               - FundingMaxPremiumRatioChanged(uint24)
+        - handler: handleFundingMaxElapsedSecChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingMaxElapsedSecChanged(uint32)
+        - handler: handleFundingRolloverSecChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingRolloverSecChanged(uint32)

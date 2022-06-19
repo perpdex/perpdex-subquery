@@ -5,6 +5,8 @@ import {
   Swapped,
   PoolFeeRatioChanged,
   FundingMaxPremiumRatioChanged,
+  FundingMaxElapsedSecChanged,
+  FundingRolloverSecChanged,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -31,6 +33,12 @@ type PoolFeeRatioChangedArgs = [number] & {
   value: number;
 };
 type FundingMaxPremiumRatioChangedArgs = [number] & {
+  value: number;
+};
+type FundingMaxElapsedSecChangedArgs = [number] & {
+  value: number;
+};
+type FundingRolloverSecChangedArgs = [number] & {
   value: number;
 };
 
@@ -160,5 +168,47 @@ export async function handleFundingMaxPremiumRatioChanged(
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await fundingMaxPremiumRatioChanged.save();
+  await market.save();
+}
+
+export async function handleFundingMaxElapsedSecChanged(
+  event: FrontierEvmEvent<FundingMaxElapsedSecChangedArgs>
+): Promise<void> {
+  const fundingMaxElapsedSecChanged = new FundingMaxElapsedSecChanged(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
+  fundingMaxElapsedSecChanged.txHash = event.transactionHash;
+  fundingMaxElapsedSecChanged.value = event.args.value;
+  fundingMaxElapsedSecChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  fundingMaxElapsedSecChanged.blockNumber = BigInt(event.blockNumber);
+  fundingMaxElapsedSecChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const market = await getOrCreateMarket(event.address);
+  market.fundingMaxElapsedSec = fundingMaxElapsedSecChanged.value;
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await fundingMaxElapsedSecChanged.save();
+  await market.save();
+}
+
+export async function handleFundingRolloverSecChanged(
+  event: FrontierEvmEvent<FundingRolloverSecChangedArgs>
+): Promise<void> {
+  const fundingRolloverSecChanged = new FundingRolloverSecChanged(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
+  fundingRolloverSecChanged.txHash = event.transactionHash;
+  fundingRolloverSecChanged.value = event.args.value;
+  fundingRolloverSecChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  fundingRolloverSecChanged.blockNumber = BigInt(event.blockNumber);
+  fundingRolloverSecChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const market = await getOrCreateMarket(event.address);
+  market.fundingRolloverSec = fundingRolloverSecChanged.value;
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await fundingRolloverSecChanged.save();
   await market.save();
 }
