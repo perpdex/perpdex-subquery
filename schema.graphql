@@ -90,14 +90,14 @@ type LiquidityAddedExchange @entity {
   quote: BigInt!
   "liquidity"
   liquidity: BigInt!
+  "cumBasePerLiquidityX96"
+  cumBasePerLiquidityX96: BigInt!
+  "cumQuotePerLiquidityX96"
+  cumQuotePerLiquidityX96: BigInt!
   "baseBalancePerShareX96"
   baseBalancePerShareX96: BigInt!
   "sharePriceAfterX96"
   sharePriceAfterX96: BigInt!
-  # "cumDeleveragedBaseSharePerLiquidityX96"
-  # cumDeleveragedBaseSharePerLiquidityX96: BigInt!
-  # "cumDeleveragedQuotePerLiquidityX96"
-  # cumDeleveragedQuotePerLiquidityX96: BigInt!
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
@@ -559,10 +559,10 @@ type TraderMakerInfo @entity {
   quoteDebt: BigInt!
   "liquidity"
   liquidity: BigInt!
-  # "cumDeleveragedBaseSharePerLiquidityX96"
-  # cumDeleveragedBaseSharePerLiquidityX96: BigInt!
-  # "cumDeleveragedQuotePerLiquidityX96"
-  # cumDeleveragedQuotePerLiquidityX96: BigInt!
+  "cumBasePerLiquidityX96"
+  cumBasePerLiquidityX96: BigInt!
+  "cumQuotePerLiquidityX96"
+  cumQuotePerLiquidityX96: BigInt!
 
   "last updated block number"
   blockNumber: BigInt!

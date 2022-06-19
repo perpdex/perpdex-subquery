@@ -67,6 +67,8 @@ export async function getOrCreateTraderMakerInfo(traderAddr: string, marketAddr:
     traderMakerInfo.baseDebtShare = BI_ZERO;
     traderMakerInfo.quoteDebt = BI_ZERO;
     traderMakerInfo.liquidity = BI_ZERO;
+    traderMakerInfo.cumBasePerLiquidityX96 = BI_ZERO;
+    traderMakerInfo.cumQuotePerLiquidityX96 = BI_ZERO;
     traderMakerInfo.blockNumber = BI_ZERO;
     traderMakerInfo.timestamp = BI_ZERO;
     await traderMakerInfo.save();

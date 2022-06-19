@@ -30,12 +30,24 @@ type DepositedArgs = [string, BigNumber] & { trader: string; amount: BigNumber }
 type WithdrawnArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type InsuranceFundTransferredArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type ProtocolFeeTransferredArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
-type LiquidityAddedExchangeArgs = [string, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+type LiquidityAddedExchangeArgs = [
+  string,
+  string,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber
+] & {
   trader: string;
   market: string;
   base: BigNumber;
   quote: BigNumber;
   liquidity: BigNumber;
+  cumBasePerLiquidityX96: BigNumber;
+  cumQuotePerLiquidityX96: BigNumber;
   baseBalancePerShare: BigNumber;
   priceAfterX96: BigNumber;
 };
@@ -232,6 +244,8 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   liquidityAddedExchange.base = event.args.base.toBigInt();
   liquidityAddedExchange.quote = event.args.quote.toBigInt();
   liquidityAddedExchange.liquidity = event.args.liquidity.toBigInt();
+  liquidityAddedExchange.cumBasePerLiquidityX96 = event.args.cumBasePerLiquidityX96.toBigInt();
+  liquidityAddedExchange.cumQuotePerLiquidityX96 = event.args.cumQuotePerLiquidityX96.toBigInt();
   liquidityAddedExchange.baseBalancePerShareX96 = event.args.baseBalancePerShare.toBigInt();
   liquidityAddedExchange.sharePriceAfterX96 = event.args.priceAfterX96.toBigInt();
   liquidityAddedExchange.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
@@ -249,6 +263,8 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   traderMakerInfo.baseDebtBalance = traderMakerInfo.baseDebtShare * event.args.baseBalancePerShare.toBigInt();
   traderMakerInfo.quoteDebt = traderMakerInfo.quoteDebt + event.args.quote.toBigInt();
   traderMakerInfo.liquidity = traderMakerInfo.liquidity + event.args.liquidity.toBigInt();
+  traderMakerInfo.cumBasePerLiquidityX96 = liquidityAddedExchange.cumBasePerLiquidityX96;
+  traderMakerInfo.cumQuotePerLiquidityX96 = liquidityAddedExchange.cumQuotePerLiquidityX96;
   traderMakerInfo.blockNumber = BigInt(event.blockNumber);
   traderMakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 

@@ -56,7 +56,7 @@ dataSources:
           kind: substrate/FrontierEvmEvent
           filter:
             topics:
-              - LiquidityAdded(address,address,uint256,uint256,uint256,uint256,uint256)
+              - LiquidityAdded(address,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
         - handler: handleLiquidityRemovedExchange
           kind: substrate/FrontierEvmEvent
           filter:
