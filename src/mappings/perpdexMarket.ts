@@ -7,6 +7,7 @@ import {
   FundingMaxPremiumRatioChanged,
   FundingMaxElapsedSecChanged,
   FundingRolloverSecChanged,
+  PriceLimitConfigChanged,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -40,6 +41,13 @@ type FundingMaxElapsedSecChangedArgs = [number] & {
 };
 type FundingRolloverSecChangedArgs = [number] & {
   value: number;
+};
+type PriceLimitConfigChangedArgs = [number, number, number, number, number] & {
+  normalOrderRatio: number;
+  liquidationRatio: number;
+  emaNormalOrderRatio: number;
+  emaLiquidationRatio: number;
+  emaSec: number;
 };
 
 export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>): Promise<void> {
@@ -210,5 +218,32 @@ export async function handleFundingRolloverSecChanged(
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await fundingRolloverSecChanged.save();
+  await market.save();
+}
+
+export async function handlePriceLimitConfigChanged(
+  event: FrontierEvmEvent<PriceLimitConfigChangedArgs>
+): Promise<void> {
+  const priceLimitConfigChanged = new PriceLimitConfigChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  priceLimitConfigChanged.txHash = event.transactionHash;
+  priceLimitConfigChanged.normalOrderRatio = event.args.normalOrderRatio;
+  priceLimitConfigChanged.liquidationRatio = event.args.liquidationRatio;
+  priceLimitConfigChanged.emaNormalOrderRatio = event.args.emaNormalOrderRatio;
+  priceLimitConfigChanged.emaLiquidationRatio = event.args.emaLiquidationRatio;
+  priceLimitConfigChanged.emaSec = event.args.emaSec;
+  priceLimitConfigChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  priceLimitConfigChanged.blockNumber = BigInt(event.blockNumber);
+  priceLimitConfigChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const market = await getOrCreateMarket(event.address);
+  market.normalOrderRatio = priceLimitConfigChanged.normalOrderRatio;
+  market.liquidationRatio = priceLimitConfigChanged.liquidationRatio;
+  market.emaNormalOrderRatio = priceLimitConfigChanged.emaNormalOrderRatio;
+  market.emaLiquidationRatio = priceLimitConfigChanged.emaLiquidationRatio;
+  market.emaSec = priceLimitConfigChanged.emaSec;
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await priceLimitConfigChanged.save();
   await market.save();
 }

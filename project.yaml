@@ -150,3 +150,8 @@ dataSources:
           filter:
             topics:
               - FundingRolloverSecChanged(uint32)
+        - handler: handlePriceLimitConfigChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PriceLimitConfigChanged(uint24,uint24,uint24,uint24,uint32)
