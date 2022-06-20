@@ -59,6 +59,36 @@
         "internalType": "int256",
         "name": "fundingRateX96",
         "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "elapsedSec",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "premiumX96",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "markPriceX96",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "cumBasePerLiquidityX96",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "cumQuotePerLiquidityX96",
+        "type": "uint256"
       }
     ],
     "name": "FundingPaid",
@@ -157,6 +187,43 @@
       }
     ],
     "name": "PoolFeeRatioChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint24",
+        "name": "normalOrderRatio",
+        "type": "uint24"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint24",
+        "name": "liquidationRatio",
+        "type": "uint24"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint24",
+        "name": "emaNormalOrderRatio",
+        "type": "uint24"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint24",
+        "name": "emaLiquidationRatio",
+        "type": "uint24"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "emaSec",
+        "type": "uint32"
+      }
+    ],
+    "name": "PriceLimitConfigChanged",
     "type": "event"
   },
   {
@@ -339,26 +406,26 @@
       },
       {
         "internalType": "uint256",
-        "name": "cumDeleveragedBasePerLiquidityX96",
+        "name": "cumBasePerLiquidityX96",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "cumDeleveragedQuotePerLiquidityX96",
+        "name": "cumQuotePerLiquidityX96",
         "type": "uint256"
       }
     ],
     "name": "getLiquidityDeleveraged",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "int256",
         "name": "",
-        "type": "uint256"
+        "type": "int256"
       },
       {
-        "internalType": "uint256",
+        "internalType": "int256",
         "name": "",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "stateMutability": "view",
@@ -415,6 +482,35 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "isBaseToQuote",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isExactInput",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isLiquidation",
+        "type": "bool"
+      }
+    ],
+    "name": "maxSwap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -461,17 +557,51 @@
       },
       {
         "internalType": "uint256",
-        "name": "cumDeleveragedBasePerLiquidityX96",
+        "name": "cumBasePerLiquidityX96",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "cumDeleveragedQuotePerLiquidityX96",
+        "name": "cumQuotePerLiquidityX96",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
         "name": "baseBalancePerShareX96",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "isBaseToQuote",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isExactInput",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isLiquidation",
+        "type": "bool"
+      }
+    ],
+    "name": "previewSwap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "oppositeAmount",
         "type": "uint256"
       }
     ],
@@ -499,6 +629,62 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "priceLimitConfig",
+    "outputs": [
+      {
+        "internalType": "uint24",
+        "name": "normalOrderRatio",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint24",
+        "name": "liquidationRatio",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint24",
+        "name": "emaNormalOrderRatio",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint24",
+        "name": "emaLiquidationRatio",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint32",
+        "name": "emaSec",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "priceLimitInfo",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "referencePrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "referenceTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "emaPrice",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -590,29 +776,40 @@
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "isBaseToQuote",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "isExactInput",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "uint24",
+            "name": "normalOrderRatio",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "liquidationRatio",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "emaNormalOrderRatio",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "emaLiquidationRatio",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint32",
+            "name": "emaSec",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct MarketStructs.PriceLimitConfig",
+        "name": "value",
+        "type": "tuple"
       }
     ],
-    "name": "swap",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "oppositeAmount",
-        "type": "uint256"
-      }
-    ],
+    "name": "setPriceLimitConfig",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -632,9 +829,14 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isLiquidation",
+        "type": "bool"
       }
     ],
-    "name": "swapDry",
+    "name": "swap",
     "outputs": [
       {
         "internalType": "uint256",
@@ -642,7 +844,7 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
