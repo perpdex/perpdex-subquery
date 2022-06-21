@@ -13,7 +13,7 @@ import {
   LiquidationRewardConfigChanged,
   ProtocolFeeRatioChanged,
   IsMarketAllowedChanged,
-  // createNewMarketDatasource,
+  createNewMarketDatasource,
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
@@ -609,8 +609,7 @@ export async function handleIsMarketAllowedChanged(event: FrontierEvmEvent<IsMar
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  // await createNewMarketDatasource({ address: event.args.market });
-  // await (global as any).createDynamicDatasource('NewMarket', { address: event.args.market });
+  await createNewMarketDatasource({ address: event.args.market });
   await isMarketAllowedChanged.save();
   await market.save();
 }

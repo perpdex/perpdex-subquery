@@ -1,4 +1,4 @@
-specVersion: 1.0.0
+specVersion: 0.2.1
 name: perpdex-subquery
 version: 1.0.0
 runner:
@@ -14,13 +14,13 @@ repository: 'https://github.com/perpdex/perpdex-subquery'
 schema:
   file: ./schema.graphql
 network:
-  chainId: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019'
+  genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019'
   endpoint: wss://rpc.shibuya.astar.network
   chaintypes:
     file: ./dist/chaintypes.js
 dataSources:
   - kind: substrate/FrontierEvm
-    startBlock: 1673363
+    startBlock: 1627735
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
@@ -103,7 +103,7 @@ dataSources:
             topics:
               - IsMarketAllowedChanged(address,bool)
   - kind: substrate/FrontierEvm
-    startBlock: 1673363
+    startBlock: 1627735
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
@@ -160,61 +160,61 @@ dataSources:
           filter:
             topics:
               - PriceLimitConfigChanged(uint24,uint24,uint24,uint24,uint32)
-# templates:
-#   - name: NewMarket
-#     kind: substrate/FrontierEvm
-#     processor:
-#       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
-#       options:
-#         abi: newMarket
-#     assets:
-#       newMarket:
-#         file: ./abi/PerpdexMarketEth.abi.json
-#     mapping:
-#       file: ./dist/index.js
-#       handlers:
-#         - handler: handleFundingPaid
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - FundingPaid(int256,uint32,int256,uint256,uint256,uint256)
-#         - handler: handleLiquidityAddedMarket
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - LiquidityAdded(uint256,uint256,uint256)
-#         - handler: handleLiquidityRemovedMarket
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - LiquidityRemoved(uint256,uint256,uint256)
-#         - handler: handleSwapped
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - Swapped(bool,bool,uint256,uint256)
-#         - handler: handlePoolFeeRatioChanged
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - PoolFeeRatioChanged(uint24)
-#         - handler: handleFundingMaxPremiumRatioChanged
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - FundingMaxPremiumRatioChanged(uint24)
-#         - handler: handleFundingMaxElapsedSecChanged
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - FundingMaxElapsedSecChanged(uint32)
-#         - handler: handleFundingRolloverSecChanged
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - FundingRolloverSecChanged(uint32)
-#         - handler: handlePriceLimitConfigChanged
-#           kind: substrate/FrontierEvmEvent
-#           filter:
-#             topics:
-#               - PriceLimitConfigChanged(uint24,uint24,uint24,uint24,uint32)
+templates:
+  - name: NewMarket
+    kind: substrate/FrontierEvm
+    processor:
+      file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
+      options:
+        abi: newMarket
+    assets:
+      newMarket:
+        file: ./abi/PerpdexMarketEth.abi.json
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleFundingPaid
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingPaid(int256,uint32,int256,uint256,uint256,uint256)
+        - handler: handleLiquidityAddedMarket
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - LiquidityAdded(uint256,uint256,uint256)
+        - handler: handleLiquidityRemovedMarket
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - LiquidityRemoved(uint256,uint256,uint256)
+        - handler: handleSwapped
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - Swapped(bool,bool,uint256,uint256)
+        - handler: handlePoolFeeRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PoolFeeRatioChanged(uint24)
+        - handler: handleFundingMaxPremiumRatioChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingMaxPremiumRatioChanged(uint24)
+        - handler: handleFundingMaxElapsedSecChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingMaxElapsedSecChanged(uint32)
+        - handler: handleFundingRolloverSecChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - FundingRolloverSecChanged(uint32)
+        - handler: handlePriceLimitConfigChanged
+          kind: substrate/FrontierEvmEvent
+          filter:
+            topics:
+              - PriceLimitConfigChanged(uint24,uint24,uint24,uint24,uint32)
