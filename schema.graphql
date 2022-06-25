@@ -738,16 +738,33 @@ type Market @entity {
 }
 
 type Candle @entity {
-  "format: <market address>-<timeSecond>-<time>"
+  "format: <market address>-<timeFormat>-"
   id: ID!
 
   "market address"
   market: String!
-  "time second"
-  #example of timeSecond: 300(5m), 86400(=1d)
-  timeSecond: Int!
+  "time format"
+  # examples of timeformat: 300(5m), 86400(=1d)
+  timeFormat: Int!
+
+  "candles"
+  candles: [OHLC!]!
+
+  "last updated block number"
+  blockNumber: BigInt!
+  "last updated block timestamp"
+  timestamp: BigInt!
+}
+
+type OHLC @entity {
+  "format: <market address>-<time>-"
+  id: ID!
+
+  "market address"
+  market: String!
   "time"
   time: Date!
+  
   "open"
   open: BigInt!
   "high"
