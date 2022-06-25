@@ -50,8 +50,8 @@ type LiquidityAddedExchangeArgs = [
   liquidity: BigNumber;
   cumBasePerLiquidityX96: BigNumber;
   cumQuotePerLiquidityX96: BigNumber;
-  baseBalancePerShare: BigNumber;
-  priceAfterX96: BigNumber;
+  baseBalancePerShareX96: BigNumber;
+  sharePriceAfterX96: BigNumber;
 };
 type LiquidityRemovedExchangeArgs = [
   string,
@@ -254,8 +254,8 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   liquidityAddedExchange.liquidity = event.args.liquidity.toBigInt();
   liquidityAddedExchange.cumBasePerLiquidityX96 = event.args.cumBasePerLiquidityX96.toBigInt();
   liquidityAddedExchange.cumQuotePerLiquidityX96 = event.args.cumQuotePerLiquidityX96.toBigInt();
-  liquidityAddedExchange.baseBalancePerShareX96 = event.args.baseBalancePerShare.toBigInt();
-  liquidityAddedExchange.sharePriceAfterX96 = event.args.priceAfterX96.toBigInt();
+  liquidityAddedExchange.baseBalancePerShareX96 = event.args.baseBalancePerShareX96.toBigInt();
+  liquidityAddedExchange.sharePriceAfterX96 = event.args.sharePriceAfterX96.toBigInt();
   liquidityAddedExchange.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
   liquidityAddedExchange.blockNumber = BigInt(event.blockNumber);
   liquidityAddedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
@@ -266,40 +266,40 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   trader.blockNumber = BigInt(event.blockNumber);
   trader.timestamp = BigInt(event.blockTimestamp.getTime());
 
+  const market = await getOrCreateMarket(liquidityAddedExchange.market);
+  market.baseBalancePerShareX96 = liquidityAddedExchange.baseBalancePerShareX96;
+  market.sharePriceAfterX96 = liquidityAddedExchange.sharePriceAfterX96;
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
+
   const traderMakerInfo = await getOrCreateTraderMakerInfo(event.args.trader, event.args.market);
-  traderMakerInfo.baseDebtShare = traderMakerInfo.baseDebtShare + event.args.base.toBigInt();
-  traderMakerInfo.baseDebtBalance = traderMakerInfo.baseDebtShare * event.args.baseBalancePerShare.toBigInt();
-  traderMakerInfo.quoteDebt = traderMakerInfo.quoteDebt + event.args.quote.toBigInt();
-  traderMakerInfo.liquidity = traderMakerInfo.liquidity + event.args.liquidity.toBigInt();
-  traderMakerInfo.cumBasePerLiquidityX96 = liquidityAddedExchange.cumBasePerLiquidityX96;
+  traderMakerInfo.liquidity = traderMakerInfo.liquidity + liquidityAddedExchange.liquidity;
+  traderMakerInfo.cumBaseSharePerLiquidityX96 = liquidityAddedExchange.cumBasePerLiquidityX96;
   traderMakerInfo.cumQuotePerLiquidityX96 = liquidityAddedExchange.cumQuotePerLiquidityX96;
   traderMakerInfo.blockNumber = BigInt(event.blockNumber);
   traderMakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const openOrder = await getOrCreateOpenOrder(event.args.trader, event.args.market);
-  openOrder.baseShare = openOrder.baseShare + event.args.base.toBigInt();
-  openOrder.quote = openOrder.quote + event.args.quote.toBigInt();
-  openOrder.liquidity = openOrder.liquidity + event.args.liquidity.toBigInt();
+  const openOrder = await getOrCreateOpenOrder(event.args.trader, liquidityAddedExchange.market);
+  openOrder.base = openOrder.base + liquidityAddedExchange.base;
+  openOrder.quote = openOrder.quote + liquidityAddedExchange.quote;
+  openOrder.liquidity = openOrder.liquidity + liquidityAddedExchange.liquidity;
+  openOrder.traderMakerInfoRefId = traderMakerInfo.id;
+  openOrder.marketRefId = liquidityAddedExchange.market;
   openOrder.blockNumber = BigInt(event.blockNumber);
   openOrder.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const market = await getOrCreateMarket(event.args.market);
-  market.priceAfterX96 = event.args.priceAfterX96.toBigInt();
-  market.blockNumber = BigInt(event.blockNumber);
-  market.timestamp = BigInt(event.blockTimestamp.getTime());
-
   await getOrCreateCandle(
-    event.args.market,
+    liquidityAddedExchange.market,
     event.blockTimestamp,
-    event.args.priceAfterX96.toBigInt(),
-    BigInt(event.blockNumber)
+    liquidityAddedExchange.sharePriceAfterX96,
+    liquidityAddedExchange.blockNumber
   );
 
   await liquidityAddedExchange.save();
   await trader.save();
+  await market.save();
   await traderMakerInfo.save();
   await openOrder.save();
-  await market.save();
 }
 
 export async function handleLiquidityRemovedExchange(
@@ -350,14 +350,14 @@ export async function handleLiquidityRemovedExchange(
   traderMakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const openOrder = await getOrCreateOpenOrder(event.args.trader, event.args.market);
-  openOrder.baseShare = openOrder.baseShare - event.args.base.toBigInt() + event.args.takerBase.toBigInt();
+  openOrder.base = openOrder.base - event.args.base.toBigInt() + event.args.takerBase.toBigInt();
   openOrder.quote = openOrder.quote - event.args.quote.toBigInt() + event.args.takerQuote.toBigInt();
   openOrder.liquidity = openOrder.liquidity - event.args.liquidity.toBigInt();
   openOrder.blockNumber = BigInt(event.blockNumber);
   openOrder.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.args.market);
-  market.priceAfterX96 = event.args.priceAfterX96.toBigInt();
+  market.sharePriceAfterX96 = event.args.priceAfterX96.toBigInt();
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 

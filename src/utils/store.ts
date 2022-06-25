@@ -1,5 +1,5 @@
 import { Trader, Protocol, TraderTakerInfo, TraderMakerInfo, Position, OpenOrder, Market, Candle } from '../types';
-import { BI_ZERO, STR_ZERO, DATE_ZERO } from './number';
+import { BI_ZERO, STR_ZERO, DATE_ZERO } from './constant';
 import { ChainId, Network, Version } from '../constants/index';
 
 export async function getOrCreateTrader(traderAddr: string): Promise<Trader> {
@@ -65,9 +65,10 @@ export async function getOrCreateTraderMakerInfo(traderAddr: string, marketAddr:
     traderMakerInfo.trader = traderAddr;
     traderMakerInfo.market = marketAddr;
     traderMakerInfo.baseDebtShare = BI_ZERO;
+    traderMakerInfo.baseDebtBalance = BI_ZERO;
     traderMakerInfo.quoteDebt = BI_ZERO;
     traderMakerInfo.liquidity = BI_ZERO;
-    traderMakerInfo.cumBasePerLiquidityX96 = BI_ZERO;
+    traderMakerInfo.cumBaseSharePerLiquidityX96 = BI_ZERO;
     traderMakerInfo.cumQuotePerLiquidityX96 = BI_ZERO;
     traderMakerInfo.blockNumber = BI_ZERO;
     traderMakerInfo.timestamp = BI_ZERO;
@@ -101,13 +102,14 @@ export async function getOrCreateOpenOrder(traderAddr: string, marketAddr: strin
     openOrder = new OpenOrder(`${traderAddr}-${marketAddr}`);
     openOrder.maker = traderAddr;
     openOrder.market = marketAddr;
-    openOrder.baseShare = BI_ZERO;
+    openOrder.base = BI_ZERO;
     openOrder.quote = BI_ZERO;
     openOrder.liquidity = BI_ZERO;
     openOrder.realizedPnl = BI_ZERO;
     openOrder.blockNumber = BI_ZERO;
     openOrder.timestamp = BI_ZERO;
-    await openOrder.save();
+    openOrder.traderMakerInfoRefId = STR_ZERO;
+    openOrder.marketRefId = STR_ZERO;
   }
   return openOrder;
 }
@@ -122,7 +124,8 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market.baseAmount = BI_ZERO;
     market.quoteAmount = BI_ZERO;
     market.liquidity = BI_ZERO;
-    market.priceAfterX96 = BI_ZERO;
+    market.baseBalancePerShareX96 = BI_ZERO;
+    market.sharePriceAfterX96 = BI_ZERO;
     market.markPriceX96 = BI_ZERO;
     market.cumBasePerLiquidityX96 = BI_ZERO;
     market.cumQuotePerLiquidityX96 = BI_ZERO;

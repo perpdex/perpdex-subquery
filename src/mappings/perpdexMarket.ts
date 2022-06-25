@@ -12,7 +12,8 @@ import {
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
 import { getOrCreateMarket } from '../utils/store';
-import { Q96 } from '../utils/number';
+import { mulDiv } from '../utils/math';
+import { Q96 } from '../utils/constant';
 
 type FundingPaidArgs = [BigNumber, number, BigNumber, BigNumber, BigNumber, BigNumber] & {
   fundingRateX96: BigNumber;
@@ -67,18 +68,28 @@ export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>
   fundingPaid.markPriceX96 = event.args.markPriceX96.toBigInt();
   fundingPaid.cumBasePerLiquidityX96 = event.args.cumBasePerLiquidityX96.toBigInt();
   fundingPaid.cumQuotePerLiquidityX96 = event.args.cumQuotePerLiquidityX96.toBigInt();
-
   fundingPaid.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
   fundingPaid.blockNumber = BigInt(event.blockNumber);
   fundingPaid.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
-  market.baseBalancePerShareX96 = (market.baseBalancePerShareX96 * (Q96 - fundingPaid.fundingRateX96)) / Q96; // Wip
+  market.baseBalancePerShareX96 = mulDiv(market.baseBalancePerShareX96, Q96 - fundingPaid.fundingRateX96, Q96);
+  if (fundingPaid.fundingRateX96 > 0) {
+    const deleveratedQuote = mulDiv(market.quoteAmount, fundingPaid.fundingRateX96, Q96);
+    market.quoteAmount = market.quoteAmount - deleveratedQuote;
+    market.cumQuotePerLiquidityX96 = market.cumQuotePerLiquidityX96 + mulDiv(deleveratedQuote, Q96, market.liquidity);
+  } else {
+    const deleveratedBase = mulDiv(
+      market.baseAmount,
+      fundingPaid.fundingRateX96 * BigInt(-1),
+      Q96 + fundingPaid.fundingRateX96 * BigInt(-1)
+    );
+    market.baseAmount = market.baseAmount - deleveratedBase;
+    market.cumBasePerLiquidityX96 = market.cumBasePerLiquidityX96 + mulDiv(deleveratedBase, Q96, market.liquidity);
+  }
   market.markPriceX96 = fundingPaid.markPriceX96;
   market.cumBasePerLiquidityX96 = fundingPaid.cumBasePerLiquidityX96;
   market.cumQuotePerLiquidityX96 = fundingPaid.cumQuotePerLiquidityX96;
-  market.blockNumberAdded = BigInt(event.blockNumber);
-  market.timestampAdded = BigInt(event.blockTimestamp.getTime());
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -96,9 +107,9 @@ export async function handleLiquidityAddedMarket(event: FrontierEvmEvent<Liquidi
   liquidityAddedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
-  market.baseAmount = market.baseAmount + event.args.base.toBigInt();
-  market.quoteAmount = market.quoteAmount + event.args.quote.toBigInt();
-  market.liquidity = market.liquidity + event.args.liquidity.toBigInt();
+  market.baseAmount = market.baseAmount + liquidityAddedMarket.base;
+  market.quoteAmount = market.quoteAmount + liquidityAddedMarket.quote;
+  market.liquidity = market.liquidity + liquidityAddedMarket.liquidity;
   market.blockNumberAdded = BigInt(event.blockNumber);
   market.timestampAdded = BigInt(event.blockTimestamp.getTime());
   market.blockNumber = BigInt(event.blockNumber);

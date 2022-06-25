@@ -561,8 +561,8 @@ type TraderMakerInfo @entity {
   quoteDebt: BigInt!
   "liquidity"
   liquidity: BigInt!
-  "cumBasePerLiquidityX96"
-  cumBasePerLiquidityX96: BigInt!
+  "cumBaseSharePerLiquidityX96"
+  cumBaseSharePerLiquidityX96: BigInt!
   "cumQuotePerLiquidityX96"
   cumQuotePerLiquidityX96: BigInt!
 
@@ -658,7 +658,7 @@ type OpenOrder @entity {
   "market address"
   market: String!
   "provided liquidity base"
-  baseShare: BigInt!
+  base: BigInt!
   "provided liquidity quote"
   quote: BigInt!
   "current liquidity"
@@ -694,9 +694,9 @@ type Market @entity {
   "total liquidity"
   liquidity: BigInt!
   "baseBalancePerShareX96"
-  baseBalancePerShareX96: BigInt
-  "priceAfterX96"
-  priceAfterX96: BigInt! #Wip
+  baseBalancePerShareX96: BigInt # wip
+  "sharePriceAfterX96"
+  sharePriceAfterX96: BigInt! # wip
   "markPriceX96"
   markPriceX96: BigInt!
   "cumBasePerLiquidityX96"
