@@ -130,9 +130,9 @@ export async function handleLiquidityRemovedMarket(event: FrontierEvmEvent<Liqui
   liquidityRemovedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
-  market.baseAmount = market.baseAmount - event.args.base.toBigInt();
-  market.quoteAmount = market.quoteAmount - event.args.quote.toBigInt();
-  market.liquidity = market.liquidity - event.args.liquidity.toBigInt();
+  market.baseAmount = market.baseAmount - liquidityRemovedMarket.base;
+  market.quoteAmount = market.quoteAmount - liquidityRemovedMarket.quote;
+  market.liquidity = market.liquidity - liquidityRemovedMarket.liquidity;
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
