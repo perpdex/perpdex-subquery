@@ -534,15 +534,16 @@ type TraderTakerInfo @entity {
   baseBalance: BigInt!
   "quoteBalance"
   quoteBalance: BigInt!
-  "positions"
-  positions: [Position!]! @derivedFrom(field: "traderRef")
-
-  dayData: [TraderDayData!] @derivedFrom(field: "trader")
 
   "last updated block number"
   blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
+
+  "positions"
+  positions: [Position!]! @derivedFrom(field: "traderTakerInfoRef")
+
+  dayData: [TraderDayData!] @derivedFrom(field: "trader")
 }
 
 type TraderMakerInfo @entity {
@@ -632,10 +633,6 @@ type Position @entity {
   entryPrice: BigInt!
   "realized pnl of this tx"
   realizedPnl: BigInt!
-  "isBaseToQuote"
-  isBaseToQuote: Boolean!
-  "isExactInput"
-  isExactInput: Boolean!
   "cumulative trading volume"
   tradingVolume: BigInt!
 
@@ -644,8 +641,8 @@ type Position @entity {
   "last updated block timestamp"
   timestamp: BigInt!
 
-  "foreign key to Trader"
-  traderRef: Trader!
+  "foreign key to traderTakerInfo"
+  traderTakerInfoRef: TraderTakerInfo!
   "foreign key to Market"
   marketRef: Market!
 }

@@ -144,7 +144,7 @@ export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promi
   const swapped = new Swapped(`${event.transactionHash}-${event.logIndex.toString()}`);
   swapped.txHash = event.transactionHash;
   swapped.isBaseToQuote = event.args.isBaseToQuote;
-  swapped.isExactInput = event.args.isBaseToQuote;
+  swapped.isExactInput = event.args.isExactInput;
   swapped.amount = event.args.amount.toBigInt();
   swapped.oppositeAmount = event.args.oppositeAmount.toBigInt();
   swapped.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
@@ -152,21 +152,21 @@ export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promi
   swapped.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
-  if (event.args.isExactInput) {
-    if (event.args.isBaseToQuote) {
-      market.baseAmount = market.baseAmount + event.args.amount.toBigInt();
-      market.quoteAmount = market.quoteAmount - event.args.oppositeAmount.toBigInt();
+  if (swapped.isExactInput) {
+    if (swapped.isBaseToQuote) {
+      market.baseAmount = market.baseAmount + swapped.amount;
+      market.quoteAmount = market.quoteAmount - swapped.oppositeAmount;
     } else {
-      market.baseAmount = market.baseAmount - event.args.oppositeAmount.toBigInt();
-      market.quoteAmount = market.quoteAmount + event.args.amount.toBigInt();
+      market.baseAmount = market.baseAmount - swapped.oppositeAmount;
+      market.quoteAmount = market.quoteAmount + swapped.amount;
     }
   } else {
-    if (event.args.isBaseToQuote) {
-      market.baseAmount = market.baseAmount + event.args.oppositeAmount.toBigInt();
-      market.quoteAmount = market.quoteAmount - event.args.amount.toBigInt();
+    if (swapped.isBaseToQuote) {
+      market.baseAmount = market.baseAmount + swapped.oppositeAmount;
+      market.quoteAmount = market.quoteAmount - swapped.amount;
     } else {
-      market.baseAmount = market.baseAmount - event.args.amount.toBigInt();
-      market.quoteAmount = market.quoteAmount + event.args.oppositeAmount.toBigInt();
+      market.baseAmount = market.baseAmount - swapped.amount;
+      market.quoteAmount = market.quoteAmount + swapped.oppositeAmount;
     }
   }
   market.blockNumber = BigInt(event.blockNumber);

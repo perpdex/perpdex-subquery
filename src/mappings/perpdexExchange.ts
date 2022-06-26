@@ -105,17 +105,7 @@ type PositionLiquidatedArgs = [
   liquidationReward: BigNumber;
   insuranceFundReward: BigNumber;
 };
-type PositionChangedArgs = [
-  string,
-  string,
-  string,
-  BigNumber,
-  BigNumber,
-  BigNumber,
-  BigNumber,
-  BigNumber,
-  BigNumber
-] & {
+type PositionChangedArgs = [string, string, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
   trader: string;
   market: string;
   base: BigNumber;
@@ -422,7 +412,7 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
 
   const position = await getOrCreatePosition(event.args.trader, event.args.market);
   position.baseShare = position.baseShare + event.args.base.toBigInt();
-  position.baseBalance = position.baseBalance * event.args.baseBalancePerShareX96.toBigInt();
+  position.baseBalance = position.baseShare * event.args.baseBalancePerShareX96.toBigInt();
   position.openNotional = position.openNotional + event.args.quote.toBigInt() - event.args.realizedPnl.toBigInt();
   position.entryPrice = position.openNotional / position.baseBalance;
   position.blockNumber = BigInt(event.blockNumber);
@@ -466,40 +456,54 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   positionChanged.blockNumber = BigInt(event.blockNumber);
   positionChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const trader = await getOrCreateTrader(event.args.trader);
+  const trader = await getOrCreateTrader(positionChanged.trader);
   trader.markets.push(positionChanged.market);
   trader.markets = [...new Set(trader.markets)]; // duplicate deletion
-  trader.collateralBalance = trader.collateralBalance + event.args.realizedPnl.toBigInt();
+  trader.collateralBalance = trader.collateralBalance + positionChanged.realizedPnl;
   trader.blockNumber = BigInt(event.blockNumber);
   trader.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const position = await getOrCreatePosition(event.args.trader, event.args.market);
-  position.baseShare = position.baseShare + event.args.base.toBigInt();
-  position.baseBalance = position.baseBalance * event.args.baseBalancePerShareX96.toBigInt();
-  position.openNotional = position.openNotional + event.args.quote.toBigInt() - event.args.realizedPnl.toBigInt();
-  position.entryPrice = position.openNotional / position.baseBalance;
-  position.blockNumber = BigInt(event.blockNumber);
-  position.timestamp = BigInt(event.blockTimestamp.getTime());
+  const market = await getOrCreateMarket(positionChanged.market);
+  market.baseBalancePerShareX96 = positionChanged.baseBalancePerShareX96;
+  market.sharePriceAfterX96 = positionChanged.sharePriceAfterX96;
+  market.blockNumber = BigInt(event.blockNumber);
+  market.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const traderTakerInfo = await getOrCreateTraderTakerInfo(event.args.trader, event.args.market);
-  traderTakerInfo.baseBalanceShare = traderTakerInfo.baseBalanceShare + event.args.base.toBigInt();
-  traderTakerInfo.baseBalance = traderTakerInfo.baseBalanceShare * event.args.baseBalancePerShareX96.toBigInt();
-  traderTakerInfo.quoteBalance =
-    traderTakerInfo.quoteBalance + event.args.quote.toBigInt() - event.args.realizedPnl.toBigInt();
+  const traderTakerInfo = await getOrCreateTraderTakerInfo(positionChanged.trader, positionChanged.market);
+  traderTakerInfo.baseBalanceShare = traderTakerInfo.baseBalanceShare + positionChanged.base;
+  traderTakerInfo.baseBalance = traderTakerInfo.baseBalanceShare * positionChanged.baseBalancePerShareX96;
+  traderTakerInfo.quoteBalance = traderTakerInfo.quoteBalance + positionChanged.quote - positionChanged.realizedPnl; // quoteFee=0
   traderTakerInfo.blockNumber = BigInt(event.blockNumber);
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
+  const position = await getOrCreatePosition(positionChanged.trader, positionChanged.market);
+  position.baseShare = position.baseShare + positionChanged.base;
+  position.baseBalance = position.baseShare * positionChanged.baseBalancePerShareX96;
+  position.openNotional = position.openNotional + positionChanged.quote - positionChanged.realizedPnl; // quoteFee=0
+  position.entryPrice = position.openNotional / position.baseBalance;
+  position.traderTakerInfoRefId = traderTakerInfo.id;
+  position.marketRefId = positionChanged.market;
+  position.blockNumber = BigInt(event.blockNumber);
+  position.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.protocolFee = protocol.protocolFee + positionChanged.protocolFee;
+  protocol.blockNumber = BigInt(event.blockNumber);
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
   await getOrCreateCandle(
-    event.args.market,
+    positionChanged.market,
     event.blockTimestamp,
-    event.args.sharePriceAfterX96.toBigInt(),
-    BigInt(event.blockNumber)
+    positionChanged.sharePriceAfterX96,
+    positionChanged.blockNumber
   );
 
   await positionChanged.save();
   await trader.save();
-  await position.save();
+  await market.save();
   await traderTakerInfo.save();
+  await position.save();
+  await protocol.save();
 }
 
 export async function handleMaxMarketsPerAccountChanged(

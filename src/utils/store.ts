@@ -99,9 +99,10 @@ export async function getOrCreatePosition(traderAddr: string, marketAddr: string
     position.entryPrice = BI_ZERO;
     position.realizedPnl = BI_ZERO;
     position.tradingVolume = BI_ZERO;
+    position.traderTakerInfoRefId = STR_ZERO;
+    position.marketRefId = STR_ZERO;
     position.blockNumber = BI_ZERO;
     position.timestamp = BI_ZERO;
-    await position.save();
   }
   return position;
 }
@@ -116,10 +117,10 @@ export async function getOrCreateOpenOrder(traderAddr: string, marketAddr: strin
     openOrder.quote = BI_ZERO;
     openOrder.liquidity = BI_ZERO;
     openOrder.realizedPnl = BI_ZERO;
-    openOrder.blockNumber = BI_ZERO;
-    openOrder.timestamp = BI_ZERO;
     openOrder.traderMakerInfoRefId = STR_ZERO;
     openOrder.marketRefId = STR_ZERO;
+    openOrder.blockNumber = BI_ZERO;
+    openOrder.timestamp = BI_ZERO;
   }
   return openOrder;
 }
