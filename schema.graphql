@@ -747,8 +747,8 @@ type Candle @entity {
   # examples of timeformat: 300(5m), 86400(=1d)
   timeFormat: Int!
 
-  "candles"
-  candles: [OHLC!]!
+  "ohlcs"
+  ohlcs: [OHLC] @derivedFrom(field: "candle")
 
   "last updated block number"
   blockNumber: BigInt!
@@ -764,7 +764,7 @@ type OHLC @entity {
   market: String!
   "time"
   time: Date!
-  
+
   "open"
   open: BigInt!
   "high"
@@ -773,6 +773,9 @@ type OHLC @entity {
   low: BigInt!
   "close"
   close: BigInt!
+
+  "candle"
+  candle: Candle
 
   "last updated block number"
   blockNumber: BigInt!

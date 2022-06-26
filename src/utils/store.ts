@@ -1,5 +1,15 @@
-import { Trader, Protocol, TraderTakerInfo, TraderMakerInfo, Position, OpenOrder, Market, Candle } from '../types';
-import { BI_ZERO, STR_ZERO, DATE_ZERO } from './constant';
+import {
+  Trader,
+  Protocol,
+  TraderTakerInfo,
+  TraderMakerInfo,
+  Position,
+  OpenOrder,
+  Market,
+  Candle,
+  OHLC,
+} from '../types';
+import { BI_ZERO, STR_ZERO, m5, m15, h1, d1 } from './constant';
 import { ChainId, Network, Version } from '../constants/index';
 
 export async function getOrCreateTrader(traderAddr: string): Promise<Trader> {
@@ -148,37 +158,59 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
   return market;
 }
 
+export async function createOHLC(
+  marketAddr: string,
+  time: Date,
+  timeFormat: number,
+  price: bigint,
+  candleID: string,
+  blockNumber: bigint
+): Promise<void> {
+  let ohlc = await OHLC.get(`${marketAddr}-${timeFormat}-${time}`);
+  if (typeof ohlc === 'undefined') {
+    ohlc = new OHLC(`${marketAddr}-${timeFormat}-${time}`);
+    ohlc.market = marketAddr;
+    ohlc.time = time;
+    ohlc.open = price;
+    ohlc.high = price;
+    ohlc.low = price;
+    ohlc.close = price;
+    ohlc.blockNumber = BI_ZERO;
+    ohlc.timestamp = BI_ZERO;
+  }
+  if (ohlc.high < price) {
+    ohlc.high = price;
+  } else if (ohlc.low > price) {
+    ohlc.low = price;
+  }
+  ohlc.close = price;
+  ohlc.candleId = candleID;
+  ohlc.blockNumber = blockNumber;
+  ohlc.timestamp = BigInt(time.getTime());
+  await ohlc.save();
+}
+
 export async function getOrCreateCandle5m(
   marketAddr: string,
   time: Date,
   price: bigint,
   blockNumber: bigint
 ): Promise<void> {
-  time.setMinutes(Math.floor(time.getMinutes() / 5) * 5);
-  time.setSeconds(0);
-  let candle = await Candle.get(`${marketAddr}-${300}-${time}`);
+  let candle = await Candle.get(`${marketAddr}-${m5}`);
   if (typeof candle === 'undefined') {
-    candle = new Candle(marketAddr);
+    candle = new Candle(`${marketAddr}-${m5}`);
     candle.market = marketAddr;
-    candle.timeSecond = 300;
-    candle.time = time;
-    candle.open = price;
-    candle.high = price;
-    candle.low = price;
-    candle.close = price;
+    candle.timeFormat = m5;
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
-    await candle.save();
   }
-  if (candle.high <= price) {
-    candle.high = price;
-  } else if (candle.low >= price) {
-    candle.low = price;
-  }
-  candle.close = price;
   candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
+  time.setMinutes(Math.floor(time.getMinutes() / 5) * 5);
+  time.setSeconds(0);
+  time.setMilliseconds(0);
+  await createOHLC(marketAddr, time, m5, price, candle.id, blockNumber);
 }
 
 export async function getOrCreateCandle15m(
@@ -187,31 +219,21 @@ export async function getOrCreateCandle15m(
   price: bigint,
   blockNumber: bigint
 ): Promise<void> {
-  time.setMinutes(Math.floor(time.getMinutes() / 15) * 15);
-  time.setSeconds(0);
-  let candle = await Candle.get(`${marketAddr}-${900}-${time}`);
+  let candle = await Candle.get(`${marketAddr}-${m15}`);
   if (typeof candle === 'undefined') {
-    candle = new Candle(marketAddr);
+    candle = new Candle(`${marketAddr}-${m15}`);
     candle.market = marketAddr;
-    candle.timeSecond = 900;
-    candle.time = time;
-    candle.open = price;
-    candle.high = price;
-    candle.low = price;
-    candle.close = price;
+    candle.timeFormat = m15;
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
-    await candle.save();
   }
-  if (candle.high <= price) {
-    candle.high = price;
-  } else if (candle.low >= price) {
-    candle.low = price;
-  }
-  candle.close = price;
   candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
+  time.setMinutes(Math.floor(time.getMinutes() / 15) * 15);
+  time.setSeconds(0);
+  time.setMilliseconds(0);
+  await createOHLC(marketAddr, time, m15, price, candle.id, blockNumber);
 }
 
 export async function getOrCreateCandle1h(
@@ -222,29 +244,21 @@ export async function getOrCreateCandle1h(
 ): Promise<void> {
   time.setMinutes(0);
   time.setSeconds(0);
-  let candle = await Candle.get(`${marketAddr}-${3600}-${time}`);
+  let candle = await Candle.get(`${marketAddr}-${h1}`);
   if (typeof candle === 'undefined') {
-    candle = new Candle(marketAddr);
+    candle = new Candle(`${marketAddr}-${h1}`);
     candle.market = marketAddr;
-    candle.timeSecond = 3600;
-    candle.time = time;
-    candle.open = price;
-    candle.high = price;
-    candle.low = price;
-    candle.close = price;
+    candle.timeFormat = h1;
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
-    await candle.save();
   }
-  if (candle.high <= price) {
-    candle.high = price;
-  } else if (candle.low >= price) {
-    candle.low = price;
-  }
-  candle.close = price;
   candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
+  time.setMinutes(0);
+  time.setSeconds(0);
+  time.setMilliseconds(0);
+  await createOHLC(marketAddr, time, h1, price, candle.id, blockNumber);
 }
 
 export async function getOrCreateCandle1d(
@@ -253,32 +267,22 @@ export async function getOrCreateCandle1d(
   price: bigint,
   blockNumber: bigint
 ): Promise<void> {
-  time.setHours(0);
-  time.setMinutes(0);
-  time.setSeconds(0);
-  let candle = await Candle.get(`${marketAddr}-${86400}-${time}`);
+  let candle = await Candle.get(`${marketAddr}-${d1}`);
   if (typeof candle === 'undefined') {
-    candle = new Candle(marketAddr);
+    candle = new Candle(`${marketAddr}-${d1}`);
     candle.market = marketAddr;
-    candle.timeSecond = 86400;
-    candle.time = time;
-    candle.open = price;
-    candle.high = price;
-    candle.low = price;
-    candle.close = price;
+    candle.timeFormat = d1;
     candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
-    await candle.save();
   }
-  if (candle.high <= price) {
-    candle.high = price;
-  } else if (candle.low >= price) {
-    candle.low = price;
-  }
-  candle.close = price;
   candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
+  time.setHours(0);
+  time.setMinutes(0);
+  time.setSeconds(0);
+  time.setMilliseconds(0);
+  await createOHLC(marketAddr, time, d1, price, candle.id, blockNumber);
 }
 
 export async function getOrCreateCandle(
