@@ -26,6 +26,7 @@ import {
   getOrCreateOpenOrder,
   getOrCreateMarket,
   getOrCreateCandle,
+  createPositionHistory,
 } from '../utils/store';
 
 type DepositedArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
@@ -455,6 +456,17 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   positionChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
   positionChanged.blockNumber = BigInt(event.blockNumber);
   positionChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await createPositionHistory(
+    positionChanged.trader,
+    positionChanged.market,
+    event.blockTimestamp,
+    positionChanged.base,
+    positionChanged.quote,
+    positionChanged.realizedPnl,
+    positionChanged.protocolFee,
+    positionChanged.blockNumber
+  );
 
   const trader = await getOrCreateTrader(positionChanged.trader);
   trader.markets.push(positionChanged.market);

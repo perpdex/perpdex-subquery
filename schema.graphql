@@ -647,6 +647,53 @@ type Position @entity {
   marketRef: Market!
 }
 
+type PositionHistory @entity {
+  "format: <trader>-<market address>"
+  id: ID!
+
+  "trader address"
+  trader: String!
+  "market address"
+  market: String!
+
+  "histories"
+  histories: [PHistory] @derivedFrom(field: "positionHistory")
+
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
+type PHistory @entity {
+  "format: <trader>-<market address>-<blockNumber>-"
+  id: ID!
+
+  "trader addres"
+  trader: String!
+  "market address"
+  market: String!
+  "time"
+  time: Date!
+
+  "base"
+  base: BigInt!
+  "quote"
+  quote: BigInt!
+  "realizedPnl"
+  realizedPnl: BigInt!
+  "protocolFee"
+  protocolFee: BigInt!
+
+  "positionHistory"
+  positionHistory: PositionHistory
+
+  "last updated block number"
+  blockNumber: BigInt!
+  "last updated block timestamp"
+  timestamp: BigInt!
+}
+
 type OpenOrder @entity {
   "format: <maker address>-<market address>"
   id: ID!

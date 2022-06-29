@@ -20,7 +20,7 @@ network:
     file: ./src/chaintypes.js
 dataSources:
   - kind: substrate/FrontierEvm
-    startBlock: 1627731
+    startBlock: 1705720
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
@@ -103,7 +103,7 @@ dataSources:
             topics:
               - IsMarketAllowedChanged(address,bool)
   - kind: substrate/FrontierEvm
-    startBlock: 1627731
+    startBlock: 1705720
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:

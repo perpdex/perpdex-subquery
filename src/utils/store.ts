@@ -4,6 +4,8 @@ import {
   TraderTakerInfo,
   TraderMakerInfo,
   Position,
+  PositionHistory,
+  PHistory,
   OpenOrder,
   Market,
   Candle,
@@ -296,4 +298,66 @@ export async function getOrCreateCandle(
   await getOrCreateCandle15m(marketAddr, time, price, blockNumber);
   await getOrCreateCandle1h(marketAddr, time, price, blockNumber);
   await getOrCreateCandle1d(marketAddr, time, price, blockNumber);
+}
+
+export async function createPositionHistory(
+  traderAddr: string,
+  marketAddr: string,
+  time: Date,
+  base: bigint,
+  quote: bigint,
+  realizesPnl: bigint,
+  protocolFee: bigint,
+  blockNumber: bigint
+): Promise<void> {
+  let positionHistory = await PositionHistory.get(`${traderAddr}-${marketAddr}`);
+  if (typeof positionHistory === 'undefined') {
+    positionHistory = new PositionHistory(`${traderAddr}-${marketAddr}`);
+    positionHistory.trader = traderAddr;
+    positionHistory.market = marketAddr;
+    positionHistory.blockNumber = BI_ZERO;
+    positionHistory.timestamp = BI_ZERO;
+  }
+  positionHistory.blockNumber = blockNumber;
+  positionHistory.timestamp = BigInt(time.getTime());
+  await positionHistory.save();
+  await createPHistory(
+    traderAddr,
+    marketAddr,
+    time,
+    base,
+    quote,
+    realizesPnl,
+    protocolFee,
+    positionHistory.id,
+    blockNumber
+  );
+}
+
+export async function createPHistory(
+  traderAddr: string,
+  marketAddr: string,
+  time: Date,
+  base: bigint,
+  quote: bigint,
+  realizedPnl: bigint,
+  protocolFee: bigint,
+  positionHistoryId: string,
+  blockNumber: bigint
+): Promise<void> {
+  let pHistory = await PHistory.get(`${traderAddr}-${marketAddr}-${blockNumber}`);
+  if (typeof pHistory === 'undefined') {
+    pHistory = new PHistory(`${traderAddr}-${marketAddr}-${blockNumber}`);
+    pHistory.trader = traderAddr;
+    pHistory.market = marketAddr;
+    pHistory.time = time;
+    pHistory.base = base;
+    pHistory.quote = quote;
+    pHistory.realizedPnl = realizedPnl;
+    pHistory.protocolFee = protocolFee;
+    pHistory.positionHistoryId = positionHistoryId;
+    pHistory.blockNumber = blockNumber;
+    pHistory.timestamp = BigInt(time.getTime());
+  }
+  await pHistory.save();
 }
