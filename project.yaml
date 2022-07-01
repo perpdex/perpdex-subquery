@@ -20,12 +20,12 @@ network:
     file: ./src/chaintypes.js
 dataSources:
   - kind: substrate/FrontierEvm
-    startBlock: 1705720
+    startBlock: 1661682
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
         abi: perpdexExchange
-        address: '0xd2dcEC5bA4Cb81b8A04B5494E19739Dba017cAd0'
+        address: '0x33Cd2616EAC828db30d481d04b9dab50a0E51Bdd'
     assets:
       perpdexExchange:
         file: ./abi/PerpdexExchange.abi.json
@@ -103,12 +103,12 @@ dataSources:
             topics:
               - IsMarketAllowedChanged(address,bool)
   - kind: substrate/FrontierEvm
-    startBlock: 1705720
+    startBlock: 1661682
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
         abi: perpdexMarketEth
-        address: '0x10Ae92bC92383efBF9F9f1cDb3C1B41A8063E6a2'
+        address: '0xE30D690E355D0300469b1280299D40524A56AfF3'
     assets:
       perpdexMarketEth:
         file: ./abi/PerpdexMarketEth.abi.json
