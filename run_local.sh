@@ -1,3 +1,7 @@
+#/bin/bash
+
+set -ex
+
 rm -rf .data
 yarn codegen
 yarn build
