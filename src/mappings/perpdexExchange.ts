@@ -1,7 +1,6 @@
 import {
   Deposited,
   Withdrawn,
-  InsuranceFundTransferred,
   ProtocolFeeTransferred,
   LiquidityAddedExchange,
   LiquidityRemovedExchange,
@@ -32,7 +31,6 @@ import {
 
 type DepositedArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type WithdrawnArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
-type InsuranceFundTransferredArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type ProtocolFeeTransferredArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type LiquidityAddedExchangeArgs = [
   string,
@@ -180,34 +178,6 @@ export async function handleWithdrawn(event: FrontierEvmEvent<WithdrawnArgs>): P
   protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await withdrawn.save();
-  await trader.save();
-  await protocol.save();
-}
-
-export async function handleInsuranceFundTransferred(
-  event: FrontierEvmEvent<InsuranceFundTransferredArgs>
-): Promise<void> {
-  const insuranceFundTransferred = new InsuranceFundTransferred(
-    `${event.transactionHash}-${event.logIndex.toString()}`
-  );
-  insuranceFundTransferred.txHash = event.transactionHash;
-  insuranceFundTransferred.trader = event.args.trader;
-  insuranceFundTransferred.amount = event.args.amount.toBigInt();
-  insuranceFundTransferred.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
-  insuranceFundTransferred.blockNumber = BigInt(event.blockNumber);
-  insuranceFundTransferred.timestamp = BigInt(event.blockTimestamp.getTime());
-
-  const trader = await getOrCreateTrader(event.args.trader);
-  trader.collateralBalance = trader.collateralBalance + insuranceFundTransferred.amount;
-  trader.blockNumber = BigInt(event.blockNumber);
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
-
-  const protocol = await getOrCreateProtocol();
-  protocol.insuranceFundBalance = protocol.insuranceFundBalance - insuranceFundTransferred.amount;
-  protocol.blockNumber = BigInt(event.blockNumber);
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
-
-  await insuranceFundTransferred.save();
   await trader.save();
   await protocol.save();
 }

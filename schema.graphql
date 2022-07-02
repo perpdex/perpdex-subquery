@@ -36,25 +36,6 @@ type Withdrawn @entity {
   timestamp: BigInt!
 }
 
-type InsuranceFundTransferred @entity {
-  "format: <tx hash>-<tx log index>"
-  id: ID!
-
-  "transaction hash"
-  txHash: String!
-  "trader address"
-  trader: String!
-  "amount"
-  amount: BigInt!
-
-  "(block number * 1000 + tx log index) for sorting"
-  blockNumberLogIndex: BigInt!
-  "block number"
-  blockNumber: BigInt!
-  "block timestamp"
-  timestamp: BigInt!
-}
-
 type ProtocolFeeTransferred @entity {
   "format: <tx hash>-<tx log index>"
   id: ID!
