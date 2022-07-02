@@ -10,6 +10,7 @@ import {
   Market,
   Candle,
   OHLC,
+  DaySummary,
 } from '../types';
 import { BI_ZERO, STR_ZERO, m5, m15, h1, d1 } from './constant';
 import { ChainId, Network, Version } from '../constants/index';
@@ -360,4 +361,21 @@ export async function createPHistory(
     pHistory.timestamp = BigInt(time.getTime());
   }
   await pHistory.save();
+}
+
+export async function getOrCreateDaySummary(traderAddr: string, time: Date): Promise<DaySummary> {
+  const timestamp = BigInt(time.getTime());
+  const dayID = Math.floor(Number(timestamp) / 86400);
+  let daySummary = await DaySummary.get(`${traderAddr}-${dayID}`);
+  if (typeof daySummary === 'undefined') {
+    daySummary = new DaySummary(`${traderAddr}-${dayID}`);
+    daySummary.trader = traderAddr;
+    daySummary.dayID = dayID;
+    daySummary.time = time;
+    daySummary.tradingVolume = BI_ZERO;
+    daySummary.realizedPnl = BI_ZERO;
+    daySummary.blockNumber = BI_ZERO;
+    daySummary.timestamp = BI_ZERO;
+  }
+  return daySummary;
 }

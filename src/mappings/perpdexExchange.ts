@@ -27,6 +27,7 @@ import {
   getOrCreateMarket,
   getOrCreateCandle,
   createPositionHistory,
+  getOrCreateDaySummary,
 } from '../utils/store';
 
 type DepositedArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
@@ -356,6 +357,12 @@ export async function handleLiquidityRemovedExchange(
   openOrder.blockNumber = BigInt(event.blockNumber);
   openOrder.timestamp = BigInt(event.blockTimestamp.getTime());
 
+  const daySummary = await getOrCreateDaySummary(event.args.trader, event.blockTimestamp);
+  // daySummary.tradingVolume = daySummary.tradingVolume +
+  daySummary.realizedPnl = daySummary.realizedPnl + liquidityRemovedExchange.realizedPnl;
+  daySummary.blockNumber = BigInt(event.blockNumber);
+  daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
+
   await getOrCreateCandle(
     liquidityRemovedExchange.market,
     event.blockTimestamp,
@@ -369,6 +376,7 @@ export async function handleLiquidityRemovedExchange(
   await traderTakerInfo.save();
   await traderMakerInfo.save();
   await openOrder.save();
+  await daySummary.save();
 }
 
 export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionLiquidatedArgs>): Promise<void> {
@@ -427,6 +435,12 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   traderTakerInfo.blockNumber = BigInt(event.blockNumber);
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
+  const daySummary = await getOrCreateDaySummary(event.args.trader, event.blockTimestamp);
+  // daySummary.tradingVolume = daySummary.tradingVolume +
+  daySummary.realizedPnl = daySummary.realizedPnl + positionLiquidated.realizedPnl;
+  daySummary.blockNumber = BigInt(event.blockNumber);
+  daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
+
   await getOrCreateCandle(
     event.args.market,
     event.blockTimestamp,
@@ -440,6 +454,7 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   await liquidator.save();
   await position.save();
   await traderTakerInfo.save();
+  await daySummary.save();
 }
 
 export async function handlePositionChanged(event: FrontierEvmEvent<PositionChangedArgs>): Promise<void> {
@@ -503,6 +518,12 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   protocol.blockNumber = BigInt(event.blockNumber);
   protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
+  const daySummary = await getOrCreateDaySummary(event.args.trader, event.blockTimestamp);
+  // daySummary.tradingVolume = daySummary.tradingVolume +
+  daySummary.realizedPnl = daySummary.realizedPnl + positionChanged.realizedPnl;
+  daySummary.blockNumber = BigInt(event.blockNumber);
+  daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
+
   await getOrCreateCandle(
     positionChanged.market,
     event.blockTimestamp,
@@ -516,6 +537,7 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   await traderTakerInfo.save();
   await position.save();
   await protocol.save();
+  await daySummary.save();
 }
 
 export async function handleMaxMarketsPerAccountChanged(

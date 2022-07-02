@@ -543,7 +543,7 @@ type TraderTakerInfo @entity {
   "positions"
   positions: [Position!]! @derivedFrom(field: "traderTakerInfoRef")
 
-  dayData: [TraderDayData!] @derivedFrom(field: "trader")
+  # dayData: [TraderDayData!] @derivedFrom(field: "trader")
 }
 
 type TraderMakerInfo @entity {
@@ -827,13 +827,16 @@ type OHLC @entity {
   timestamp: BigInt!
 }
 
-type TraderDayData @entity {
+type DaySummary @entity {
   "format: <trader id>-<day id>"
   id: ID!
 
-  trader: Trader!
-  "timestamp"
-  date: BigInt!
+  "trader address"
+  trader: String! #(todo)trader: Trader!
+  "integer portion of timeStamp divided by 86400"
+  dayID: Int!
+  "time"
+  time: Date!
   "trading volume aggregated per day for trader"
   tradingVolume: BigInt!
   "total pnl aggregated per day for trader"
