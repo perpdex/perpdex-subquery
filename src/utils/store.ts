@@ -364,8 +364,7 @@ export async function createPHistory(
 }
 
 export async function getOrCreateDaySummary(traderAddr: string, time: Date): Promise<DaySummary> {
-  const timestamp = BigInt(time.getTime());
-  const dayID = Math.floor(Number(timestamp) / 86400);
+  const dayID = Math.floor(time.getTime() / 8640000);
   let daySummary = await DaySummary.get(`${traderAddr}-${dayID}`);
   if (typeof daySummary === 'undefined') {
     daySummary = new DaySummary(`${traderAddr}-${dayID}`);
