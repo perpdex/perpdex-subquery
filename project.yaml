@@ -107,11 +107,11 @@ dataSources:
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
-        abi: perpdexMarketEth
+        abi: perpdexMarket
         address: '0xE30D690E355D0300469b1280299D40524A56AfF3'
     assets:
-      perpdexMarketEth:
-        file: ./abi/PerpdexMarketEth.abi.json
+      perpdexMarket:
+        file: ./abi/PerpdexMarket.abi.json
     mapping:
       file: ./dist/index.js
       handlers:
@@ -169,7 +169,7 @@ templates:
         abi: newMarket
     assets:
       newMarket:
-        file: ./abi/PerpdexMarketEth.abi.json
+        file: ./abi/PerpdexMarket.abi.json
     mapping:
       file: ./dist/index.js
       handlers:
