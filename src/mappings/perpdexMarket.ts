@@ -8,14 +8,21 @@ import {
   FundingMaxElapsedSecChanged,
   FundingRolloverSecChanged,
   PriceLimitConfigChanged,
-} from '../types';
-import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
-import { BigNumber } from 'ethers';
-import { getBlockNumberLogIndex, getOrCreateMarket } from '../utils/store';
-import { mulDiv } from '../utils/math';
-import { Q96 } from '../utils/constant';
+} from "../types";
+import { FrontierEvmEvent } from "@subql/contract-processors/dist/frontierEvm";
+import { BigNumber } from "ethers";
+import { getBlockNumberLogIndex, getOrCreateMarket } from "../utils/store";
+import { mulDiv } from "../utils/math";
+import { Q96 } from "../utils/constant";
 
-type FundingPaidArgs = [BigNumber, number, BigNumber, BigNumber, BigNumber, BigNumber] & {
+type FundingPaidArgs = [
+  BigNumber,
+  number,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber
+] & {
   fundingRateX96: BigNumber;
   elapsedSec: number;
   premiumX96: BigNumber;
@@ -59,25 +66,44 @@ type PriceLimitConfigChangedArgs = [number, number, number, number, number] & {
   emaSec: number;
 };
 
-export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>): Promise<void> {
-  const fundingPaid = new FundingPaid(`${event.transactionHash}-${event.logIndex.toString()}`);
+export async function handleFundingPaid(
+  event: FrontierEvmEvent<FundingPaidArgs>
+): Promise<void> {
+  const fundingPaid = new FundingPaid(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
   fundingPaid.txHash = event.transactionHash;
   fundingPaid.fundingRateX96 = event.args.fundingRateX96.toBigInt();
   fundingPaid.elapsedSec = event.args.elapsedSec;
   fundingPaid.premiumX96 = event.args.premiumX96.toBigInt();
   fundingPaid.markPriceX96 = event.args.markPriceX96.toBigInt();
-  fundingPaid.cumBasePerLiquidityX96 = event.args.cumBasePerLiquidityX96.toBigInt();
-  fundingPaid.cumQuotePerLiquidityX96 = event.args.cumQuotePerLiquidityX96.toBigInt();
-  fundingPaid.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  fundingPaid.cumBasePerLiquidityX96 =
+    event.args.cumBasePerLiquidityX96.toBigInt();
+  fundingPaid.cumQuotePerLiquidityX96 =
+    event.args.cumQuotePerLiquidityX96.toBigInt();
+  fundingPaid.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   fundingPaid.blockNumber = BigInt(event.blockNumber);
   fundingPaid.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
-  market.baseBalancePerShareX96 = mulDiv(market.baseBalancePerShareX96, Q96 - fundingPaid.fundingRateX96, Q96);
+  market.baseBalancePerShareX96 = mulDiv(
+    market.baseBalancePerShareX96,
+    Q96 - fundingPaid.fundingRateX96,
+    Q96
+  );
   if (fundingPaid.fundingRateX96 > 0) {
-    const deleveratedQuote = mulDiv(market.quoteAmount, fundingPaid.fundingRateX96, Q96);
+    const deleveratedQuote = mulDiv(
+      market.quoteAmount,
+      fundingPaid.fundingRateX96,
+      Q96
+    );
     market.quoteAmount = market.quoteAmount - deleveratedQuote;
-    market.cumQuotePerLiquidityX96 = market.cumQuotePerLiquidityX96 + mulDiv(deleveratedQuote, Q96, market.liquidity);
+    market.cumQuotePerLiquidityX96 =
+      market.cumQuotePerLiquidityX96 +
+      mulDiv(deleveratedQuote, Q96, market.liquidity);
   } else {
     const deleveratedBase = mulDiv(
       market.baseAmount,
@@ -85,7 +111,9 @@ export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>
       Q96 + fundingPaid.fundingRateX96 * BigInt(-1)
     );
     market.baseAmount = market.baseAmount - deleveratedBase;
-    market.cumBasePerLiquidityX96 = market.cumBasePerLiquidityX96 + mulDiv(deleveratedBase, Q96, market.liquidity);
+    market.cumBasePerLiquidityX96 =
+      market.cumBasePerLiquidityX96 +
+      mulDiv(deleveratedBase, Q96, market.liquidity);
   }
   market.markPriceX96 = fundingPaid.markPriceX96;
   market.cumBasePerLiquidityX96 = fundingPaid.cumBasePerLiquidityX96;
@@ -96,13 +124,20 @@ export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>
   await fundingPaid.save();
 }
 
-export async function handleLiquidityAddedMarket(event: FrontierEvmEvent<LiquidityAddedMarketArgs>): Promise<void> {
-  const liquidityAddedMarket = new LiquidityAddedMarket(`${event.transactionHash}-${event.logIndex.toString()}`);
+export async function handleLiquidityAddedMarket(
+  event: FrontierEvmEvent<LiquidityAddedMarketArgs>
+): Promise<void> {
+  const liquidityAddedMarket = new LiquidityAddedMarket(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
   liquidityAddedMarket.txHash = event.transactionHash;
   liquidityAddedMarket.base = event.args.base.toBigInt();
   liquidityAddedMarket.quote = event.args.quote.toBigInt();
   liquidityAddedMarket.liquidity = event.args.liquidity.toBigInt();
-  liquidityAddedMarket.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  liquidityAddedMarket.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   liquidityAddedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityAddedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -119,13 +154,20 @@ export async function handleLiquidityAddedMarket(event: FrontierEvmEvent<Liquidi
   await market.save();
 }
 
-export async function handleLiquidityRemovedMarket(event: FrontierEvmEvent<LiquidityRemovedMarketArgs>): Promise<void> {
-  const liquidityRemovedMarket = new LiquidityRemovedMarket(`${event.transactionHash}-${event.logIndex.toString()}`);
+export async function handleLiquidityRemovedMarket(
+  event: FrontierEvmEvent<LiquidityRemovedMarketArgs>
+): Promise<void> {
+  const liquidityRemovedMarket = new LiquidityRemovedMarket(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
   liquidityRemovedMarket.txHash = event.transactionHash;
   liquidityRemovedMarket.base = event.args.base.toBigInt();
   liquidityRemovedMarket.quote = event.args.quote.toBigInt();
   liquidityRemovedMarket.liquidity = event.args.liquidity.toBigInt();
-  liquidityRemovedMarket.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  liquidityRemovedMarket.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   liquidityRemovedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityRemovedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -140,14 +182,21 @@ export async function handleLiquidityRemovedMarket(event: FrontierEvmEvent<Liqui
   await market.save();
 }
 
-export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promise<void> {
-  const swapped = new Swapped(`${event.transactionHash}-${event.logIndex.toString()}`);
+export async function handleSwapped(
+  event: FrontierEvmEvent<SwappedArgs>
+): Promise<void> {
+  const swapped = new Swapped(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
   swapped.txHash = event.transactionHash;
   swapped.isBaseToQuote = event.args.isBaseToQuote;
   swapped.isExactInput = event.args.isExactInput;
   swapped.amount = event.args.amount.toBigInt();
   swapped.oppositeAmount = event.args.oppositeAmount.toBigInt();
-  swapped.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  swapped.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   swapped.blockNumber = BigInt(event.blockNumber);
   swapped.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -176,11 +225,18 @@ export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promi
   await market.save();
 }
 
-export async function handlePoolFeeRatioChanged(event: FrontierEvmEvent<PoolFeeRatioChangedArgs>): Promise<void> {
-  const poolFeeRatioChanged = new PoolFeeRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+export async function handlePoolFeeRatioChanged(
+  event: FrontierEvmEvent<PoolFeeRatioChangedArgs>
+): Promise<void> {
+  const poolFeeRatioChanged = new PoolFeeRatioChanged(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
   poolFeeRatioChanged.txHash = event.transactionHash;
   poolFeeRatioChanged.value = event.args.value;
-  poolFeeRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  poolFeeRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   poolFeeRatioChanged.blockNumber = BigInt(event.blockNumber);
   poolFeeRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -201,9 +257,14 @@ export async function handleFundingMaxPremiumRatioChanged(
   );
   fundingMaxPremiumRatioChanged.txHash = event.transactionHash;
   fundingMaxPremiumRatioChanged.value = event.args.value;
-  fundingMaxPremiumRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  fundingMaxPremiumRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   fundingMaxPremiumRatioChanged.blockNumber = BigInt(event.blockNumber);
-  fundingMaxPremiumRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+  fundingMaxPremiumRatioChanged.timestamp = BigInt(
+    event.blockTimestamp.getTime()
+  );
 
   const market = await getOrCreateMarket(event.address);
   market.maxPremiumRatio = fundingMaxPremiumRatioChanged.value;
@@ -222,9 +283,14 @@ export async function handleFundingMaxElapsedSecChanged(
   );
   fundingMaxElapsedSecChanged.txHash = event.transactionHash;
   fundingMaxElapsedSecChanged.value = event.args.value;
-  fundingMaxElapsedSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  fundingMaxElapsedSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   fundingMaxElapsedSecChanged.blockNumber = BigInt(event.blockNumber);
-  fundingMaxElapsedSecChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+  fundingMaxElapsedSecChanged.timestamp = BigInt(
+    event.blockTimestamp.getTime()
+  );
 
   const market = await getOrCreateMarket(event.address);
   market.fundingMaxElapsedSec = fundingMaxElapsedSecChanged.value;
@@ -243,7 +309,10 @@ export async function handleFundingRolloverSecChanged(
   );
   fundingRolloverSecChanged.txHash = event.transactionHash;
   fundingRolloverSecChanged.value = event.args.value;
-  fundingRolloverSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  fundingRolloverSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   fundingRolloverSecChanged.blockNumber = BigInt(event.blockNumber);
   fundingRolloverSecChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -259,14 +328,19 @@ export async function handleFundingRolloverSecChanged(
 export async function handlePriceLimitConfigChanged(
   event: FrontierEvmEvent<PriceLimitConfigChangedArgs>
 ): Promise<void> {
-  const priceLimitConfigChanged = new PriceLimitConfigChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
+  const priceLimitConfigChanged = new PriceLimitConfigChanged(
+    `${event.transactionHash}-${event.logIndex.toString()}`
+  );
   priceLimitConfigChanged.txHash = event.transactionHash;
   priceLimitConfigChanged.normalOrderRatio = event.args.normalOrderRatio;
   priceLimitConfigChanged.liquidationRatio = event.args.liquidationRatio;
   priceLimitConfigChanged.emaNormalOrderRatio = event.args.emaNormalOrderRatio;
   priceLimitConfigChanged.emaLiquidationRatio = event.args.emaLiquidationRatio;
   priceLimitConfigChanged.emaSec = event.args.emaSec;
-  priceLimitConfigChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
+  priceLimitConfigChanged.blockNumberLogIndex = getBlockNumberLogIndex(
+    event.blockNumber,
+    event.logIndex
+  );
   priceLimitConfigChanged.blockNumber = BigInt(event.blockNumber);
   priceLimitConfigChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
