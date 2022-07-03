@@ -88,43 +88,6 @@ export async function getOrCreateTraderMakerInfo(traderAddr: string, marketAddr:
   return traderMakerInfo;
 }
 
-export async function getOrCreatePosition(traderAddr: string, marketAddr: string): Promise<Position> {
-  let position = await Position.get(`${traderAddr}-${marketAddr}`);
-  if (typeof position === 'undefined') {
-    position = new Position(`${traderAddr}-${marketAddr}`);
-    position.trader = traderAddr;
-    position.market = marketAddr;
-    position.baseShare = BI_ZERO;
-    position.baseBalance = BI_ZERO;
-    position.openNotional = BI_ZERO;
-    position.entryPrice = BI_ZERO;
-    position.realizedPnl = BI_ZERO;
-    position.traderTakerInfoRefId = STR_ZERO;
-    position.marketRefId = STR_ZERO;
-    position.blockNumber = BI_ZERO;
-    position.timestamp = BI_ZERO;
-  }
-  return position;
-}
-
-export async function getOrCreateOpenOrder(traderAddr: string, marketAddr: string): Promise<OpenOrder> {
-  let openOrder = await OpenOrder.get(`${traderAddr}-${marketAddr}`);
-  if (typeof openOrder === 'undefined') {
-    openOrder = new OpenOrder(`${traderAddr}-${marketAddr}`);
-    openOrder.maker = traderAddr;
-    openOrder.market = marketAddr;
-    openOrder.base = BI_ZERO;
-    openOrder.quote = BI_ZERO;
-    openOrder.liquidity = BI_ZERO;
-    openOrder.realizedPnl = BI_ZERO;
-    openOrder.traderMakerInfoRefId = STR_ZERO;
-    openOrder.marketRefId = STR_ZERO;
-    openOrder.blockNumber = BI_ZERO;
-    openOrder.timestamp = BI_ZERO;
-  }
-  return openOrder;
-}
-
 export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
   let market = await Market.get(marketAddr);
   if (typeof market === 'undefined') {
@@ -356,6 +319,10 @@ async function createPHistory(
     pHistory.blockNumber = blockNumber;
     pHistory.timestamp = BigInt(time.getTime());
   }
+  pHistory.base += base;
+  pHistory.quote += quote;
+  pHistory.realizedPnl += realizedPnl;
+  pHistory.protocolFee += protocolFee;
   await pHistory.save();
 }
 
