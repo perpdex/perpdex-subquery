@@ -37,6 +37,18 @@
   "lint-staged": {
     "*.ts": [
       "prettier --write"
+    ],
+    "*.yaml": [
+      "prettier --write"
+    ],
+    "*.yml": [
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "*.graphql": [
+      "prettier --write"
     ]
   }
 }
