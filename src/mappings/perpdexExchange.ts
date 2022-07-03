@@ -23,7 +23,7 @@ import {
   getOrCreateTraderTakerInfo,
   getOrCreateTraderMakerInfo,
   getOrCreateMarket,
-  getOrCreateCandle,
+  createCandle,
   createPositionHistory,
   createLiquidityHistory,
   getOrCreateDaySummary,
@@ -255,7 +255,7 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
     liquidityAddedExchange.blockNumber
   );
 
-  await getOrCreateCandle(
+  await createCandle(
     liquidityAddedExchange.market,
     event.blockTimestamp,
     liquidityAddedExchange.sharePriceAfterX96,
@@ -337,7 +337,7 @@ export async function handleLiquidityRemovedExchange(
     liquidityRemovedExchange.blockNumber
   );
 
-  await getOrCreateCandle(
+  await createCandle(
     liquidityRemovedExchange.market,
     event.blockTimestamp,
     liquidityRemovedExchange.sharePriceAfterX96,
@@ -422,7 +422,7 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
     positionLiquidated.blockNumber
   );
 
-  await getOrCreateCandle(
+  await createCandle(
     positionLiquidated.market,
     event.blockTimestamp,
     positionLiquidated.sharePriceAfterX96,
@@ -494,7 +494,7 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
     positionChanged.blockNumber
   );
 
-  await getOrCreateCandle(
+  await createCandle(
     positionChanged.market,
     event.blockTimestamp,
     positionChanged.sharePriceAfterX96,

@@ -157,7 +157,7 @@ export async function createOHLC(
   await ohlc.save();
 }
 
-export async function getOrCreateCandle5m(
+export async function createCandle5m(
   marketAddr: string,
   time: Date,
   price: bigint,
@@ -180,7 +180,7 @@ export async function getOrCreateCandle5m(
   await createOHLC(marketAddr, time, m5, price, candle.id, blockNumber);
 }
 
-export async function getOrCreateCandle15m(
+export async function createCandle15m(
   marketAddr: string,
   time: Date,
   price: bigint,
@@ -203,7 +203,7 @@ export async function getOrCreateCandle15m(
   await createOHLC(marketAddr, time, m15, price, candle.id, blockNumber);
 }
 
-export async function getOrCreateCandle1h(
+export async function createCandle1h(
   marketAddr: string,
   time: Date,
   price: bigint,
@@ -228,7 +228,7 @@ export async function getOrCreateCandle1h(
   await createOHLC(marketAddr, time, h1, price, candle.id, blockNumber);
 }
 
-export async function getOrCreateCandle1d(
+export async function createCandle1d(
   marketAddr: string,
   time: Date,
   price: bigint,
@@ -252,16 +252,16 @@ export async function getOrCreateCandle1d(
   await createOHLC(marketAddr, time, d1, price, candle.id, blockNumber);
 }
 
-export async function getOrCreateCandle(
+export async function createCandle(
   marketAddr: string,
   time: Date,
   price: bigint,
   blockNumber: bigint
 ): Promise<void> {
-  await getOrCreateCandle5m(marketAddr, time, price, blockNumber);
-  await getOrCreateCandle15m(marketAddr, time, price, blockNumber);
-  await getOrCreateCandle1h(marketAddr, time, price, blockNumber);
-  await getOrCreateCandle1d(marketAddr, time, price, blockNumber);
+  await createCandle5m(marketAddr, time, price, blockNumber);
+  await createCandle15m(marketAddr, time, price, blockNumber);
+  await createCandle1h(marketAddr, time, price, blockNumber);
+  await createCandle1d(marketAddr, time, price, blockNumber);
 }
 
 export async function createPositionHistory(
