@@ -7,7 +7,9 @@
     "build": "tsc -b",
     "prepack": "rm -rf dist && npm build",
     "test": "jest",
-    "codegen": "./node_modules/.bin/subql codegen"
+    "codegen": "./node_modules/.bin/subql codegen",
+    "prepare": "husky install",
+    "lint-fix": "prettier --write src/**/*.ts"
   },
   "homepage": "https://github.com/perpdex/perpdex-subquery",
   "repository": "github:perpdex/perpdex-subquery",
@@ -26,6 +28,15 @@
     "@subql/cli": "latest",
     "@subql/contract-processors": "0.6.0",
     "@subql/types": "^0.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
     "typescript": "^4.6.2"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
   }
 }
