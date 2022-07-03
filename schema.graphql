@@ -535,12 +535,6 @@ type TraderMakerInfo @entity {
   trader: String!
   "market address"
   market: String!
-  "baseDebtShare"
-  baseDebtShare: BigInt!
-  "baseDebtBalance"
-  baseDebtBalance: BigInt!
-  "quoteDebt"
-  quoteDebt: BigInt!
   "liquidity"
   liquidity: BigInt!
   "cumBaseSharePerLiquidityX96"
@@ -553,8 +547,53 @@ type TraderMakerInfo @entity {
   "last updated block timestamp"
   timestamp: BigInt!
 
-  "open orders"
-  openOrders: [OpenOrder!]! @derivedFrom(field: "traderMakerInfoRef")
+  # "open orders"
+  # openOrders: [OpenOrder!]! @derivedFrom(field: "traderMakerInfoRef")
+}
+
+type LiquidityHistory @entity {
+  "format: <trader>-<market address>"
+  id: ID!
+
+  "trader address"
+  trader: String!
+  "market address"
+  market: String!
+
+  "histories"
+  histories: [LHistory] @derivedFrom(field: "liquidityHistory")
+
+  "block number"
+  blockNumber: BigInt!
+  "block timestamp"
+  timestamp: BigInt!
+}
+
+type LHistory @entity {
+  "format: <trader>-<market address>-<blockNumber>-"
+  id: ID!
+
+  "trader addres"
+  trader: String!
+  "market address"
+  market: String!
+  "time"
+  time: Date!
+
+  "base"
+  base: BigInt!
+  "quote"
+  quote: BigInt!
+  "liquidity"
+  liquidity: BigInt!
+
+  "liquidityHistory"
+  liquidityHistory: LiquidityHistory
+
+  "last updated block number"
+  blockNumber: BigInt!
+  "last updated block timestamp"
+  timestamp: BigInt!
 }
 
 type Protocol @entity {
@@ -569,8 +608,8 @@ type Protocol @entity {
   contractVersion: String!
   "number of public markets"
   publicMarketCount: BigInt!
-  "cumulative trading volume"
-  tradingVolume: BigInt!
+  # "cumulative trading volume"
+  # tradingVolume: BigInt!
   "total value locked"
   totalValueLocked: BigInt!
   "protocolFee"
@@ -614,8 +653,8 @@ type Position @entity {
   entryPrice: BigInt!
   "realized pnl of this tx"
   realizedPnl: BigInt!
-  "cumulative trading volume"
-  tradingVolume: BigInt!
+  # "cumulative trading volume"
+  # tradingVolume: BigInt!
 
   "last updated block number"
   blockNumber: BigInt!
@@ -710,8 +749,8 @@ type Market @entity {
   baseToken: String!
   "quoteToken address"
   quoteToken: String!
-  "cumulative trading volume"
-  tradingVolume: BigInt!
+  # "cumulative trading volume"
+  # tradingVolume: BigInt!
   "provided liquidity base amount"
   baseAmount: BigInt!
   "provided liquidity quote amount"
@@ -758,8 +797,8 @@ type Market @entity {
 
   "positions"
   positions: [Position!]! @derivedFrom(field: "marketRef")
-  "open orders"
-  openOrders: [OpenOrder!]! @derivedFrom(field: "marketRef")
+  # "open orders"
+  # openOrders: [OpenOrder!]! @derivedFrom(field: "marketRef")
 }
 
 type Candle @entity {
@@ -814,12 +853,12 @@ type DaySummary @entity {
 
   "trader address"
   trader: String! #(todo)trader: Trader!
-  "integer portion of timeStamp divided by 86400"
+  "integer portion of timeStamp divided by 8640000"
   dayID: Int!
   "time"
   time: Date!
-  "trading volume aggregated per day for trader"
-  tradingVolume: BigInt!
+  # "trading volume aggregated per day for trader"
+  # tradingVolume: BigInt!
   "total pnl aggregated per day for trader"
   realizedPnl: BigInt!
 

@@ -26,8 +26,10 @@ import {
   getOrCreateMarket,
   getOrCreateCandle,
   createPositionHistory,
+  createLiquidityHistory,
   getOrCreateDaySummary,
 } from '../utils/store';
+import { negBI } from '../utils/math';
 
 type DepositedArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
 type WithdrawnArgs = [string, BigNumber] & { trader: string; amount: BigNumber };
@@ -222,7 +224,7 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   liquidityAddedExchange.blockNumber = BigInt(event.blockNumber);
   liquidityAddedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const trader = await getOrCreateTrader(event.args.trader);
+  const trader = await getOrCreateTrader(liquidityAddedExchange.trader);
   trader.markets.push(liquidityAddedExchange.market);
   trader.markets = [...new Set(trader.markets)]; // duplicate deletion
   trader.blockNumber = BigInt(event.blockNumber);
@@ -234,24 +236,25 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const traderMakerInfo = await getOrCreateTraderMakerInfo(event.args.trader, event.args.market);
-  traderMakerInfo.baseDebtShare = traderMakerInfo.baseDebtShare + liquidityAddedExchange.base; // wip
-  traderMakerInfo.baseDebtBalance = traderMakerInfo.baseDebtShare * liquidityAddedExchange.baseBalancePerShareX96; // wip
-  traderMakerInfo.quoteDebt = traderMakerInfo.quoteDebt + liquidityAddedExchange.quote; // wip
+  const traderMakerInfo = await getOrCreateTraderMakerInfo(
+    liquidityAddedExchange.trader,
+    liquidityAddedExchange.market
+  );
   traderMakerInfo.liquidity = traderMakerInfo.liquidity + liquidityAddedExchange.liquidity;
   traderMakerInfo.cumBaseSharePerLiquidityX96 = liquidityAddedExchange.cumBasePerLiquidityX96;
   traderMakerInfo.cumQuotePerLiquidityX96 = liquidityAddedExchange.cumQuotePerLiquidityX96;
   traderMakerInfo.blockNumber = BigInt(event.blockNumber);
   traderMakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const openOrder = await getOrCreateOpenOrder(event.args.trader, liquidityAddedExchange.market);
-  openOrder.base = openOrder.base + liquidityAddedExchange.base;
-  openOrder.quote = openOrder.quote + liquidityAddedExchange.quote;
-  openOrder.liquidity = openOrder.liquidity + liquidityAddedExchange.liquidity;
-  openOrder.traderMakerInfoRefId = traderMakerInfo.id;
-  openOrder.marketRefId = liquidityAddedExchange.market;
-  openOrder.blockNumber = BigInt(event.blockNumber);
-  openOrder.timestamp = BigInt(event.blockTimestamp.getTime());
+  await createLiquidityHistory(
+    liquidityAddedExchange.trader,
+    liquidityAddedExchange.market,
+    event.blockTimestamp,
+    liquidityAddedExchange.base,
+    liquidityAddedExchange.quote,
+    liquidityAddedExchange.liquidity,
+    liquidityAddedExchange.blockNumber
+  );
 
   await getOrCreateCandle(
     liquidityAddedExchange.market,
@@ -264,7 +267,6 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   await trader.save();
   await market.save();
   await traderMakerInfo.save();
-  await openOrder.save();
 }
 
 export async function handleLiquidityRemovedExchange(
@@ -289,20 +291,23 @@ export async function handleLiquidityRemovedExchange(
   liquidityRemovedExchange.blockNumber = BigInt(event.blockNumber);
   liquidityRemovedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const trader = await getOrCreateTrader(event.args.trader);
-  trader.markets.push(liquidityRemovedExchange.trader);
+  const trader = await getOrCreateTrader(liquidityRemovedExchange.trader);
+  trader.markets.push(liquidityRemovedExchange.market);
   trader.markets = [...new Set(trader.markets)]; // duplicate deletion
   trader.collateralBalance = trader.collateralBalance + liquidityRemovedExchange.realizedPnl;
   trader.blockNumber = BigInt(event.blockNumber);
   trader.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const market = await getOrCreateMarket(event.args.market);
+  const market = await getOrCreateMarket(liquidityRemovedExchange.market);
   market.baseBalancePerShareX96 = liquidityRemovedExchange.baseBalancePerShareX96;
   market.sharePriceAfterX96 = liquidityRemovedExchange.sharePriceAfterX96;
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const traderTakerInfo = await getOrCreateTraderTakerInfo(event.args.trader, event.args.market);
+  const traderTakerInfo = await getOrCreateTraderTakerInfo(
+    liquidityRemovedExchange.trader,
+    liquidityRemovedExchange.market
+  );
   traderTakerInfo.baseBalanceShare = traderTakerInfo.baseBalanceShare + liquidityRemovedExchange.takerBase;
   traderTakerInfo.baseBalance = traderTakerInfo.baseBalanceShare * liquidityRemovedExchange.baseBalancePerShareX96;
   traderTakerInfo.quoteBalance =
@@ -310,28 +315,28 @@ export async function handleLiquidityRemovedExchange(
   traderTakerInfo.blockNumber = BigInt(event.blockNumber);
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const traderMakerInfo = await getOrCreateTraderMakerInfo(event.args.trader, event.args.market);
-  traderMakerInfo.baseDebtShare = traderMakerInfo.baseDebtShare - liquidityRemovedExchange.base; // wip
-  traderMakerInfo.baseDebtBalance = traderMakerInfo.baseDebtShare * liquidityRemovedExchange.baseBalancePerShareX96; // wip
-  traderMakerInfo.quoteDebt = traderMakerInfo.quoteDebt - liquidityRemovedExchange.quote; // wip
+  const traderMakerInfo = await getOrCreateTraderMakerInfo(
+    liquidityRemovedExchange.trader,
+    liquidityRemovedExchange.market
+  );
   traderMakerInfo.liquidity = traderMakerInfo.liquidity - liquidityRemovedExchange.liquidity;
   traderMakerInfo.blockNumber = BigInt(event.blockNumber);
   traderMakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const openOrder = await getOrCreateOpenOrder(event.args.trader, event.args.market);
-  openOrder.base = openOrder.base - liquidityRemovedExchange.base;
-  openOrder.quote = openOrder.quote - liquidityRemovedExchange.quote;
-  openOrder.liquidity = openOrder.liquidity - liquidityRemovedExchange.liquidity;
-  openOrder.traderMakerInfoRefId = traderMakerInfo.id;
-  openOrder.marketRefId = liquidityRemovedExchange.market;
-  openOrder.blockNumber = BigInt(event.blockNumber);
-  openOrder.timestamp = BigInt(event.blockTimestamp.getTime());
-
   const daySummary = await getOrCreateDaySummary(event.args.trader, event.blockTimestamp);
-  // daySummary.tradingVolume = daySummary.tradingVolume +
   daySummary.realizedPnl = daySummary.realizedPnl + liquidityRemovedExchange.realizedPnl;
   daySummary.blockNumber = BigInt(event.blockNumber);
   daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  await createLiquidityHistory(
+    liquidityRemovedExchange.trader,
+    liquidityRemovedExchange.market,
+    event.blockTimestamp,
+    negBI(liquidityRemovedExchange.base),
+    negBI(liquidityRemovedExchange.quote),
+    negBI(liquidityRemovedExchange.liquidity),
+    liquidityRemovedExchange.blockNumber
+  );
 
   await getOrCreateCandle(
     liquidityRemovedExchange.market,
@@ -345,7 +350,6 @@ export async function handleLiquidityRemovedExchange(
   await market.save();
   await traderTakerInfo.save();
   await traderMakerInfo.save();
-  await openOrder.save();
   await daySummary.save();
 }
 
@@ -406,7 +410,6 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const daySummary = await getOrCreateDaySummary(event.args.trader, event.blockTimestamp);
-  // daySummary.tradingVolume = daySummary.tradingVolume +
   daySummary.realizedPnl = daySummary.realizedPnl + positionLiquidated.realizedPnl;
   daySummary.blockNumber = BigInt(event.blockNumber);
   daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
@@ -489,7 +492,6 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const daySummary = await getOrCreateDaySummary(event.args.trader, event.blockTimestamp);
-  // daySummary.tradingVolume = daySummary.tradingVolume +
   daySummary.realizedPnl = daySummary.realizedPnl + positionChanged.realizedPnl;
   daySummary.blockNumber = BigInt(event.blockNumber);
   daySummary.timestamp = BigInt(event.blockTimestamp.getTime());

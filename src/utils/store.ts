@@ -6,6 +6,8 @@ import {
   Position,
   PositionHistory,
   PHistory,
+  LiquidityHistory,
+  LHistory,
   OpenOrder,
   Market,
   Candle,
@@ -38,7 +40,6 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
     protocol.chainId = ChainId;
     protocol.contractVersion = Version;
     protocol.publicMarketCount = BI_ZERO;
-    protocol.tradingVolume = BI_ZERO;
     protocol.totalValueLocked = BI_ZERO;
     protocol.protocolFee = BI_ZERO;
     protocol.insuranceFundBalance = BI_ZERO;
@@ -77,9 +78,6 @@ export async function getOrCreateTraderMakerInfo(traderAddr: string, marketAddr:
     traderMakerInfo = new TraderMakerInfo(`${traderAddr}-${marketAddr}`);
     traderMakerInfo.trader = traderAddr;
     traderMakerInfo.market = marketAddr;
-    traderMakerInfo.baseDebtShare = BI_ZERO;
-    traderMakerInfo.baseDebtBalance = BI_ZERO;
-    traderMakerInfo.quoteDebt = BI_ZERO;
     traderMakerInfo.liquidity = BI_ZERO;
     traderMakerInfo.cumBaseSharePerLiquidityX96 = BI_ZERO;
     traderMakerInfo.cumQuotePerLiquidityX96 = BI_ZERO;
@@ -101,7 +99,6 @@ export async function getOrCreatePosition(traderAddr: string, marketAddr: string
     position.openNotional = BI_ZERO;
     position.entryPrice = BI_ZERO;
     position.realizedPnl = BI_ZERO;
-    position.tradingVolume = BI_ZERO;
     position.traderTakerInfoRefId = STR_ZERO;
     position.marketRefId = STR_ZERO;
     position.blockNumber = BI_ZERO;
@@ -134,7 +131,6 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market = new Market(marketAddr);
     market.baseToken = STR_ZERO;
     market.quoteToken = STR_ZERO;
-    market.tradingVolume = BI_ZERO;
     market.baseAmount = BI_ZERO;
     market.quoteAmount = BI_ZERO;
     market.liquidity = BI_ZERO;
@@ -335,7 +331,7 @@ export async function createPositionHistory(
   );
 }
 
-export async function createPHistory(
+async function createPHistory(
   traderAddr: string,
   marketAddr: string,
   time: Date,
@@ -363,6 +359,58 @@ export async function createPHistory(
   await pHistory.save();
 }
 
+export async function createLiquidityHistory(
+  traderAddr: string,
+  marketAddr: string,
+  time: Date,
+  base: bigint,
+  quote: bigint,
+  liquidity: bigint,
+  blockNumber: bigint
+): Promise<void> {
+  let liquidityHistory = await LiquidityHistory.get(`${traderAddr}-${marketAddr}`);
+  if (typeof liquidityHistory === 'undefined') {
+    liquidityHistory = new LiquidityHistory(`${traderAddr}-${marketAddr}`);
+    liquidityHistory.trader = traderAddr;
+    liquidityHistory.market = marketAddr;
+    liquidityHistory.blockNumber = BI_ZERO;
+    liquidityHistory.timestamp = BI_ZERO;
+  }
+  liquidityHistory.blockNumber = blockNumber;
+  liquidityHistory.timestamp = BigInt(time.getTime());
+  await liquidityHistory.save();
+  await createLHistory(traderAddr, marketAddr, time, base, quote, liquidity, liquidityHistory.id, blockNumber);
+}
+
+async function createLHistory(
+  traderAddr: string,
+  marketAddr: string,
+  time: Date,
+  base: bigint,
+  quote: bigint,
+  liquidity: bigint,
+  liquidityHistoryId: string,
+  blockNumber: bigint
+): Promise<void> {
+  let lHistory = await LHistory.get(`${traderAddr}-${marketAddr}-${blockNumber}`);
+  if (typeof lHistory === 'undefined') {
+    lHistory = new LHistory(`${traderAddr}-${marketAddr}-${blockNumber}`);
+    lHistory.trader = traderAddr;
+    lHistory.market = marketAddr;
+    lHistory.time = time;
+    lHistory.base = base;
+    lHistory.quote = quote;
+    lHistory.liquidity = liquidity;
+    lHistory.liquidityHistoryId = liquidityHistoryId;
+    lHistory.blockNumber = blockNumber;
+    lHistory.timestamp = BigInt(time.getTime());
+  }
+  lHistory.base += base;
+  lHistory.quote += quote;
+  lHistory.liquidity += liquidity;
+  await lHistory.save();
+}
+
 export async function getOrCreateDaySummary(traderAddr: string, time: Date): Promise<DaySummary> {
   const dayID = Math.floor(time.getTime() / 8640000);
   let daySummary = await DaySummary.get(`${traderAddr}-${dayID}`);
@@ -371,7 +419,6 @@ export async function getOrCreateDaySummary(traderAddr: string, time: Date): Pro
     daySummary.trader = traderAddr;
     daySummary.dayID = dayID;
     daySummary.time = time;
-    daySummary.tradingVolume = BI_ZERO;
     daySummary.realizedPnl = BI_ZERO;
     daySummary.blockNumber = BI_ZERO;
     daySummary.timestamp = BI_ZERO;
