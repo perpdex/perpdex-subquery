@@ -17,6 +17,7 @@ import {
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
 import {
+  getBlockNumberLogIndex,
   getOrCreateTrader,
   getOrCreateProtocol,
   getOrCreateTraderTakerInfo,
@@ -141,7 +142,7 @@ export async function handleDeposited(event: FrontierEvmEvent<DepositedArgs>): P
   deposited.txHash = event.transactionHash;
   deposited.trader = event.args.trader;
   deposited.amount = event.args.amount.toBigInt();
-  deposited.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  deposited.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   deposited.blockNumber = BigInt(event.blockNumber);
   deposited.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -164,7 +165,7 @@ export async function handleWithdrawn(event: FrontierEvmEvent<WithdrawnArgs>): P
   withdrawn.txHash = event.transactionHash;
   withdrawn.trader = event.args.trader;
   withdrawn.amount = event.args.amount.toBigInt();
-  withdrawn.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  withdrawn.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   withdrawn.blockNumber = BigInt(event.blockNumber);
   withdrawn.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -187,7 +188,7 @@ export async function handleProtocolFeeTransferred(event: FrontierEvmEvent<Proto
   protocolFeeTransferred.txHash = event.transactionHash;
   protocolFeeTransferred.trader = event.args.trader;
   protocolFeeTransferred.amount = event.args.amount.toBigInt();
-  protocolFeeTransferred.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  protocolFeeTransferred.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   protocolFeeTransferred.blockNumber = BigInt(event.blockNumber);
   protocolFeeTransferred.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -218,7 +219,7 @@ export async function handleLiquidityAddedExchange(event: FrontierEvmEvent<Liqui
   liquidityAddedExchange.cumQuotePerLiquidityX96 = event.args.cumQuotePerLiquidityX96.toBigInt();
   liquidityAddedExchange.baseBalancePerShareX96 = event.args.baseBalancePerShareX96.toBigInt();
   liquidityAddedExchange.sharePriceAfterX96 = event.args.sharePriceAfterX96.toBigInt();
-  liquidityAddedExchange.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  liquidityAddedExchange.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   liquidityAddedExchange.blockNumber = BigInt(event.blockNumber);
   liquidityAddedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -285,7 +286,7 @@ export async function handleLiquidityRemovedExchange(
   liquidityRemovedExchange.realizedPnl = event.args.realizedPnl.toBigInt();
   liquidityRemovedExchange.baseBalancePerShareX96 = event.args.baseBalancePerShareX96.toBigInt();
   liquidityRemovedExchange.sharePriceAfterX96 = event.args.sharePriceAfterX96.toBigInt();
-  liquidityRemovedExchange.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  liquidityRemovedExchange.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   liquidityRemovedExchange.blockNumber = BigInt(event.blockNumber);
   liquidityRemovedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -366,7 +367,7 @@ export async function handlePositionLiquidated(event: FrontierEvmEvent<PositionL
   positionLiquidated.liquidationPenalty = event.args.liquidationPenalty.toBigInt();
   positionLiquidated.insuranceFundReward = event.args.insuranceFundReward.toBigInt();
   positionLiquidated.liquidationReward = event.args.liquidationReward.toBigInt();
-  positionLiquidated.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  positionLiquidated.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   positionLiquidated.blockNumber = BigInt(event.blockNumber);
   positionLiquidated.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -448,7 +449,7 @@ export async function handlePositionChanged(event: FrontierEvmEvent<PositionChan
   positionChanged.protocolFee = event.args.protocolFee.toBigInt();
   positionChanged.baseBalancePerShareX96 = event.args.baseBalancePerShareX96.toBigInt();
   positionChanged.sharePriceAfterX96 = event.args.sharePriceAfterX96.toBigInt();
-  positionChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  positionChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   positionChanged.blockNumber = BigInt(event.blockNumber);
   positionChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -516,7 +517,7 @@ export async function handleMaxMarketsPerAccountChanged(
   );
   maxMarketsPerAccountChanged.txHash = event.transactionHash;
   maxMarketsPerAccountChanged.value = event.args.value;
-  maxMarketsPerAccountChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  maxMarketsPerAccountChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   maxMarketsPerAccountChanged.blockNumber = BigInt(event.blockNumber);
   maxMarketsPerAccountChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -533,7 +534,7 @@ export async function handleImRatioChanged(event: FrontierEvmEvent<ImRatioChange
   const imRatioChanged = new ImRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
   imRatioChanged.txHash = event.transactionHash;
   imRatioChanged.value = event.args.value;
-  imRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  imRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   imRatioChanged.blockNumber = BigInt(event.blockNumber);
   imRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -550,7 +551,7 @@ export async function handleMmRatioChanged(event: FrontierEvmEvent<MmRatioChange
   const mmRatioChanged = new MmRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
   mmRatioChanged.txHash = event.transactionHash;
   mmRatioChanged.value = event.args.value;
-  mmRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  mmRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   mmRatioChanged.blockNumber = BigInt(event.blockNumber);
   mmRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -572,8 +573,7 @@ export async function handleLiquidationRewardConfigChanged(
   liquidationRewardConfigChanged.txHash = event.transactionHash;
   liquidationRewardConfigChanged.rewardRatio = event.args.rewardRatio;
   liquidationRewardConfigChanged.smoothEmaTime = event.args.smoothEmaTime;
-  liquidationRewardConfigChanged.blockNumberLogIndex =
-    BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  liquidationRewardConfigChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   liquidationRewardConfigChanged.blockNumber = BigInt(event.blockNumber);
   liquidationRewardConfigChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -593,7 +593,7 @@ export async function handleProtocolFeeRatioChanged(
   const protocolFeeRatioChanged = new ProtocolFeeRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
   protocolFeeRatioChanged.txHash = event.transactionHash;
   protocolFeeRatioChanged.value = event.args.value;
-  protocolFeeRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  protocolFeeRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   protocolFeeRatioChanged.blockNumber = BigInt(event.blockNumber);
   protocolFeeRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -611,15 +611,15 @@ export async function handleIsMarketAllowedChanged(event: FrontierEvmEvent<IsMar
   isMarketAllowedChanged.txHash = event.transactionHash;
   isMarketAllowedChanged.market = event.args.market;
   isMarketAllowedChanged.isMarketAllowed = event.args.isMarketAllowed;
-  isMarketAllowedChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  isMarketAllowedChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   isMarketAllowedChanged.blockNumber = BigInt(event.blockNumber);
   isMarketAllowedChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  const market = await getOrCreateMarket(event.args.market);
+  const market = await getOrCreateMarket(isMarketAllowedChanged.market);
   market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
-  await createNewMarketDatasource({ address: event.args.market });
+  await createNewMarketDatasource({ address: isMarketAllowedChanged.market });
   await isMarketAllowedChanged.save();
   await market.save();
 }

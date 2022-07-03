@@ -11,7 +11,7 @@ import {
 } from '../types';
 import { FrontierEvmEvent } from '@subql/contract-processors/dist/frontierEvm';
 import { BigNumber } from 'ethers';
-import { getOrCreateMarket } from '../utils/store';
+import { getBlockNumberLogIndex, getOrCreateMarket } from '../utils/store';
 import { mulDiv } from '../utils/math';
 import { Q96 } from '../utils/constant';
 
@@ -68,7 +68,7 @@ export async function handleFundingPaid(event: FrontierEvmEvent<FundingPaidArgs>
   fundingPaid.markPriceX96 = event.args.markPriceX96.toBigInt();
   fundingPaid.cumBasePerLiquidityX96 = event.args.cumBasePerLiquidityX96.toBigInt();
   fundingPaid.cumQuotePerLiquidityX96 = event.args.cumQuotePerLiquidityX96.toBigInt();
-  fundingPaid.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  fundingPaid.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   fundingPaid.blockNumber = BigInt(event.blockNumber);
   fundingPaid.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -102,7 +102,7 @@ export async function handleLiquidityAddedMarket(event: FrontierEvmEvent<Liquidi
   liquidityAddedMarket.base = event.args.base.toBigInt();
   liquidityAddedMarket.quote = event.args.quote.toBigInt();
   liquidityAddedMarket.liquidity = event.args.liquidity.toBigInt();
-  liquidityAddedMarket.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  liquidityAddedMarket.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   liquidityAddedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityAddedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -125,7 +125,7 @@ export async function handleLiquidityRemovedMarket(event: FrontierEvmEvent<Liqui
   liquidityRemovedMarket.base = event.args.base.toBigInt();
   liquidityRemovedMarket.quote = event.args.quote.toBigInt();
   liquidityRemovedMarket.liquidity = event.args.liquidity.toBigInt();
-  liquidityRemovedMarket.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  liquidityRemovedMarket.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   liquidityRemovedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityRemovedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -147,7 +147,7 @@ export async function handleSwapped(event: FrontierEvmEvent<SwappedArgs>): Promi
   swapped.isExactInput = event.args.isExactInput;
   swapped.amount = event.args.amount.toBigInt();
   swapped.oppositeAmount = event.args.oppositeAmount.toBigInt();
-  swapped.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  swapped.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   swapped.blockNumber = BigInt(event.blockNumber);
   swapped.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -180,7 +180,7 @@ export async function handlePoolFeeRatioChanged(event: FrontierEvmEvent<PoolFeeR
   const poolFeeRatioChanged = new PoolFeeRatioChanged(`${event.transactionHash}-${event.logIndex.toString()}`);
   poolFeeRatioChanged.txHash = event.transactionHash;
   poolFeeRatioChanged.value = event.args.value;
-  poolFeeRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  poolFeeRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   poolFeeRatioChanged.blockNumber = BigInt(event.blockNumber);
   poolFeeRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -201,7 +201,7 @@ export async function handleFundingMaxPremiumRatioChanged(
   );
   fundingMaxPremiumRatioChanged.txHash = event.transactionHash;
   fundingMaxPremiumRatioChanged.value = event.args.value;
-  fundingMaxPremiumRatioChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  fundingMaxPremiumRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   fundingMaxPremiumRatioChanged.blockNumber = BigInt(event.blockNumber);
   fundingMaxPremiumRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -222,7 +222,7 @@ export async function handleFundingMaxElapsedSecChanged(
   );
   fundingMaxElapsedSecChanged.txHash = event.transactionHash;
   fundingMaxElapsedSecChanged.value = event.args.value;
-  fundingMaxElapsedSecChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  fundingMaxElapsedSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   fundingMaxElapsedSecChanged.blockNumber = BigInt(event.blockNumber);
   fundingMaxElapsedSecChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -243,7 +243,7 @@ export async function handleFundingRolloverSecChanged(
   );
   fundingRolloverSecChanged.txHash = event.transactionHash;
   fundingRolloverSecChanged.value = event.args.value;
-  fundingRolloverSecChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  fundingRolloverSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   fundingRolloverSecChanged.blockNumber = BigInt(event.blockNumber);
   fundingRolloverSecChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
@@ -266,7 +266,7 @@ export async function handlePriceLimitConfigChanged(
   priceLimitConfigChanged.emaNormalOrderRatio = event.args.emaNormalOrderRatio;
   priceLimitConfigChanged.emaLiquidationRatio = event.args.emaLiquidationRatio;
   priceLimitConfigChanged.emaSec = event.args.emaSec;
-  priceLimitConfigChanged.blockNumberLogIndex = BigInt(event.blockNumber) * BigInt(1000) + BigInt(event.logIndex);
+  priceLimitConfigChanged.blockNumberLogIndex = getBlockNumberLogIndex(event.blockNumber, event.logIndex);
   priceLimitConfigChanged.blockNumber = BigInt(event.blockNumber);
   priceLimitConfigChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
