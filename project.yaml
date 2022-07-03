@@ -3,18 +3,18 @@ name: perpdex-subquery
 version: 1.0.0
 runner:
   node:
-    name: '@subql/node'
-    version: '>=0.35.0'
+    name: "@subql/node"
+    version: ">=0.35.0"
   query:
-    name: '@subql/query'
-    version: '>=0.16.0'
+    name: "@subql/query"
+    version: ">=0.16.0"
 description: >-
   The SubQuery project for PerpDEX
-repository: 'https://github.com/perpdex/perpdex-subquery'
+repository: "https://github.com/perpdex/perpdex-subquery"
 schema:
   file: ./schema.graphql
 network:
-  chainId: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019'
+  chainId: "0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019"
   endpoint: wss://rpc.shibuya.astar.network
   chaintypes:
     file: ./src/chaintypes.js
@@ -25,7 +25,7 @@ dataSources:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
         abi: perpdexExchange
-        address: '0x33Cd2616EAC828db30d481d04b9dab50a0E51Bdd'
+        address: "0x33Cd2616EAC828db30d481d04b9dab50a0E51Bdd"
     assets:
       perpdexExchange:
         file: ./abi/PerpdexExchange.abi.json
@@ -103,7 +103,7 @@ dataSources:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
         abi: perpdexMarket
-        address: '0xE30D690E355D0300469b1280299D40524A56AfF3'
+        address: "0xE30D690E355D0300469b1280299D40524A56AfF3"
     assets:
       perpdexMarket:
         file: ./abi/PerpdexMarket.abi.json
