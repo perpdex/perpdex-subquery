@@ -13,17 +13,20 @@ import {
   Candle,
   OHLC,
   DaySummary,
-} from '../types';
-import { BI_ZERO, STR_ZERO, m5, m15, h1, d1 } from './constant';
-import { ChainId, Network, Version } from '../constants/index';
+} from "../types";
+import { BI_ZERO, STR_ZERO, m5, m15, h1, d1 } from "./constant";
+import { ChainId, Network, Version } from "../constants/index";
 
-export function getBlockNumberLogIndex(blockNumber: number, logIndex: number): bigint {
+export function getBlockNumberLogIndex(
+  blockNumber: number,
+  logIndex: number
+): bigint {
   return BigInt(blockNumber) * BigInt(1000) + BigInt(logIndex);
 }
 
 export async function getOrCreateTrader(traderAddr: string): Promise<Trader> {
   let trader = await Trader.get(traderAddr);
-  if (typeof trader === 'undefined') {
+  if (typeof trader === "undefined") {
     trader = new Trader(traderAddr);
     trader.collateralBalance = BI_ZERO;
     trader.markets = [];
@@ -34,11 +37,11 @@ export async function getOrCreateTrader(traderAddr: string): Promise<Trader> {
   return trader;
 }
 
-const protocolId = 'perpdex';
+const protocolId = "perpdex";
 
 export async function getOrCreateProtocol(): Promise<Protocol> {
   let protocol = await Protocol.get(protocolId);
-  if (typeof protocol === 'undefined') {
+  if (typeof protocol === "undefined") {
     protocol = new Protocol(protocolId);
     protocol.network = Network;
     protocol.chainId = ChainId;
@@ -60,9 +63,14 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
   return protocol;
 }
 
-export async function getOrCreateTraderTakerInfo(traderAddr: string, marketAddr: string): Promise<TraderTakerInfo> {
-  let traderTakerInfo = await TraderTakerInfo.get(`${traderAddr}-${marketAddr}`);
-  if (typeof traderTakerInfo === 'undefined') {
+export async function getOrCreateTraderTakerInfo(
+  traderAddr: string,
+  marketAddr: string
+): Promise<TraderTakerInfo> {
+  let traderTakerInfo = await TraderTakerInfo.get(
+    `${traderAddr}-${marketAddr}`
+  );
+  if (typeof traderTakerInfo === "undefined") {
     traderTakerInfo = new TraderTakerInfo(`${traderAddr}-${marketAddr}`);
     traderTakerInfo.trader = traderAddr;
     traderTakerInfo.market = marketAddr;
@@ -76,9 +84,14 @@ export async function getOrCreateTraderTakerInfo(traderAddr: string, marketAddr:
   return traderTakerInfo;
 }
 
-export async function getOrCreateTraderMakerInfo(traderAddr: string, marketAddr: string): Promise<TraderMakerInfo> {
-  let traderMakerInfo = await TraderMakerInfo.get(`${traderAddr}-${marketAddr}`);
-  if (typeof traderMakerInfo === 'undefined') {
+export async function getOrCreateTraderMakerInfo(
+  traderAddr: string,
+  marketAddr: string
+): Promise<TraderMakerInfo> {
+  let traderMakerInfo = await TraderMakerInfo.get(
+    `${traderAddr}-${marketAddr}`
+  );
+  if (typeof traderMakerInfo === "undefined") {
     traderMakerInfo = new TraderMakerInfo(`${traderAddr}-${marketAddr}`);
     traderMakerInfo.trader = traderAddr;
     traderMakerInfo.market = marketAddr;
@@ -94,7 +107,7 @@ export async function getOrCreateTraderMakerInfo(traderAddr: string, marketAddr:
 
 export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
   let market = await Market.get(marketAddr);
-  if (typeof market === 'undefined') {
+  if (typeof market === "undefined") {
     market = new Market(marketAddr);
     market.baseToken = STR_ZERO;
     market.quoteToken = STR_ZERO;
@@ -134,7 +147,7 @@ export async function createOHLC(
   blockNumber: bigint
 ): Promise<void> {
   let ohlc = await OHLC.get(`${marketAddr}-${timeFormat}-${time}`);
-  if (typeof ohlc === 'undefined') {
+  if (typeof ohlc === "undefined") {
     ohlc = new OHLC(`${marketAddr}-${timeFormat}-${time}`);
     ohlc.market = marketAddr;
     ohlc.time = time;
@@ -164,7 +177,7 @@ export async function createCandle5m(
   blockNumber: bigint
 ): Promise<void> {
   let candle = await Candle.get(`${marketAddr}-${m5}`);
-  if (typeof candle === 'undefined') {
+  if (typeof candle === "undefined") {
     candle = new Candle(`${marketAddr}-${m5}`);
     candle.market = marketAddr;
     candle.timeFormat = m5;
@@ -187,7 +200,7 @@ export async function createCandle15m(
   blockNumber: bigint
 ): Promise<void> {
   let candle = await Candle.get(`${marketAddr}-${m15}`);
-  if (typeof candle === 'undefined') {
+  if (typeof candle === "undefined") {
     candle = new Candle(`${marketAddr}-${m15}`);
     candle.market = marketAddr;
     candle.timeFormat = m15;
@@ -212,7 +225,7 @@ export async function createCandle1h(
   time.setMinutes(0);
   time.setSeconds(0);
   let candle = await Candle.get(`${marketAddr}-${h1}`);
-  if (typeof candle === 'undefined') {
+  if (typeof candle === "undefined") {
     candle = new Candle(`${marketAddr}-${h1}`);
     candle.market = marketAddr;
     candle.timeFormat = h1;
@@ -235,7 +248,7 @@ export async function createCandle1d(
   blockNumber: bigint
 ): Promise<void> {
   let candle = await Candle.get(`${marketAddr}-${d1}`);
-  if (typeof candle === 'undefined') {
+  if (typeof candle === "undefined") {
     candle = new Candle(`${marketAddr}-${d1}`);
     candle.market = marketAddr;
     candle.timeFormat = d1;
@@ -274,8 +287,10 @@ export async function createPositionHistory(
   protocolFee: bigint,
   blockNumber: bigint
 ): Promise<void> {
-  let positionHistory = await PositionHistory.get(`${traderAddr}-${marketAddr}`);
-  if (typeof positionHistory === 'undefined') {
+  let positionHistory = await PositionHistory.get(
+    `${traderAddr}-${marketAddr}`
+  );
+  if (typeof positionHistory === "undefined") {
     positionHistory = new PositionHistory(`${traderAddr}-${marketAddr}`);
     positionHistory.trader = traderAddr;
     positionHistory.market = marketAddr;
@@ -309,8 +324,10 @@ async function createPHistory(
   positionHistoryId: string,
   blockNumber: bigint
 ): Promise<void> {
-  let pHistory = await PHistory.get(`${traderAddr}-${marketAddr}-${blockNumber}`);
-  if (typeof pHistory === 'undefined') {
+  let pHistory = await PHistory.get(
+    `${traderAddr}-${marketAddr}-${blockNumber}`
+  );
+  if (typeof pHistory === "undefined") {
     pHistory = new PHistory(`${traderAddr}-${marketAddr}-${blockNumber}`);
     pHistory.trader = traderAddr;
     pHistory.market = marketAddr;
@@ -339,8 +356,10 @@ export async function createLiquidityHistory(
   liquidity: bigint,
   blockNumber: bigint
 ): Promise<void> {
-  let liquidityHistory = await LiquidityHistory.get(`${traderAddr}-${marketAddr}`);
-  if (typeof liquidityHistory === 'undefined') {
+  let liquidityHistory = await LiquidityHistory.get(
+    `${traderAddr}-${marketAddr}`
+  );
+  if (typeof liquidityHistory === "undefined") {
     liquidityHistory = new LiquidityHistory(`${traderAddr}-${marketAddr}`);
     liquidityHistory.trader = traderAddr;
     liquidityHistory.market = marketAddr;
@@ -350,7 +369,16 @@ export async function createLiquidityHistory(
   liquidityHistory.blockNumber = blockNumber;
   liquidityHistory.timestamp = BigInt(time.getTime());
   await liquidityHistory.save();
-  await createLHistory(traderAddr, marketAddr, time, base, quote, liquidity, liquidityHistory.id, blockNumber);
+  await createLHistory(
+    traderAddr,
+    marketAddr,
+    time,
+    base,
+    quote,
+    liquidity,
+    liquidityHistory.id,
+    blockNumber
+  );
 }
 
 async function createLHistory(
@@ -363,8 +391,10 @@ async function createLHistory(
   liquidityHistoryId: string,
   blockNumber: bigint
 ): Promise<void> {
-  let lHistory = await LHistory.get(`${traderAddr}-${marketAddr}-${blockNumber}`);
-  if (typeof lHistory === 'undefined') {
+  let lHistory = await LHistory.get(
+    `${traderAddr}-${marketAddr}-${blockNumber}`
+  );
+  if (typeof lHistory === "undefined") {
     lHistory = new LHistory(`${traderAddr}-${marketAddr}-${blockNumber}`);
     lHistory.trader = traderAddr;
     lHistory.market = marketAddr;
@@ -382,10 +412,13 @@ async function createLHistory(
   await lHistory.save();
 }
 
-export async function getOrCreateDaySummary(traderAddr: string, time: Date): Promise<DaySummary> {
+export async function getOrCreateDaySummary(
+  traderAddr: string,
+  time: Date
+): Promise<DaySummary> {
   const dayID = Math.floor(time.getTime() / 8640000);
   let daySummary = await DaySummary.get(`${traderAddr}-${dayID}`);
-  if (typeof daySummary === 'undefined') {
+  if (typeof daySummary === "undefined") {
     daySummary = new DaySummary(`${traderAddr}-${dayID}`);
     daySummary.trader = traderAddr;
     daySummary.dayID = dayID;
