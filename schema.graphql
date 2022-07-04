@@ -5,7 +5,7 @@ type Deposited @entity {
   trader: String!
   amount: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -17,7 +17,7 @@ type Withdrawn @entity {
   trader: String!
   amount: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -29,7 +29,7 @@ type ProtocolFeeTransferred @entity {
   trader: String!
   amount: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -48,7 +48,7 @@ type LiquidityAddedExchange @entity {
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -69,7 +69,7 @@ type LiquidityRemovedExchange @entity {
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -91,7 +91,7 @@ type PositionLiquidated @entity {
   liquidationReward: BigInt!
   insuranceFundReward: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -109,7 +109,7 @@ type PositionChanged @entity {
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -120,7 +120,7 @@ type MaxMarketsPerAccountChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -131,7 +131,7 @@ type ImRatioChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -142,7 +142,7 @@ type MmRatioChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -154,7 +154,7 @@ type LiquidationRewardConfigChanged @entity {
   rewardRatio: Int!
   smoothEmaTime: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -165,7 +165,7 @@ type ProtocolFeeRatioChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -177,7 +177,7 @@ type IsMarketAllowedChanged @entity {
   market: String!
   isMarketAllowed: Boolean!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -193,7 +193,7 @@ type FundingPaid @entity {
   cumBasePerLiquidityX96: BigInt!
   cumQuotePerLiquidityX96: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -206,7 +206,7 @@ type LiquidityAddedMarket @entity {
   quote: BigInt!
   liquidity: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -219,7 +219,7 @@ type LiquidityRemovedMarket @entity {
   quote: BigInt!
   liquidity: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -233,7 +233,7 @@ type Swapped @entity {
   amount: BigInt!
   oppositeAmount: BigInt!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -244,7 +244,7 @@ type PoolFeeRatioChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -255,7 +255,7 @@ type FundingMaxPremiumRatioChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -266,7 +266,7 @@ type FundingMaxElapsedSecChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -277,7 +277,7 @@ type FundingRolloverSecChanged @entity {
 
   value: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
@@ -292,7 +292,7 @@ type PriceLimitConfigChanged @entity {
   emaLiquidationRatio: Int!
   emaSec: Int!
 
-  "(block number * 1000 + log index) for sorting"
+  "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }

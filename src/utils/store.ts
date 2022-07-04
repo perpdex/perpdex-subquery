@@ -14,14 +14,14 @@ import {
   OHLC,
   DaySummary,
 } from "../types";
-import { BI_ZERO, STR_ZERO, m5, m15, h1, d1 } from "./constant";
+import { BI_ZERO, STR_ZERO, m5, m15, h1, d1, MAX_LOG_COUNT } from "./constant";
 import { ChainId, Network, Version } from "../constants/index";
 
 export function getBlockNumberLogIndex(
   blockNumber: number,
   logIndex: number
 ): bigint {
-  return BigInt(blockNumber) * BigInt(1000) + BigInt(logIndex);
+  return BigInt(blockNumber) * BigInt(MAX_LOG_COUNT) + BigInt(logIndex);
 }
 
 export async function getOrCreateTrader(traderAddr: string): Promise<Trader> {
