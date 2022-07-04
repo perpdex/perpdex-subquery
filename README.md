@@ -43,7 +43,6 @@ query {
   depositeds {
     nodes {
       id
-      txHash
       trader
       amount
       blockNumberLogIndex

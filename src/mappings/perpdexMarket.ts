@@ -72,7 +72,6 @@ export async function handleFundingPaid(
   const fundingPaid = new FundingPaid(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  fundingPaid.txHash = event.transactionHash;
   fundingPaid.fundingRateX96 = event.args.fundingRateX96.toBigInt();
   fundingPaid.elapsedSec = event.args.elapsedSec;
   fundingPaid.premiumX96 = event.args.premiumX96.toBigInt();
@@ -130,7 +129,6 @@ export async function handleLiquidityAddedMarket(
   const liquidityAddedMarket = new LiquidityAddedMarket(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  liquidityAddedMarket.txHash = event.transactionHash;
   liquidityAddedMarket.base = event.args.base.toBigInt();
   liquidityAddedMarket.quote = event.args.quote.toBigInt();
   liquidityAddedMarket.liquidity = event.args.liquidity.toBigInt();
@@ -160,7 +158,6 @@ export async function handleLiquidityRemovedMarket(
   const liquidityRemovedMarket = new LiquidityRemovedMarket(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  liquidityRemovedMarket.txHash = event.transactionHash;
   liquidityRemovedMarket.base = event.args.base.toBigInt();
   liquidityRemovedMarket.quote = event.args.quote.toBigInt();
   liquidityRemovedMarket.liquidity = event.args.liquidity.toBigInt();
@@ -188,7 +185,6 @@ export async function handleSwapped(
   const swapped = new Swapped(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  swapped.txHash = event.transactionHash;
   swapped.isBaseToQuote = event.args.isBaseToQuote;
   swapped.isExactInput = event.args.isExactInput;
   swapped.amount = event.args.amount.toBigInt();
@@ -231,7 +227,6 @@ export async function handlePoolFeeRatioChanged(
   const poolFeeRatioChanged = new PoolFeeRatioChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  poolFeeRatioChanged.txHash = event.transactionHash;
   poolFeeRatioChanged.value = event.args.value;
   poolFeeRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -255,7 +250,6 @@ export async function handleFundingMaxPremiumRatioChanged(
   const fundingMaxPremiumRatioChanged = new FundingMaxPremiumRatioChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  fundingMaxPremiumRatioChanged.txHash = event.transactionHash;
   fundingMaxPremiumRatioChanged.value = event.args.value;
   fundingMaxPremiumRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -281,7 +275,6 @@ export async function handleFundingMaxElapsedSecChanged(
   const fundingMaxElapsedSecChanged = new FundingMaxElapsedSecChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  fundingMaxElapsedSecChanged.txHash = event.transactionHash;
   fundingMaxElapsedSecChanged.value = event.args.value;
   fundingMaxElapsedSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -307,7 +300,6 @@ export async function handleFundingRolloverSecChanged(
   const fundingRolloverSecChanged = new FundingRolloverSecChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  fundingRolloverSecChanged.txHash = event.transactionHash;
   fundingRolloverSecChanged.value = event.args.value;
   fundingRolloverSecChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -331,7 +323,6 @@ export async function handlePriceLimitConfigChanged(
   const priceLimitConfigChanged = new PriceLimitConfigChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
-  priceLimitConfigChanged.txHash = event.transactionHash;
   priceLimitConfigChanged.normalOrderRatio = event.args.normalOrderRatio;
   priceLimitConfigChanged.liquidationRatio = event.args.liquidationRatio;
   priceLimitConfigChanged.emaNormalOrderRatio = event.args.emaNormalOrderRatio;
