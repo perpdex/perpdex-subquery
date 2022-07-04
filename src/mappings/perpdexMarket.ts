@@ -84,7 +84,6 @@ export async function handleFundingPaid(
     event.blockNumber,
     event.logIndex
   );
-  fundingPaid.blockNumber = BigInt(event.blockNumber);
   fundingPaid.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
@@ -117,7 +116,6 @@ export async function handleFundingPaid(
   market.markPriceX96 = fundingPaid.markPriceX96;
   market.cumBasePerLiquidityX96 = fundingPaid.cumBasePerLiquidityX96;
   market.cumQuotePerLiquidityX96 = fundingPaid.cumQuotePerLiquidityX96;
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await fundingPaid.save();
@@ -136,7 +134,6 @@ export async function handleLiquidityAddedMarket(
     event.blockNumber,
     event.logIndex
   );
-  liquidityAddedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityAddedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
@@ -145,7 +142,6 @@ export async function handleLiquidityAddedMarket(
   market.liquidity = market.liquidity + liquidityAddedMarket.liquidity;
   market.blockNumberAdded = BigInt(event.blockNumber);
   market.timestampAdded = BigInt(event.blockTimestamp.getTime());
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidityAddedMarket.save();
@@ -165,14 +161,12 @@ export async function handleLiquidityRemovedMarket(
     event.blockNumber,
     event.logIndex
   );
-  liquidityRemovedMarket.blockNumber = BigInt(event.blockNumber);
   liquidityRemovedMarket.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
   market.baseAmount = market.baseAmount - liquidityRemovedMarket.base;
   market.quoteAmount = market.quoteAmount - liquidityRemovedMarket.quote;
   market.liquidity = market.liquidity - liquidityRemovedMarket.liquidity;
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidityRemovedMarket.save();
@@ -193,7 +187,6 @@ export async function handleSwapped(
     event.blockNumber,
     event.logIndex
   );
-  swapped.blockNumber = BigInt(event.blockNumber);
   swapped.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
@@ -214,7 +207,6 @@ export async function handleSwapped(
       market.quoteAmount = market.quoteAmount + swapped.oppositeAmount;
     }
   }
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await swapped.save();
@@ -232,12 +224,10 @@ export async function handlePoolFeeRatioChanged(
     event.blockNumber,
     event.logIndex
   );
-  poolFeeRatioChanged.blockNumber = BigInt(event.blockNumber);
   poolFeeRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
   market.poolFeeRatio = poolFeeRatioChanged.value;
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await poolFeeRatioChanged.save();
@@ -255,14 +245,12 @@ export async function handleFundingMaxPremiumRatioChanged(
     event.blockNumber,
     event.logIndex
   );
-  fundingMaxPremiumRatioChanged.blockNumber = BigInt(event.blockNumber);
   fundingMaxPremiumRatioChanged.timestamp = BigInt(
     event.blockTimestamp.getTime()
   );
 
   const market = await getOrCreateMarket(event.address);
   market.maxPremiumRatio = fundingMaxPremiumRatioChanged.value;
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await fundingMaxPremiumRatioChanged.save();
@@ -280,14 +268,12 @@ export async function handleFundingMaxElapsedSecChanged(
     event.blockNumber,
     event.logIndex
   );
-  fundingMaxElapsedSecChanged.blockNumber = BigInt(event.blockNumber);
   fundingMaxElapsedSecChanged.timestamp = BigInt(
     event.blockTimestamp.getTime()
   );
 
   const market = await getOrCreateMarket(event.address);
   market.fundingMaxElapsedSec = fundingMaxElapsedSecChanged.value;
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await fundingMaxElapsedSecChanged.save();
@@ -305,12 +291,10 @@ export async function handleFundingRolloverSecChanged(
     event.blockNumber,
     event.logIndex
   );
-  fundingRolloverSecChanged.blockNumber = BigInt(event.blockNumber);
   fundingRolloverSecChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
   market.fundingRolloverSec = fundingRolloverSecChanged.value;
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await fundingRolloverSecChanged.save();
@@ -332,7 +316,6 @@ export async function handlePriceLimitConfigChanged(
     event.blockNumber,
     event.logIndex
   );
-  priceLimitConfigChanged.blockNumber = BigInt(event.blockNumber);
   priceLimitConfigChanged.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const market = await getOrCreateMarket(event.address);
@@ -341,7 +324,6 @@ export async function handlePriceLimitConfigChanged(
   market.emaNormalOrderRatio = priceLimitConfigChanged.emaNormalOrderRatio;
   market.emaLiquidationRatio = priceLimitConfigChanged.emaLiquidationRatio;
   market.emaSec = priceLimitConfigChanged.emaSec;
-  market.blockNumber = BigInt(event.blockNumber);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await priceLimitConfigChanged.save();

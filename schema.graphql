@@ -7,7 +7,6 @@ type Deposited @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -20,7 +19,6 @@ type Withdrawn @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -33,7 +31,6 @@ type ProtocolFeeTransferred @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -53,7 +50,6 @@ type LiquidityAddedExchange @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -75,7 +71,6 @@ type LiquidityRemovedExchange @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -98,7 +93,6 @@ type PositionLiquidated @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -117,7 +111,6 @@ type PositionChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -129,7 +122,6 @@ type MaxMarketsPerAccountChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -141,7 +133,6 @@ type ImRatioChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -153,7 +144,6 @@ type MmRatioChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -166,7 +156,6 @@ type LiquidationRewardConfigChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -178,7 +167,6 @@ type ProtocolFeeRatioChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -191,7 +179,6 @@ type IsMarketAllowedChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -208,7 +195,6 @@ type FundingPaid @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -222,7 +208,6 @@ type LiquidityAddedMarket @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -236,7 +221,6 @@ type LiquidityRemovedMarket @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -251,7 +235,6 @@ type Swapped @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -263,7 +246,6 @@ type PoolFeeRatioChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -275,7 +257,6 @@ type FundingMaxPremiumRatioChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -287,7 +268,6 @@ type FundingMaxElapsedSecChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -299,7 +279,6 @@ type FundingRolloverSecChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -315,7 +294,6 @@ type PriceLimitConfigChanged @entity {
 
   "(block number * 1000 + tx log index) for sorting"
   blockNumberLogIndex: BigInt!
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -326,8 +304,6 @@ type Trader @entity {
   collateralBalance: BigInt!
   markets: [String]!
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 }
@@ -342,8 +318,6 @@ type TraderTakerInfo @entity {
   baseBalance: BigInt!
   quoteBalance: BigInt!
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 
@@ -362,8 +336,6 @@ type TraderMakerInfo @entity {
   cumBaseSharePerLiquidityX96: BigInt!
   cumQuotePerLiquidityX96: BigInt!
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 
@@ -380,7 +352,6 @@ type LiquidityHistory @entity {
 
   histories: [LHistory] @derivedFrom(field: "liquidityHistory")
 
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -398,8 +369,6 @@ type LHistory @entity {
 
   liquidityHistory: LiquidityHistory
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 }
@@ -424,8 +393,6 @@ type Protocol @entity {
   rewardRatio: Int!
   smoothEmaTime: Int!
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 }
@@ -447,8 +414,6 @@ type Position @entity {
   # "cumulative trading volume"
   # tradingVolume: BigInt!
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 
@@ -465,7 +430,6 @@ type PositionHistory @entity {
 
   histories: [PHistory] @derivedFrom(field: "positionHistory")
 
-  blockNumber: BigInt!
   timestamp: BigInt!
 }
 
@@ -484,8 +448,6 @@ type PHistory @entity {
 
   positionHistory: PositionHistory
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 }
@@ -503,8 +465,6 @@ type OpenOrder @entity {
   liquidity: BigInt!
   realizedPnl: BigInt!
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 
@@ -545,8 +505,6 @@ type Market @entity {
   blockNumberAdded: BigInt!
   "block timestamp when the pool was added "
   timestampAdded: BigInt!
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 
@@ -566,8 +524,6 @@ type Candle @entity {
 
   ohlcs: [OHLC] @derivedFrom(field: "candle")
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 }
@@ -586,8 +542,6 @@ type OHLC @entity {
 
   candle: Candle
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 }
@@ -605,8 +559,6 @@ type DaySummary @entity {
   "total pnl aggregated per day for trader"
   realizedPnl: BigInt!
 
-  "last updated block number"
-  blockNumber: BigInt!
   "last updated block timestamp"
   timestamp: BigInt!
 }
