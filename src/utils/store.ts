@@ -134,6 +134,7 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market.emaLiquidationRatio = 0;
     market.emaSec = 0;
 
+    market.blockNumberAdded = BI_ZERO;
     market.timestampAdded = BI_ZERO;
     market.timestamp = BI_ZERO;
     await market.save();
