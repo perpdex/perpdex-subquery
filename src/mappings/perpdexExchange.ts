@@ -300,6 +300,7 @@ export async function handleLiquidityAddedExchange(
     liquidityAddedExchange.market,
     event.blockTimestamp,
     liquidityAddedExchange.sharePriceAfterX96,
+    liquidityAddedExchange.baseBalancePerShareX96,
     BI_ZERO,
     BI_ZERO
   );
@@ -393,6 +394,7 @@ export async function handleLiquidityRemovedExchange(
     liquidityRemovedExchange.market,
     event.blockTimestamp,
     liquidityRemovedExchange.sharePriceAfterX96,
+    liquidityRemovedExchange.baseBalancePerShareX96,
     BI_ZERO,
     BI_ZERO
   );
@@ -499,6 +501,7 @@ export async function handlePositionLiquidated(
     positionLiquidated.market,
     event.blockTimestamp,
     positionLiquidated.sharePriceAfterX96,
+    positionLiquidated.baseBalancePerShareX96,
     positionLiquidated.base,
     positionLiquidated.quote
   );
@@ -585,6 +588,7 @@ export async function handlePositionChanged(
     positionChanged.market,
     event.blockTimestamp,
     positionChanged.sharePriceAfterX96,
+    positionChanged.baseBalancePerShareX96,
     positionChanged.base,
     positionChanged.quote
   );

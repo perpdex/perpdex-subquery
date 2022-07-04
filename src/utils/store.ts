@@ -13,8 +13,18 @@ import {
   Candle,
   DaySummary,
 } from "../types";
-import { BI_ZERO, STR_ZERO, m5, m15, h1, d1, MAX_LOG_COUNT } from "./constant";
+import {
+  BI_ZERO,
+  STR_ZERO,
+  m5,
+  m15,
+  h1,
+  d1,
+  MAX_LOG_COUNT,
+  Q96,
+} from "./constant";
 import { ChainId, Network, Version } from "../constants/index";
+import { mulDiv } from "./math";
 
 export function getBlockNumberLogIndex(
   blockNumber: number,
@@ -135,7 +145,7 @@ async function doCreateCandle(
   marketAddr: string,
   time: Date,
   timeFormat: number,
-  price: bigint,
+  priceX96: bigint,
   baseAmount: bigint,
   quoteAmount: bigint
 ): Promise<void> {
@@ -145,19 +155,19 @@ async function doCreateCandle(
     ohlc.market = marketAddr;
     ohlc.timeFormat = timeFormat;
     ohlc.time = time;
-    ohlc.open = price;
-    ohlc.high = price;
-    ohlc.low = price;
+    ohlc.openX96 = priceX96;
+    ohlc.highX96 = priceX96;
+    ohlc.lowX96 = priceX96;
     ohlc.timestamp = BI_ZERO;
     ohlc.baseAmount = BI_ZERO;
     ohlc.quoteAmount = BI_ZERO;
   }
-  if (ohlc.high < price) {
-    ohlc.high = price;
-  } else if (ohlc.low > price) {
-    ohlc.low = price;
+  if (ohlc.highX96 < priceX96) {
+    ohlc.highX96 = priceX96;
+  } else if (ohlc.lowX96 > priceX96) {
+    ohlc.lowX96 = priceX96;
   }
-  ohlc.close = price;
+  ohlc.closeX96 = priceX96;
   ohlc.baseAmount += baseAmount;
   ohlc.quoteAmount += quoteAmount;
   ohlc.timestamp = BigInt(time.getTime());
@@ -171,19 +181,22 @@ const roundTime = (time: Date, interval: number) => {
 export async function createCandle(
   marketAddr: string,
   time: Date,
-  price: bigint,
-  baseAmount: bigint,
+  sharePriceX96: bigint,
+  baseBalancePerShareX96: bigint,
+  baseShare: bigint,
   quoteAmount: bigint
 ): Promise<void> {
   const intervals = [m5, m15, h1, d1];
+  const priceX96 = mulDiv(sharePriceX96, Q96, baseBalancePerShareX96);
+
   for (let i = 0; i < intervals.length; i++) {
     const interval = intervals[i];
     await doCreateCandle(
       marketAddr,
       roundTime(time, interval),
       interval,
-      price,
-      baseAmount,
+      priceX96,
+      mulDiv(baseShare, baseBalancePerShareX96, Q96),
       quoteAmount
     );
   }

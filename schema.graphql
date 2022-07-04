@@ -547,10 +547,10 @@ type Candle @entity {
   timeFormat: Int!
   time: Date!
 
-  open: BigInt!
-  high: BigInt!
-  low: BigInt!
-  close: BigInt!
+  openX96: BigInt!
+  highX96: BigInt!
+  lowX96: BigInt!
+  closeX96: BigInt!
   baseAmount: BigInt!
   quoteAmount: BigInt!
 
