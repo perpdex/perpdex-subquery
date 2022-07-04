@@ -14,14 +14,14 @@ import {
   OHLC,
   DaySummary,
 } from "../types";
-import { BI_ZERO, STR_ZERO, m5, m15, h1, d1 } from "./constant";
+import { BI_ZERO, STR_ZERO, m5, m15, h1, d1, MAX_LOG_COUNT } from "./constant";
 import { ChainId, Network, Version } from "../constants/index";
 
 export function getBlockNumberLogIndex(
   blockNumber: number,
   logIndex: number
 ): bigint {
-  return BigInt(blockNumber) * BigInt(1000) + BigInt(logIndex);
+  return BigInt(blockNumber) * BigInt(MAX_LOG_COUNT) + BigInt(logIndex);
 }
 
 export async function getOrCreateTrader(traderAddr: string): Promise<Trader> {
@@ -30,7 +30,6 @@ export async function getOrCreateTrader(traderAddr: string): Promise<Trader> {
     trader = new Trader(traderAddr);
     trader.collateralBalance = BI_ZERO;
     trader.markets = [];
-    trader.blockNumber = BI_ZERO;
     trader.timestamp = BI_ZERO;
     await trader.save();
   }
@@ -56,7 +55,6 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
     protocol.rewardRatio = 0;
     protocol.smoothEmaTime = 0;
     protocol.protocolFeeRatio = 0;
-    protocol.blockNumber = BI_ZERO;
     protocol.timestamp = BI_ZERO;
     await protocol.save();
   }
@@ -77,7 +75,6 @@ export async function getOrCreateTraderTakerInfo(
     traderTakerInfo.baseBalanceShare = BI_ZERO;
     traderTakerInfo.baseBalance = BI_ZERO;
     traderTakerInfo.quoteBalance = BI_ZERO;
-    traderTakerInfo.blockNumber = BI_ZERO;
     traderTakerInfo.timestamp = BI_ZERO;
     await traderTakerInfo.save();
   }
@@ -98,7 +95,6 @@ export async function getOrCreateTraderMakerInfo(
     traderMakerInfo.liquidity = BI_ZERO;
     traderMakerInfo.cumBaseSharePerLiquidityX96 = BI_ZERO;
     traderMakerInfo.cumQuotePerLiquidityX96 = BI_ZERO;
-    traderMakerInfo.blockNumber = BI_ZERO;
     traderMakerInfo.timestamp = BI_ZERO;
     await traderMakerInfo.save();
   }
@@ -129,9 +125,7 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market.emaLiquidationRatio = 0;
     market.emaSec = 0;
 
-    market.blockNumberAdded = BI_ZERO;
     market.timestampAdded = BI_ZERO;
-    market.blockNumber = BI_ZERO;
     market.timestamp = BI_ZERO;
     await market.save();
   }
@@ -143,8 +137,7 @@ export async function createOHLC(
   time: Date,
   timeFormat: number,
   price: bigint,
-  candleID: string,
-  blockNumber: bigint
+  candleID: string
 ): Promise<void> {
   let ohlc = await OHLC.get(`${marketAddr}-${timeFormat}-${time}`);
   if (typeof ohlc === "undefined") {
@@ -155,7 +148,6 @@ export async function createOHLC(
     ohlc.high = price;
     ohlc.low = price;
     ohlc.close = price;
-    ohlc.blockNumber = BI_ZERO;
     ohlc.timestamp = BI_ZERO;
   }
   if (ohlc.high < price) {
@@ -165,7 +157,6 @@ export async function createOHLC(
   }
   ohlc.close = price;
   ohlc.candleId = candleID;
-  ohlc.blockNumber = blockNumber;
   ohlc.timestamp = BigInt(time.getTime());
   await ohlc.save();
 }
@@ -173,54 +164,47 @@ export async function createOHLC(
 export async function createCandle5m(
   marketAddr: string,
   time: Date,
-  price: bigint,
-  blockNumber: bigint
+  price: bigint
 ): Promise<void> {
   let candle = await Candle.get(`${marketAddr}-${m5}`);
   if (typeof candle === "undefined") {
     candle = new Candle(`${marketAddr}-${m5}`);
     candle.market = marketAddr;
     candle.timeFormat = m5;
-    candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
   }
-  candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
   time.setMinutes(Math.floor(time.getMinutes() / 5) * 5);
   time.setSeconds(0);
   time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, m5, price, candle.id, blockNumber);
+  await createOHLC(marketAddr, time, m5, price, candle.id);
 }
 
 export async function createCandle15m(
   marketAddr: string,
   time: Date,
-  price: bigint,
-  blockNumber: bigint
+  price: bigint
 ): Promise<void> {
   let candle = await Candle.get(`${marketAddr}-${m15}`);
   if (typeof candle === "undefined") {
     candle = new Candle(`${marketAddr}-${m15}`);
     candle.market = marketAddr;
     candle.timeFormat = m15;
-    candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
   }
-  candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
   time.setMinutes(Math.floor(time.getMinutes() / 15) * 15);
   time.setSeconds(0);
   time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, m15, price, candle.id, blockNumber);
+  await createOHLC(marketAddr, time, m15, price, candle.id);
 }
 
 export async function createCandle1h(
   marketAddr: string,
   time: Date,
-  price: bigint,
-  blockNumber: bigint
+  price: bigint
 ): Promise<void> {
   time.setMinutes(0);
   time.setSeconds(0);
@@ -229,52 +213,46 @@ export async function createCandle1h(
     candle = new Candle(`${marketAddr}-${h1}`);
     candle.market = marketAddr;
     candle.timeFormat = h1;
-    candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
   }
-  candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
   time.setMinutes(0);
   time.setSeconds(0);
   time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, h1, price, candle.id, blockNumber);
+  await createOHLC(marketAddr, time, h1, price, candle.id);
 }
 
 export async function createCandle1d(
   marketAddr: string,
   time: Date,
-  price: bigint,
-  blockNumber: bigint
+  price: bigint
 ): Promise<void> {
   let candle = await Candle.get(`${marketAddr}-${d1}`);
   if (typeof candle === "undefined") {
     candle = new Candle(`${marketAddr}-${d1}`);
     candle.market = marketAddr;
     candle.timeFormat = d1;
-    candle.blockNumber = BI_ZERO;
     candle.timestamp = BI_ZERO;
   }
-  candle.blockNumber = blockNumber;
   candle.timestamp = BigInt(time.getTime());
   await candle.save();
   time.setHours(0);
   time.setMinutes(0);
   time.setSeconds(0);
   time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, d1, price, candle.id, blockNumber);
+  await createOHLC(marketAddr, time, d1, price, candle.id);
 }
 
 export async function createCandle(
   marketAddr: string,
   time: Date,
-  price: bigint,
-  blockNumber: bigint
+  price: bigint
 ): Promise<void> {
-  await createCandle5m(marketAddr, time, price, blockNumber);
-  await createCandle15m(marketAddr, time, price, blockNumber);
-  await createCandle1h(marketAddr, time, price, blockNumber);
-  await createCandle1d(marketAddr, time, price, blockNumber);
+  await createCandle5m(marketAddr, time, price);
+  await createCandle15m(marketAddr, time, price);
+  await createCandle1h(marketAddr, time, price);
+  await createCandle1d(marketAddr, time, price);
 }
 
 export async function createPositionHistory(
@@ -284,8 +262,7 @@ export async function createPositionHistory(
   base: bigint,
   quote: bigint,
   realizesPnl: bigint,
-  protocolFee: bigint,
-  blockNumber: bigint
+  protocolFee: bigint
 ): Promise<void> {
   let positionHistory = await PositionHistory.get(
     `${traderAddr}-${marketAddr}`
@@ -294,10 +271,8 @@ export async function createPositionHistory(
     positionHistory = new PositionHistory(`${traderAddr}-${marketAddr}`);
     positionHistory.trader = traderAddr;
     positionHistory.market = marketAddr;
-    positionHistory.blockNumber = BI_ZERO;
     positionHistory.timestamp = BI_ZERO;
   }
-  positionHistory.blockNumber = blockNumber;
   positionHistory.timestamp = BigInt(time.getTime());
   await positionHistory.save();
   await createPHistory(
@@ -308,8 +283,7 @@ export async function createPositionHistory(
     quote,
     realizesPnl,
     protocolFee,
-    positionHistory.id,
-    blockNumber
+    positionHistory.id
   );
 }
 
@@ -321,14 +295,13 @@ async function createPHistory(
   quote: bigint,
   realizedPnl: bigint,
   protocolFee: bigint,
-  positionHistoryId: string,
-  blockNumber: bigint
+  positionHistoryId: string
 ): Promise<void> {
   let pHistory = await PHistory.get(
-    `${traderAddr}-${marketAddr}-${blockNumber}`
+    `${traderAddr}-${marketAddr}-` // TODO: fix id
   );
   if (typeof pHistory === "undefined") {
-    pHistory = new PHistory(`${traderAddr}-${marketAddr}-${blockNumber}`);
+    pHistory = new PHistory(`${traderAddr}-${marketAddr}-`); // TODO: fix id
     pHistory.trader = traderAddr;
     pHistory.market = marketAddr;
     pHistory.time = time;
@@ -337,7 +310,6 @@ async function createPHistory(
     pHistory.realizedPnl = realizedPnl;
     pHistory.protocolFee = protocolFee;
     pHistory.positionHistoryId = positionHistoryId;
-    pHistory.blockNumber = blockNumber;
     pHistory.timestamp = BigInt(time.getTime());
   }
   pHistory.base += base;
@@ -353,8 +325,7 @@ export async function createLiquidityHistory(
   time: Date,
   base: bigint,
   quote: bigint,
-  liquidity: bigint,
-  blockNumber: bigint
+  liquidity: bigint
 ): Promise<void> {
   let liquidityHistory = await LiquidityHistory.get(
     `${traderAddr}-${marketAddr}`
@@ -363,10 +334,8 @@ export async function createLiquidityHistory(
     liquidityHistory = new LiquidityHistory(`${traderAddr}-${marketAddr}`);
     liquidityHistory.trader = traderAddr;
     liquidityHistory.market = marketAddr;
-    liquidityHistory.blockNumber = BI_ZERO;
     liquidityHistory.timestamp = BI_ZERO;
   }
-  liquidityHistory.blockNumber = blockNumber;
   liquidityHistory.timestamp = BigInt(time.getTime());
   await liquidityHistory.save();
   await createLHistory(
@@ -376,8 +345,7 @@ export async function createLiquidityHistory(
     base,
     quote,
     liquidity,
-    liquidityHistory.id,
-    blockNumber
+    liquidityHistory.id
   );
 }
 
@@ -388,14 +356,13 @@ async function createLHistory(
   base: bigint,
   quote: bigint,
   liquidity: bigint,
-  liquidityHistoryId: string,
-  blockNumber: bigint
+  liquidityHistoryId: string
 ): Promise<void> {
   let lHistory = await LHistory.get(
-    `${traderAddr}-${marketAddr}-${blockNumber}`
+    `${traderAddr}-${marketAddr}-` // TODO: fix id
   );
   if (typeof lHistory === "undefined") {
-    lHistory = new LHistory(`${traderAddr}-${marketAddr}-${blockNumber}`);
+    lHistory = new LHistory(`${traderAddr}-${marketAddr}-`); // TODO: fix id
     lHistory.trader = traderAddr;
     lHistory.market = marketAddr;
     lHistory.time = time;
@@ -403,7 +370,6 @@ async function createLHistory(
     lHistory.quote = quote;
     lHistory.liquidity = liquidity;
     lHistory.liquidityHistoryId = liquidityHistoryId;
-    lHistory.blockNumber = blockNumber;
     lHistory.timestamp = BigInt(time.getTime());
   }
   lHistory.base += base;
@@ -424,7 +390,6 @@ export async function getOrCreateDaySummary(
     daySummary.dayID = dayID;
     daySummary.time = time;
     daySummary.realizedPnl = BI_ZERO;
-    daySummary.blockNumber = BI_ZERO;
     daySummary.timestamp = BI_ZERO;
   }
   return daySummary;
