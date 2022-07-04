@@ -161,6 +161,7 @@ export async function handleDeposited(
   const deposited = new Deposited(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  deposited.exchange = event.address;
   deposited.trader = event.args.trader;
   deposited.amount = event.args.amount.toBigInt();
   deposited.blockNumberLogIndex = getBlockNumberLogIndex(
@@ -187,6 +188,7 @@ export async function handleWithdrawn(
   const withdrawn = new Withdrawn(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  withdrawn.exchange = event.address;
   withdrawn.trader = event.args.trader;
   withdrawn.amount = event.args.amount.toBigInt();
   withdrawn.blockNumberLogIndex = getBlockNumberLogIndex(
@@ -213,6 +215,7 @@ export async function handleProtocolFeeTransferred(
   const protocolFeeTransferred = new ProtocolFeeTransferred(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  protocolFeeTransferred.exchange = event.address;
   protocolFeeTransferred.trader = event.args.trader;
   protocolFeeTransferred.amount = event.args.amount.toBigInt();
   protocolFeeTransferred.blockNumberLogIndex = getBlockNumberLogIndex(
@@ -241,6 +244,7 @@ export async function handleLiquidityAddedExchange(
   const liquidityAddedExchange = new LiquidityAddedExchange(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  liquidityAddedExchange.exchange = event.address;
   liquidityAddedExchange.trader = event.args.trader;
   liquidityAddedExchange.market = event.args.market;
   liquidityAddedExchange.base = event.args.base.toBigInt();
@@ -309,6 +313,7 @@ export async function handleLiquidityRemovedExchange(
   const liquidityRemovedExchange = new LiquidityRemovedExchange(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  liquidityRemovedExchange.exchange = event.address;
   liquidityRemovedExchange.trader = event.args.trader;
   liquidityRemovedExchange.market = event.args.market;
   liquidityRemovedExchange.liquidator = event.args.liquidator;
@@ -401,6 +406,7 @@ export async function handlePositionLiquidated(
   const positionLiquidated = new PositionLiquidated(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  positionLiquidated.exchange = event.address;
   positionLiquidated.trader = event.args.trader;
   positionLiquidated.market = event.args.market;
   positionLiquidated.liquidator = event.args.liquidator;
@@ -505,6 +511,7 @@ export async function handlePositionChanged(
   const positionChanged = new PositionChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  positionChanged.exchange = event.address;
   positionChanged.trader = event.args.trader;
   positionChanged.market = event.args.market;
   positionChanged.base = event.args.base.toBigInt();
@@ -587,6 +594,7 @@ export async function handleMaxMarketsPerAccountChanged(
   const maxMarketsPerAccountChanged = new MaxMarketsPerAccountChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  maxMarketsPerAccountChanged.exchange = event.address;
   maxMarketsPerAccountChanged.value = event.args.value;
   maxMarketsPerAccountChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -610,6 +618,7 @@ export async function handleImRatioChanged(
   const imRatioChanged = new ImRatioChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  imRatioChanged.exchange = event.address;
   imRatioChanged.value = event.args.value;
   imRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -631,6 +640,7 @@ export async function handleMmRatioChanged(
   const mmRatioChanged = new MmRatioChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  mmRatioChanged.exchange = event.address;
   mmRatioChanged.value = event.args.value;
   mmRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -652,6 +662,7 @@ export async function handleLiquidationRewardConfigChanged(
   const liquidationRewardConfigChanged = new LiquidationRewardConfigChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  liquidationRewardConfigChanged.exchange = event.address;
   liquidationRewardConfigChanged.rewardRatio = event.args.rewardRatio;
   liquidationRewardConfigChanged.smoothEmaTime = event.args.smoothEmaTime;
   liquidationRewardConfigChanged.blockNumberLogIndex = getBlockNumberLogIndex(
@@ -677,6 +688,7 @@ export async function handleProtocolFeeRatioChanged(
   const protocolFeeRatioChanged = new ProtocolFeeRatioChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  protocolFeeRatioChanged.exchange = event.address;
   protocolFeeRatioChanged.value = event.args.value;
   protocolFeeRatioChanged.blockNumberLogIndex = getBlockNumberLogIndex(
     event.blockNumber,
@@ -698,6 +710,7 @@ export async function handleIsMarketAllowedChanged(
   const isMarketAllowedChanged = new IsMarketAllowedChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
+  isMarketAllowedChanged.exchange = event.address;
   isMarketAllowedChanged.market = event.args.market;
   isMarketAllowedChanged.isMarketAllowed = event.args.isMarketAllowed;
   isMarketAllowedChanged.blockNumberLogIndex = getBlockNumberLogIndex(

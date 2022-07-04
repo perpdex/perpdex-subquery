@@ -4,6 +4,7 @@ type Deposited @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   trader: String!
   amount: BigInt!
 
@@ -16,6 +17,7 @@ type Withdrawn @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   trader: String!
   amount: BigInt!
 
@@ -28,6 +30,7 @@ type ProtocolFeeTransferred @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   trader: String!
   amount: BigInt!
 
@@ -40,6 +43,7 @@ type LiquidityAddedExchange @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   trader: String!
   market: String!
   base: BigInt!
@@ -59,6 +63,7 @@ type LiquidityRemovedExchange @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   trader: String!
   market: String!
   liquidator: String!
@@ -80,6 +85,7 @@ type PositionLiquidated @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   trader: String!
   market: String!
   liquidator: String!
@@ -102,6 +108,7 @@ type PositionChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   trader: String!
   market: String!
   base: BigInt!
@@ -120,6 +127,7 @@ type MaxMarketsPerAccountChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -131,6 +139,7 @@ type ImRatioChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -142,6 +151,7 @@ type MmRatioChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -153,6 +163,7 @@ type LiquidationRewardConfigChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   rewardRatio: Int!
   smoothEmaTime: Int!
 
@@ -165,6 +176,7 @@ type ProtocolFeeRatioChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -176,6 +188,7 @@ type IsMarketAllowedChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  exchange: String!
   market: String!
   isMarketAllowed: Boolean!
 
@@ -188,6 +201,7 @@ type FundingPaid @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   fundingRateX96: BigInt!
   elapsedSec: Int!
   premiumX96: BigInt!
@@ -204,6 +218,7 @@ type LiquidityAddedMarket @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   base: BigInt!
   quote: BigInt!
   liquidity: BigInt!
@@ -217,6 +232,7 @@ type LiquidityRemovedMarket @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   base: BigInt!
   quote: BigInt!
   liquidity: BigInt!
@@ -230,6 +246,7 @@ type Swapped @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   isBaseToQuote: Boolean!
   isExactInput: Boolean!
   amount: BigInt!
@@ -244,6 +261,7 @@ type PoolFeeRatioChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -255,6 +273,7 @@ type FundingMaxPremiumRatioChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -266,6 +285,7 @@ type FundingMaxElapsedSecChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -277,6 +297,7 @@ type FundingRolloverSecChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   value: Int!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
@@ -288,6 +309,7 @@ type PriceLimitConfigChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
 
+  market: String!
   normalOrderRatio: Int!
   liquidationRatio: Int!
   emaNormalOrderRatio: Int!
