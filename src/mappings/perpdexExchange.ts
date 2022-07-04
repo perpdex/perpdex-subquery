@@ -29,6 +29,7 @@ import {
   getOrCreateDaySummary,
 } from "../utils/store";
 import { negBI } from "../utils/math";
+import { BI_ZERO } from "../utils/constant";
 
 type DepositedArgs = [string, BigNumber] & {
   trader: string;
@@ -298,7 +299,9 @@ export async function handleLiquidityAddedExchange(
   await createCandle(
     liquidityAddedExchange.market,
     event.blockTimestamp,
-    liquidityAddedExchange.sharePriceAfterX96
+    liquidityAddedExchange.sharePriceAfterX96,
+    BI_ZERO,
+    BI_ZERO
   );
 
   await liquidityAddedExchange.save();
@@ -389,7 +392,9 @@ export async function handleLiquidityRemovedExchange(
   await createCandle(
     liquidityRemovedExchange.market,
     event.blockTimestamp,
-    liquidityRemovedExchange.sharePriceAfterX96
+    liquidityRemovedExchange.sharePriceAfterX96,
+    BI_ZERO,
+    BI_ZERO
   );
 
   await liquidityRemovedExchange.save();
@@ -493,7 +498,9 @@ export async function handlePositionLiquidated(
   await createCandle(
     positionLiquidated.market,
     event.blockTimestamp,
-    positionLiquidated.sharePriceAfterX96
+    positionLiquidated.sharePriceAfterX96,
+    positionLiquidated.base,
+    positionLiquidated.quote
   );
 
   await positionLiquidated.save();
@@ -577,7 +584,9 @@ export async function handlePositionChanged(
   await createCandle(
     positionChanged.market,
     event.blockTimestamp,
-    positionChanged.sharePriceAfterX96
+    positionChanged.sharePriceAfterX96,
+    positionChanged.base,
+    positionChanged.quote
   );
 
   await positionChanged.save();

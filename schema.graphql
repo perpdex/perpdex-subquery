@@ -539,34 +539,20 @@ type Market @entity {
   # openOrders: [OpenOrder!]! @derivedFrom(field: "marketRef")
 }
 
-type CandleMetadata @entity {
-  "format: <market address>-<timeFormat>-"
-  id: ID!
-
-  market: String!
-  "time format"
-  # examples of timeformat: 300(5m), 86400(=1d)
-  timeFormat: Int!
-
-  candles: [Candle] @derivedFrom(field: "candleMetadata")
-
-  "last updated block timestamp"
-  timestamp: BigInt!
-}
-
 type Candle @entity {
-  "format: <market address>-<time>-"
+  "format: <market address>-<timeFormat>-<time>"
   id: ID!
 
   market: String!
+  timeFormat: Int!
   time: Date!
 
   open: BigInt!
   high: BigInt!
   low: BigInt!
   close: BigInt!
-
-  candleMetadata: CandleMetadata
+  baseAmount: BigInt!
+  quoteAmount: BigInt!
 
   "last updated block timestamp"
   timestamp: BigInt!
