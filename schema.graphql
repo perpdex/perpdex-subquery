@@ -81,29 +81,7 @@ type LiquidityRemovedExchange @entity {
   timestamp: BigInt!
 }
 
-type PositionLiquidated @entity {
-  "format: <tx hash>-<log index>"
-  id: ID!
-
-  exchange: String!
-  trader: String!
-  market: String!
-  liquidator: String!
-  base: BigInt!
-  quote: BigInt!
-  realizedPnl: BigInt!
-  protocolFee: BigInt!
-  baseBalancePerShareX96: BigInt!
-  sharePriceAfterX96: BigInt!
-  liquidationPenalty: BigInt!
-  liquidationReward: BigInt!
-  insuranceFundReward: BigInt!
-
-  "(block number * MAX_LOG_COUNT + log index) for sorting"
-  blockNumberLogIndex: BigInt!
-  timestamp: BigInt!
-}
-
+# also represent PositionLiquidated
 type PositionChanged @entity {
   "format: <tx hash>-<log index>"
   id: ID!
@@ -117,6 +95,12 @@ type PositionChanged @entity {
   protocolFee: BigInt!
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
+
+  # PositionLiquidated
+  liquidator: String!
+  liquidationPenalty: BigInt!
+  liquidationReward: BigInt!
+  insuranceFundReward: BigInt!
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!

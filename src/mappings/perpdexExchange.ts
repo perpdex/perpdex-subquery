@@ -4,7 +4,6 @@ import {
   ProtocolFeeTransferred,
   LiquidityAddedExchange,
   LiquidityRemovedExchange,
-  PositionLiquidated,
   PositionChanged,
   MaxMarketsPerAccountChanged,
   ImRatioChanged,
@@ -410,7 +409,7 @@ export async function handleLiquidityRemovedExchange(
 export async function handlePositionLiquidated(
   event: FrontierEvmEvent<PositionLiquidatedArgs>
 ): Promise<void> {
-  const positionLiquidated = new PositionLiquidated(
+  const positionLiquidated = new PositionChanged(
     `${event.transactionHash}-${event.logIndex.toString()}`
   );
   positionLiquidated.exchange = event.address;
