@@ -10,8 +10,8 @@ import {
   LHistory,
   OpenOrder,
   Market,
+  CandleMetadata,
   Candle,
-  OHLC,
   DaySummary,
 } from "../types";
 import { BI_ZERO, STR_ZERO, m5, m15, h1, d1, MAX_LOG_COUNT } from "./constant";
@@ -137,11 +137,11 @@ export async function createOHLC(
   time: Date,
   timeFormat: number,
   price: bigint,
-  candleID: string
+  candleMetadataId: string
 ): Promise<void> {
-  let ohlc = await OHLC.get(`${marketAddr}-${timeFormat}-${time}`);
+  let ohlc = await Candle.get(`${marketAddr}-${timeFormat}-${time}`);
   if (typeof ohlc === "undefined") {
-    ohlc = new OHLC(`${marketAddr}-${timeFormat}-${time}`);
+    ohlc = new Candle(`${marketAddr}-${timeFormat}-${time}`);
     ohlc.market = marketAddr;
     ohlc.time = time;
     ohlc.open = price;
@@ -156,7 +156,7 @@ export async function createOHLC(
     ohlc.low = price;
   }
   ohlc.close = price;
-  ohlc.candleId = candleID;
+  ohlc.candleMetadataId = candleMetadataId;
   ohlc.timestamp = BigInt(time.getTime());
   await ohlc.save();
 }
@@ -166,9 +166,9 @@ export async function createCandle5m(
   time: Date,
   price: bigint
 ): Promise<void> {
-  let candle = await Candle.get(`${marketAddr}-${m5}`);
+  let candle = await CandleMetadata.get(`${marketAddr}-${m5}`);
   if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${m5}`);
+    candle = new CandleMetadata(`${marketAddr}-${m5}`);
     candle.market = marketAddr;
     candle.timeFormat = m5;
     candle.timestamp = BI_ZERO;
@@ -186,9 +186,9 @@ export async function createCandle15m(
   time: Date,
   price: bigint
 ): Promise<void> {
-  let candle = await Candle.get(`${marketAddr}-${m15}`);
+  let candle = await CandleMetadata.get(`${marketAddr}-${m15}`);
   if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${m15}`);
+    candle = new CandleMetadata(`${marketAddr}-${m15}`);
     candle.market = marketAddr;
     candle.timeFormat = m15;
     candle.timestamp = BI_ZERO;
@@ -208,9 +208,9 @@ export async function createCandle1h(
 ): Promise<void> {
   time.setMinutes(0);
   time.setSeconds(0);
-  let candle = await Candle.get(`${marketAddr}-${h1}`);
+  let candle = await CandleMetadata.get(`${marketAddr}-${h1}`);
   if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${h1}`);
+    candle = new CandleMetadata(`${marketAddr}-${h1}`);
     candle.market = marketAddr;
     candle.timeFormat = h1;
     candle.timestamp = BI_ZERO;
@@ -228,9 +228,9 @@ export async function createCandle1d(
   time: Date,
   price: bigint
 ): Promise<void> {
-  let candle = await Candle.get(`${marketAddr}-${d1}`);
+  let candle = await CandleMetadata.get(`${marketAddr}-${d1}`);
   if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${d1}`);
+    candle = new CandleMetadata(`${marketAddr}-${d1}`);
     candle.market = marketAddr;
     candle.timeFormat = d1;
     candle.timestamp = BI_ZERO;
