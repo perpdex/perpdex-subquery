@@ -1,41 +1,41 @@
 type Deposited @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   trader: String!
   amount: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type Withdrawn @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   trader: String!
   amount: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type ProtocolFeeTransferred @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   trader: String!
   amount: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type LiquidityAddedExchange @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   trader: String!
@@ -48,13 +48,13 @@ type LiquidityAddedExchange @entity {
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type LiquidityRemovedExchange @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   trader: String!
@@ -69,13 +69,13 @@ type LiquidityRemovedExchange @entity {
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type PositionLiquidated @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   trader: String!
@@ -91,13 +91,13 @@ type PositionLiquidated @entity {
   liquidationReward: BigInt!
   insuranceFundReward: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type PositionChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   trader: String!
@@ -109,81 +109,81 @@ type PositionChanged @entity {
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type MaxMarketsPerAccountChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type ImRatioChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type MmRatioChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type LiquidationRewardConfigChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   rewardRatio: Int!
   smoothEmaTime: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type ProtocolFeeRatioChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type IsMarketAllowedChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   market: String!
   isMarketAllowed: Boolean!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type FundingPaid @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   fundingRateX96: BigInt!
@@ -193,39 +193,39 @@ type FundingPaid @entity {
   cumBasePerLiquidityX96: BigInt!
   cumQuotePerLiquidityX96: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type LiquidityAddedMarket @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   base: BigInt!
   quote: BigInt!
   liquidity: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type LiquidityRemovedMarket @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   base: BigInt!
   quote: BigInt!
   liquidity: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type Swapped @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   isBaseToQuote: Boolean!
@@ -233,57 +233,57 @@ type Swapped @entity {
   amount: BigInt!
   oppositeAmount: BigInt!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type PoolFeeRatioChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type FundingMaxPremiumRatioChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type FundingMaxElapsedSecChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type FundingRolloverSecChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   value: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
 
 type PriceLimitConfigChanged @entity {
-  "format: <tx hash>-<tx log index>"
+  "format: <tx hash>-<log index>"
   id: ID!
 
   normalOrderRatio: Int!
@@ -292,7 +292,7 @@ type PriceLimitConfigChanged @entity {
   emaLiquidationRatio: Int!
   emaSec: Int!
 
-  "(block number * 1000 + tx log index) for sorting"
+  "(block number * 1000 + log index) for sorting"
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
