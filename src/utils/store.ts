@@ -11,7 +11,6 @@ import {
   OpenOrder,
   Market,
   Candle,
-  OHLC,
   DaySummary,
 } from "../types";
 import { BI_ZERO, STR_ZERO, m5, m15, h1, d1, MAX_LOG_COUNT } from "./constant";
@@ -132,23 +131,26 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
   return market;
 }
 
-export async function createOHLC(
+async function doCreateCandle(
   marketAddr: string,
   time: Date,
   timeFormat: number,
   price: bigint,
-  candleID: string
+  baseAmount: bigint,
+  quoteAmount: bigint
 ): Promise<void> {
-  let ohlc = await OHLC.get(`${marketAddr}-${timeFormat}-${time}`);
+  let ohlc = await Candle.get(`${marketAddr}-${timeFormat}-${time}`);
   if (typeof ohlc === "undefined") {
-    ohlc = new OHLC(`${marketAddr}-${timeFormat}-${time}`);
+    ohlc = new Candle(`${marketAddr}-${timeFormat}-${time}`);
     ohlc.market = marketAddr;
+    ohlc.timeFormat = timeFormat;
     ohlc.time = time;
     ohlc.open = price;
     ohlc.high = price;
     ohlc.low = price;
-    ohlc.close = price;
     ohlc.timestamp = BI_ZERO;
+    ohlc.baseAmount = BI_ZERO;
+    ohlc.quoteAmount = BI_ZERO;
   }
   if (ohlc.high < price) {
     ohlc.high = price;
@@ -156,103 +158,35 @@ export async function createOHLC(
     ohlc.low = price;
   }
   ohlc.close = price;
-  ohlc.candleId = candleID;
+  ohlc.baseAmount += baseAmount;
+  ohlc.quoteAmount += quoteAmount;
   ohlc.timestamp = BigInt(time.getTime());
   await ohlc.save();
 }
 
-export async function createCandle5m(
-  marketAddr: string,
-  time: Date,
-  price: bigint
-): Promise<void> {
-  let candle = await Candle.get(`${marketAddr}-${m5}`);
-  if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${m5}`);
-    candle.market = marketAddr;
-    candle.timeFormat = m5;
-    candle.timestamp = BI_ZERO;
-  }
-  candle.timestamp = BigInt(time.getTime());
-  await candle.save();
-  time.setMinutes(Math.floor(time.getMinutes() / 5) * 5);
-  time.setSeconds(0);
-  time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, m5, price, candle.id);
-}
-
-export async function createCandle15m(
-  marketAddr: string,
-  time: Date,
-  price: bigint
-): Promise<void> {
-  let candle = await Candle.get(`${marketAddr}-${m15}`);
-  if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${m15}`);
-    candle.market = marketAddr;
-    candle.timeFormat = m15;
-    candle.timestamp = BI_ZERO;
-  }
-  candle.timestamp = BigInt(time.getTime());
-  await candle.save();
-  time.setMinutes(Math.floor(time.getMinutes() / 15) * 15);
-  time.setSeconds(0);
-  time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, m15, price, candle.id);
-}
-
-export async function createCandle1h(
-  marketAddr: string,
-  time: Date,
-  price: bigint
-): Promise<void> {
-  time.setMinutes(0);
-  time.setSeconds(0);
-  let candle = await Candle.get(`${marketAddr}-${h1}`);
-  if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${h1}`);
-    candle.market = marketAddr;
-    candle.timeFormat = h1;
-    candle.timestamp = BI_ZERO;
-  }
-  candle.timestamp = BigInt(time.getTime());
-  await candle.save();
-  time.setMinutes(0);
-  time.setSeconds(0);
-  time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, h1, price, candle.id);
-}
-
-export async function createCandle1d(
-  marketAddr: string,
-  time: Date,
-  price: bigint
-): Promise<void> {
-  let candle = await Candle.get(`${marketAddr}-${d1}`);
-  if (typeof candle === "undefined") {
-    candle = new Candle(`${marketAddr}-${d1}`);
-    candle.market = marketAddr;
-    candle.timeFormat = d1;
-    candle.timestamp = BI_ZERO;
-  }
-  candle.timestamp = BigInt(time.getTime());
-  await candle.save();
-  time.setHours(0);
-  time.setMinutes(0);
-  time.setSeconds(0);
-  time.setMilliseconds(0);
-  await createOHLC(marketAddr, time, d1, price, candle.id);
-}
+const roundTime = (time: Date, interval: number) => {
+  return new Date(Math.floor(time.getTime() / interval) * interval);
+};
 
 export async function createCandle(
   marketAddr: string,
   time: Date,
-  price: bigint
+  price: bigint,
+  baseAmount: bigint,
+  quoteAmount: bigint
 ): Promise<void> {
-  await createCandle5m(marketAddr, time, price);
-  await createCandle15m(marketAddr, time, price);
-  await createCandle1h(marketAddr, time, price);
-  await createCandle1d(marketAddr, time, price);
+  const intervals = [m5, m15, h1, d1];
+  for (let i = 0; i < intervals.length; i++) {
+    const interval = intervals[i];
+    await doCreateCandle(
+      marketAddr,
+      roundTime(time, interval),
+      interval,
+      price,
+      baseAmount,
+      quoteAmount
+    );
+  }
 }
 
 export async function createPositionHistory(
