@@ -1,3 +1,5 @@
+# entities one-to-one correspondence with event
+
 type Deposited @entity {
   "format: <tx hash>-<log index>"
   id: ID!
@@ -296,6 +298,8 @@ type PriceLimitConfigChanged @entity {
   blockNumberLogIndex: BigInt!
   timestamp: BigInt!
 }
+
+# entities not directly correspondence with event
 
 type Trader @entity {
   "format: trader address"
