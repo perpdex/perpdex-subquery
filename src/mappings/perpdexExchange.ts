@@ -734,6 +734,7 @@ export async function handleIsMarketAllowedChanged(
   const market = await getOrCreateMarket(isMarketAllowedChanged.market);
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
+  // TODO: check if already exists
   await createNewMarketDatasource({ address: isMarketAllowedChanged.market });
   await isMarketAllowedChanged.save();
   await market.save();
