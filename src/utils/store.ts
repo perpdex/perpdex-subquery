@@ -5,9 +5,7 @@ import {
   TraderMakerInfo,
   Position,
   PositionHistory,
-  PHistory,
   LiquidityHistory,
-  LHistory,
   OpenOrder,
   Market,
   Candle,
@@ -209,62 +207,30 @@ export async function createPositionHistory(
   time: Date,
   base: bigint,
   quote: bigint,
-  realizesPnl: bigint,
+  realizedPnl: bigint,
   protocolFee: bigint
 ): Promise<void> {
   let positionHistory = await PositionHistory.get(
-    `${traderAddr}-${marketAddr}`
+    `${traderAddr}-${marketAddr}-${time}`
   );
   if (typeof positionHistory === "undefined") {
-    positionHistory = new PositionHistory(`${traderAddr}-${marketAddr}`);
+    positionHistory = new PositionHistory(
+      `${traderAddr}-${marketAddr}-${time}`
+    );
     positionHistory.trader = traderAddr;
     positionHistory.market = marketAddr;
-    positionHistory.timestamp = BI_ZERO;
+    positionHistory.time = time;
+    positionHistory.base = BI_ZERO;
+    positionHistory.quote = BI_ZERO;
+    positionHistory.realizedPnl = BI_ZERO;
+    positionHistory.protocolFee = BI_ZERO;
   }
+  positionHistory.base += base;
+  positionHistory.quote += quote;
+  positionHistory.realizedPnl += realizedPnl;
+  positionHistory.protocolFee += protocolFee;
   positionHistory.timestamp = BigInt(time.getTime());
   await positionHistory.save();
-  await createPHistory(
-    traderAddr,
-    marketAddr,
-    time,
-    base,
-    quote,
-    realizesPnl,
-    protocolFee,
-    positionHistory.id
-  );
-}
-
-async function createPHistory(
-  traderAddr: string,
-  marketAddr: string,
-  time: Date,
-  base: bigint,
-  quote: bigint,
-  realizedPnl: bigint,
-  protocolFee: bigint,
-  positionHistoryId: string
-): Promise<void> {
-  let pHistory = await PHistory.get(
-    `${traderAddr}-${marketAddr}-` // TODO: fix id
-  );
-  if (typeof pHistory === "undefined") {
-    pHistory = new PHistory(`${traderAddr}-${marketAddr}-`); // TODO: fix id
-    pHistory.trader = traderAddr;
-    pHistory.market = marketAddr;
-    pHistory.time = time;
-    pHistory.base = base;
-    pHistory.quote = quote;
-    pHistory.realizedPnl = realizedPnl;
-    pHistory.protocolFee = protocolFee;
-    pHistory.positionHistoryId = positionHistoryId;
-    pHistory.timestamp = BigInt(time.getTime());
-  }
-  pHistory.base += base;
-  pHistory.quote += quote;
-  pHistory.realizedPnl += realizedPnl;
-  pHistory.protocolFee += protocolFee;
-  await pHistory.save();
 }
 
 export async function createLiquidityHistory(
@@ -276,54 +242,24 @@ export async function createLiquidityHistory(
   liquidity: bigint
 ): Promise<void> {
   let liquidityHistory = await LiquidityHistory.get(
-    `${traderAddr}-${marketAddr}`
+    `${traderAddr}-${marketAddr}-${time}`
   );
   if (typeof liquidityHistory === "undefined") {
-    liquidityHistory = new LiquidityHistory(`${traderAddr}-${marketAddr}`);
+    liquidityHistory = new LiquidityHistory(
+      `${traderAddr}-${marketAddr}-${time}`
+    );
     liquidityHistory.trader = traderAddr;
     liquidityHistory.market = marketAddr;
-    liquidityHistory.timestamp = BI_ZERO;
+    liquidityHistory.time = time;
+    liquidityHistory.base = BI_ZERO;
+    liquidityHistory.quote = BI_ZERO;
+    liquidityHistory.liquidity = BI_ZERO;
   }
+  liquidityHistory.base += base;
+  liquidityHistory.quote += quote;
+  liquidityHistory.liquidity += liquidity;
   liquidityHistory.timestamp = BigInt(time.getTime());
   await liquidityHistory.save();
-  await createLHistory(
-    traderAddr,
-    marketAddr,
-    time,
-    base,
-    quote,
-    liquidity,
-    liquidityHistory.id
-  );
-}
-
-async function createLHistory(
-  traderAddr: string,
-  marketAddr: string,
-  time: Date,
-  base: bigint,
-  quote: bigint,
-  liquidity: bigint,
-  liquidityHistoryId: string
-): Promise<void> {
-  let lHistory = await LHistory.get(
-    `${traderAddr}-${marketAddr}-` // TODO: fix id
-  );
-  if (typeof lHistory === "undefined") {
-    lHistory = new LHistory(`${traderAddr}-${marketAddr}-`); // TODO: fix id
-    lHistory.trader = traderAddr;
-    lHistory.market = marketAddr;
-    lHistory.time = time;
-    lHistory.base = base;
-    lHistory.quote = quote;
-    lHistory.liquidity = liquidity;
-    lHistory.liquidityHistoryId = liquidityHistoryId;
-    lHistory.timestamp = BigInt(time.getTime());
-  }
-  lHistory.base += base;
-  lHistory.quote += quote;
-  lHistory.liquidity += liquidity;
-  await lHistory.save();
 }
 
 export async function getOrCreateDaySummary(
