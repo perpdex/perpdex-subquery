@@ -354,19 +354,7 @@ type TraderMakerInfo @entity {
 }
 
 type LiquidityHistory @entity {
-  "format: <trader>-<market address>"
-  id: ID!
-
-  trader: String!
-  market: String!
-
-  histories: [LHistory] @derivedFrom(field: "liquidityHistory")
-
-  timestamp: BigInt!
-}
-
-type LHistory @entity {
-  "format: <trader>-<market address>-<blockNumber>-"
+  "format: <trader>-<market address>-<time>"
   id: ID!
 
   trader: String!
@@ -376,8 +364,6 @@ type LHistory @entity {
   base: BigInt!
   quote: BigInt!
   liquidity: BigInt!
-
-  liquidityHistory: LiquidityHistory
 
   "last updated block timestamp"
   timestamp: BigInt!
@@ -432,19 +418,7 @@ type Position @entity {
 }
 
 type PositionHistory @entity {
-  "format: <trader>-<market address>"
-  id: ID!
-
-  trader: String!
-  market: String!
-
-  histories: [PHistory] @derivedFrom(field: "positionHistory")
-
-  timestamp: BigInt!
-}
-
-type PHistory @entity {
-  "format: <trader>-<market address>-<blockNumber>-"
+  "format: <trader>-<market address>-<time>"
   id: ID!
 
   trader: String!
@@ -455,8 +429,6 @@ type PHistory @entity {
   quote: BigInt!
   realizedPnl: BigInt!
   protocolFee: BigInt!
-
-  positionHistory: PositionHistory
 
   "last updated block timestamp"
   timestamp: BigInt!
