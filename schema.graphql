@@ -97,10 +97,10 @@ type PositionChanged @entity {
   sharePriceAfterX96: BigInt!
 
   # PositionLiquidated
-  liquidator: String!
-  liquidationPenalty: BigInt!
-  liquidationReward: BigInt!
-  insuranceFundReward: BigInt!
+  liquidator: String
+  liquidationPenalty: BigInt
+  liquidationReward: BigInt
+  insuranceFundReward: BigInt
 
   "(block number * MAX_LOG_COUNT + log index) for sorting"
   blockNumberLogIndex: BigInt!
