@@ -114,7 +114,6 @@ export async function handleFundingPaid(
       market.cumBasePerLiquidityX96 +
       mulDiv(deleveratedBase, Q96, market.liquidity);
   }
-  market.markPriceX96 = fundingPaid.markPriceX96;
   market.cumBasePerLiquidityX96 = fundingPaid.cumBasePerLiquidityX96;
   market.cumQuotePerLiquidityX96 = fundingPaid.cumQuotePerLiquidityX96;
   market.timestamp = BigInt(event.blockTimestamp.getTime());
@@ -142,7 +141,6 @@ export async function handleLiquidityAddedMarket(
   market.baseAmount = market.baseAmount + liquidityAddedMarket.base;
   market.quoteAmount = market.quoteAmount + liquidityAddedMarket.quote;
   market.liquidity = market.liquidity + liquidityAddedMarket.liquidity;
-  market.blockNumberAdded = BigInt(event.blockNumber);
   market.timestampAdded = BigInt(event.blockTimestamp.getTime());
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
