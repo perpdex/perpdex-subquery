@@ -307,6 +307,59 @@ type PriceLimitConfigChanged @entity {
 
 # entities not directly correspondence with event
 
+type Protocol @entity {
+  "hardcoded as 'perpdex'"
+  id: ID!
+
+  network: String!
+  chainId: String!
+  contractVersion: String!
+  publicMarketCount: BigInt!
+  protocolFee: BigInt!
+  protocolFeeRatio: Int!
+  insuranceFundBalance: BigInt!
+  maxMarketsPerAccount: Int!
+  imRatio: Int!
+  mmRatio: Int!
+  rewardRatio: Int!
+  smoothEmaTime: Int!
+
+  "last updated block timestamp"
+  timestamp: BigInt!
+}
+
+type Market @entity {
+  "format: market address"
+  id: ID!
+
+  baseToken: String!
+  quoteToken: String!
+  "provided liquidity base amount"
+  baseAmount: BigInt!
+  "provided liquidity quote amount"
+  quoteAmount: BigInt!
+  "total liquidity"
+  liquidity: BigInt!
+  baseBalancePerShareX96: BigInt!
+  sharePriceAfterX96: BigInt!
+  cumBasePerLiquidityX96: BigInt!
+  cumQuotePerLiquidityX96: BigInt!
+  poolFeeRatio: Int!
+  maxPremiumRatio: Int!
+  fundingMaxElapsedSec: Int!
+  fundingRolloverSec: Int!
+  normalOrderRatio: Int!
+  liquidationRatio: Int!
+  emaNormalOrderRatio: Int!
+  emaLiquidationRatio: Int!
+  emaSec: Int!
+
+  "block timestamp when the pool was added "
+  timestampAdded: BigInt!
+  "last updated block timestamp"
+  timestamp: BigInt!
+}
+
 type Trader @entity {
   "format: trader address"
   id: ID!
@@ -330,10 +383,6 @@ type TraderTakerInfo @entity {
 
   "last updated block timestamp"
   timestamp: BigInt!
-
-  positions: [Position!]! @derivedFrom(field: "traderTakerInfoRef")
-
-  # dayData: [TraderDayData!] @derivedFrom(field: "trader")
 }
 
 type TraderMakerInfo @entity {
@@ -348,73 +397,6 @@ type TraderMakerInfo @entity {
 
   "last updated block timestamp"
   timestamp: BigInt!
-
-  # "open orders"
-  # openOrders: [OpenOrder!]! @derivedFrom(field: "traderMakerInfoRef")
-}
-
-type LiquidityHistory @entity {
-  "format: <trader>-<market address>-<time>"
-  id: ID!
-
-  trader: String!
-  market: String!
-  time: Date!
-
-  base: BigInt!
-  quote: BigInt!
-  liquidity: BigInt!
-
-  "last updated block timestamp"
-  timestamp: BigInt!
-}
-
-type Protocol @entity {
-  "hardcoded as 'perpdex'"
-  id: ID!
-
-  network: String!
-  chainId: String!
-  contractVersion: String!
-  publicMarketCount: BigInt!
-  # "cumulative trading volume"
-  # tradingVolume: BigInt!
-  totalValueLocked: BigInt!
-  protocolFee: BigInt!
-  protocolFeeRatio: Int!
-  insuranceFundBalance: BigInt!
-  maxMarketsPerAccount: Int!
-  imRatio: Int!
-  mmRatio: Int!
-  rewardRatio: Int!
-  smoothEmaTime: Int!
-
-  "last updated block timestamp"
-  timestamp: BigInt!
-}
-
-type Position @entity {
-  "format: <trader address>-<market address>"
-  id: ID!
-
-  trader: String!
-  market: String!
-  baseShare: BigInt!
-  baseBalance: BigInt!
-  "average open notional after this tx"
-  openNotional: BigInt!
-  "average entry price of the current position = abs(openNotional / baseBalance)"
-  entryPrice: BigInt!
-  "realized pnl of this tx"
-  realizedPnl: BigInt!
-  # "cumulative trading volume"
-  # tradingVolume: BigInt!
-
-  "last updated block timestamp"
-  timestamp: BigInt!
-
-  traderTakerInfoRef: TraderTakerInfo!
-  marketRef: Market!
 }
 
 type PositionHistory @entity {
@@ -434,65 +416,20 @@ type PositionHistory @entity {
   timestamp: BigInt!
 }
 
-type OpenOrder @entity {
-  "format: <maker address>-<market address>"
+type LiquidityHistory @entity {
+  "format: <trader>-<market address>-<time>"
   id: ID!
-  maker: String!
+
+  trader: String!
   market: String!
-  "provided liquidity base"
+  time: Date!
+
   base: BigInt!
-  "provided liquidity quote"
   quote: BigInt!
-  "current liquidity"
   liquidity: BigInt!
-  realizedPnl: BigInt!
 
   "last updated block timestamp"
   timestamp: BigInt!
-
-  traderMakerInfoRef: TraderMakerInfo!
-  marketRef: Market!
-}
-
-type Market @entity {
-  "format: market address"
-  id: ID!
-
-  baseToken: String!
-  quoteToken: String!
-  # "cumulative trading volume"
-  # tradingVolume: BigInt!
-  "provided liquidity base amount"
-  baseAmount: BigInt!
-  "provided liquidity quote amount"
-  quoteAmount: BigInt!
-  "total liquidity"
-  liquidity: BigInt!
-  baseBalancePerShareX96: BigInt # wip
-  sharePriceAfterX96: BigInt! # wip
-  markPriceX96: BigInt!
-  cumBasePerLiquidityX96: BigInt!
-  cumQuotePerLiquidityX96: BigInt!
-  poolFeeRatio: Int!
-  maxPremiumRatio: Int!
-  fundingMaxElapsedSec: Int!
-  fundingRolloverSec: Int!
-  normalOrderRatio: Int!
-  liquidationRatio: Int!
-  emaNormalOrderRatio: Int!
-  emaLiquidationRatio: Int!
-  emaSec: Int!
-
-  "block number when the pool was added "
-  blockNumberAdded: BigInt!
-  "block timestamp when the pool was added "
-  timestampAdded: BigInt!
-  "last updated block timestamp"
-  timestamp: BigInt!
-
-  positions: [Position!]! @derivedFrom(field: "marketRef")
-  # "open orders"
-  # openOrders: [OpenOrder!]! @derivedFrom(field: "marketRef")
 }
 
 type Candle @entity {
@@ -518,12 +455,10 @@ type DaySummary @entity {
   "format: <trader id>-<day id>"
   id: ID!
 
-  trader: String! #(todo)trader: Trader!
+  trader: String!
   "integer portion of timeStamp divided by 8640000"
   dayID: Int!
   time: Date!
-  # "trading volume aggregated per day for trader"
-  # tradingVolume: BigInt!
   "total pnl aggregated per day for trader"
   realizedPnl: BigInt!
 

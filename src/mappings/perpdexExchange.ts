@@ -17,14 +17,14 @@ import { FrontierEvmEvent } from "@subql/contract-processors/dist/frontierEvm";
 import { BigNumber } from "ethers";
 import {
   getBlockNumberLogIndex,
-  getOrCreateTrader,
   getOrCreateProtocol,
+  getOrCreateMarket,
+  getOrCreateTrader,
   getOrCreateTraderTakerInfo,
   getOrCreateTraderMakerInfo,
-  getOrCreateMarket,
-  createCandle,
   createPositionHistory,
   createLiquidityHistory,
+  createCandle,
   getOrCreateDaySummary,
 } from "../utils/store";
 import { negBI } from "../utils/math";

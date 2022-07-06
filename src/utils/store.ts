@@ -3,10 +3,8 @@ import {
   Protocol,
   TraderTakerInfo,
   TraderMakerInfo,
-  Position,
   PositionHistory,
   LiquidityHistory,
-  OpenOrder,
   Market,
   Candle,
   DaySummary,
@@ -53,7 +51,6 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
     protocol.chainId = ChainId;
     protocol.contractVersion = Version;
     protocol.publicMarketCount = BI_ZERO;
-    protocol.totalValueLocked = BI_ZERO;
     protocol.protocolFee = BI_ZERO;
     protocol.insuranceFundBalance = BI_ZERO;
     protocol.maxMarketsPerAccount = 0;
@@ -119,7 +116,6 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market.liquidity = BI_ZERO;
     market.baseBalancePerShareX96 = BI_ZERO;
     market.sharePriceAfterX96 = BI_ZERO;
-    market.markPriceX96 = BI_ZERO;
     market.cumBasePerLiquidityX96 = BI_ZERO;
     market.cumQuotePerLiquidityX96 = BI_ZERO;
     market.poolFeeRatio = 0;
@@ -132,7 +128,6 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market.emaLiquidationRatio = 0;
     market.emaSec = 0;
 
-    market.blockNumberAdded = BI_ZERO;
     market.timestampAdded = BI_ZERO;
     market.timestamp = BI_ZERO;
     await market.save();
