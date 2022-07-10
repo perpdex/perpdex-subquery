@@ -20,7 +20,7 @@ network:
     file: ./src/chaintypes.js
 dataSources:
   - kind: substrate/FrontierEvm
-    startBlock: 1761360
+    startBlock: 1661682
     processor:
       file: ./node_modules/@subql/contract-processors/dist/frontierEvm.js
       options:
