@@ -28,7 +28,7 @@ import {
   getOrCreateDaySummary,
 } from "../utils/store";
 import { negBI } from "../utils/math";
-import { BI_ZERO } from "../utils/constant";
+import { BI_ZERO, Q96 } from "../utils/constant";
 
 type DepositedArgs = [string, BigNumber] & {
   trader: string;
@@ -356,8 +356,9 @@ export async function handleLiquidityRemovedExchange(
   traderTakerInfo.baseBalanceShare =
     traderTakerInfo.baseBalanceShare + liquidityRemovedExchange.takerBase;
   traderTakerInfo.baseBalance =
-    traderTakerInfo.baseBalanceShare *
-    liquidityRemovedExchange.baseBalancePerShareX96;
+    (traderTakerInfo.baseBalanceShare *
+      liquidityRemovedExchange.baseBalancePerShareX96) /
+    Q96;
   traderTakerInfo.quoteBalance =
     traderTakerInfo.quoteBalance +
     liquidityRemovedExchange.takerQuote -
@@ -466,8 +467,9 @@ export async function handlePositionLiquidated(
   traderTakerInfo.baseBalanceShare =
     traderTakerInfo.baseBalanceShare + positionLiquidated.base;
   traderTakerInfo.baseBalance =
-    traderTakerInfo.baseBalanceShare *
-    positionLiquidated.baseBalancePerShareX96;
+    (traderTakerInfo.baseBalanceShare *
+      positionLiquidated.baseBalancePerShareX96) /
+    Q96;
   traderTakerInfo.quoteBalance =
     traderTakerInfo.quoteBalance +
     positionLiquidated.quote -
@@ -560,7 +562,9 @@ export async function handlePositionChanged(
   traderTakerInfo.baseBalanceShare =
     traderTakerInfo.baseBalanceShare + positionChanged.base;
   traderTakerInfo.baseBalance =
-    traderTakerInfo.baseBalanceShare * positionChanged.baseBalancePerShareX96;
+    (traderTakerInfo.baseBalanceShare *
+      positionChanged.baseBalancePerShareX96) /
+    Q96;
   traderTakerInfo.quoteBalance =
     traderTakerInfo.quoteBalance +
     positionChanged.quote -
