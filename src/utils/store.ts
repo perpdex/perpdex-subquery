@@ -228,7 +228,9 @@ export async function createPositionHistory(
   positionHistory.baseBalanceShare += base;
   positionHistory.baseBalancePerShareX96 = baseBalancePerShareX96;
   positionHistory.baseBalance =
-    positionHistory.baseBalanceShare * positionHistory.baseBalancePerShareX96;
+    (positionHistory.baseBalanceShare *
+      positionHistory.baseBalancePerShareX96) /
+    Q96;
   positionHistory.quoteBalance += quote;
   positionHistory.entryPrice =
     positionHistory.quoteBalance / positionHistory.baseBalance;
