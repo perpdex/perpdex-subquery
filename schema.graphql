@@ -380,6 +380,7 @@ type TraderTakerInfo @entity {
   baseBalanceShare: BigInt!
   baseBalance: BigInt!
   quoteBalance: BigInt!
+  entryPrice: BigInt!
 
   "last updated block timestamp"
   timestamp: BigInt!
@@ -407,8 +408,11 @@ type PositionHistory @entity {
   market: String!
   time: Date!
 
-  base: BigInt!
-  quote: BigInt!
+  baseBalanceShare: BigInt!
+  baseBalancePerShareX96: BigInt!
+  baseBalance: BigInt!
+  quoteBalance: BigInt!
+  entryPrice: BigInt!
   realizedPnl: BigInt!
   protocolFee: BigInt!
 

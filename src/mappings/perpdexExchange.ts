@@ -362,6 +362,8 @@ export async function handleLiquidityRemovedExchange(
     traderTakerInfo.quoteBalance +
     liquidityRemovedExchange.takerQuote -
     liquidityRemovedExchange.realizedPnl;
+  traderTakerInfo.entryPrice =
+    traderTakerInfo.quoteBalance / traderTakerInfo.baseBalance;
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const traderMakerInfo = await getOrCreateTraderMakerInfo(
@@ -470,6 +472,8 @@ export async function handlePositionLiquidated(
     traderTakerInfo.quoteBalance +
     positionLiquidated.quote -
     positionLiquidated.realizedPnl;
+  traderTakerInfo.entryPrice =
+    traderTakerInfo.quoteBalance / traderTakerInfo.baseBalance;
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const protocol = await getOrCreateProtocol();
@@ -491,6 +495,7 @@ export async function handlePositionLiquidated(
     positionLiquidated.market,
     event.blockTimestamp,
     positionLiquidated.base,
+    positionLiquidated.baseBalancePerShareX96,
     positionLiquidated.quote,
     positionLiquidated.realizedPnl,
     positionLiquidated.protocolFee
@@ -560,6 +565,8 @@ export async function handlePositionChanged(
     traderTakerInfo.quoteBalance +
     positionChanged.quote -
     positionChanged.realizedPnl;
+  traderTakerInfo.entryPrice =
+    traderTakerInfo.quoteBalance / traderTakerInfo.baseBalance;
   traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
 
   const protocol = await getOrCreateProtocol();
@@ -578,6 +585,7 @@ export async function handlePositionChanged(
     positionChanged.market,
     event.blockTimestamp,
     positionChanged.base,
+    positionChanged.baseBalancePerShareX96,
     positionChanged.quote,
     positionChanged.realizedPnl,
     positionChanged.protocolFee

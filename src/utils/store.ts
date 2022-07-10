@@ -79,6 +79,7 @@ export async function getOrCreateTraderTakerInfo(
     traderTakerInfo.baseBalanceShare = BI_ZERO;
     traderTakerInfo.baseBalance = BI_ZERO;
     traderTakerInfo.quoteBalance = BI_ZERO;
+    traderTakerInfo.entryPrice = BI_ZERO;
     traderTakerInfo.timestamp = BI_ZERO;
     await traderTakerInfo.save();
   }
@@ -201,6 +202,7 @@ export async function createPositionHistory(
   marketAddr: string,
   time: Date,
   base: bigint,
+  baseBalancePerShareX96: bigint,
   quote: bigint,
   realizedPnl: bigint,
   protocolFee: bigint
@@ -215,13 +217,21 @@ export async function createPositionHistory(
     positionHistory.trader = traderAddr;
     positionHistory.market = marketAddr;
     positionHistory.time = time;
-    positionHistory.base = BI_ZERO;
-    positionHistory.quote = BI_ZERO;
+    positionHistory.baseBalanceShare = BI_ZERO;
+    positionHistory.baseBalancePerShareX96 = BI_ZERO;
+    positionHistory.baseBalance = BI_ZERO;
+    positionHistory.quoteBalance = BI_ZERO;
+    positionHistory.entryPrice = BI_ZERO;
     positionHistory.realizedPnl = BI_ZERO;
     positionHistory.protocolFee = BI_ZERO;
   }
-  positionHistory.base += base;
-  positionHistory.quote += quote;
+  positionHistory.baseBalanceShare += base;
+  positionHistory.baseBalancePerShareX96 = baseBalancePerShareX96;
+  positionHistory.baseBalance =
+    positionHistory.baseBalanceShare * positionHistory.baseBalancePerShareX96;
+  positionHistory.quoteBalance += quote;
+  positionHistory.entryPrice =
+    positionHistory.quoteBalance / positionHistory.baseBalance;
   positionHistory.realizedPnl += realizedPnl;
   positionHistory.protocolFee += protocolFee;
   positionHistory.timestamp = BigInt(time.getTime());
