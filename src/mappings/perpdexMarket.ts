@@ -145,11 +145,17 @@ export async function handleLiquidityAddedMarket(
   market.baseAmount = market.baseAmount + liquidityAddedMarket.base;
   market.quoteAmount = market.quoteAmount + liquidityAddedMarket.quote;
   market.liquidity = market.liquidity + liquidityAddedMarket.liquidity;
+  market.makerVolume = market.makerVolume + liquidityAddedMarket.liquidity;
   market.timestampAdded = BigInt(event.blockTimestamp.getTime());
   market.timestamp = BigInt(event.blockTimestamp.getTime());
 
+  const protocol = await getOrCreateProtocol();
+  protocol.makerVolume = protocol.makerVolume + liquidityAddedMarket.liquidity;
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+
   await liquidityAddedMarket.save();
   await market.save();
+  await protocol.save();
 }
 
 export async function handleLiquidityRemovedMarket(
@@ -172,10 +178,17 @@ export async function handleLiquidityRemovedMarket(
   market.baseAmount = market.baseAmount - liquidityRemovedMarket.base;
   market.quoteAmount = market.quoteAmount - liquidityRemovedMarket.quote;
   market.liquidity = market.liquidity - liquidityRemovedMarket.liquidity;
+  market.makerVolume = market.makerVolume + liquidityRemovedMarket.liquidity;
   market.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.makerVolume =
+    protocol.makerVolume + liquidityRemovedMarket.liquidity;
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await liquidityRemovedMarket.save();
   await market.save();
+  await protocol.save();
 }
 
 export async function handleSwapped(
