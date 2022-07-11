@@ -11,7 +11,11 @@ import {
 } from "../types";
 import { FrontierEvmEvent } from "@subql/contract-processors/dist/frontierEvm";
 import { BigNumber } from "ethers";
-import { getBlockNumberLogIndex, getOrCreateMarket } from "../utils/store";
+import {
+  getBlockNumberLogIndex,
+  getOrCreateProtocol,
+  getOrCreateMarket,
+} from "../utils/store";
 import { mulDiv } from "../utils/math";
 import { Q96 } from "../utils/constant";
 
@@ -209,10 +213,16 @@ export async function handleSwapped(
       market.quoteAmount = market.quoteAmount + swapped.oppositeAmount;
     }
   }
+  market.takerVolume = market.takerVolume + swapped.amount;
   market.timestamp = BigInt(event.blockTimestamp.getTime());
+
+  const protocol = await getOrCreateProtocol();
+  protocol.takerVolume = protocol.takerVolume + swapped.amount;
+  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
 
   await swapped.save();
   await market.save();
+  await protocol.save();
 }
 
 export async function handlePoolFeeRatioChanged(
