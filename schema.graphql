@@ -314,6 +314,8 @@ type Protocol @entity {
   network: String!
   chainId: String!
   contractVersion: String!
+  takerVolume: BigInt!
+  makerVolume: BigInt!
   publicMarketCount: BigInt!
   protocolFee: BigInt!
   protocolFeeRatio: Int!
@@ -340,6 +342,8 @@ type Market @entity {
   quoteAmount: BigInt!
   "total liquidity"
   liquidity: BigInt!
+  takerVolume: BigInt!
+  makerVolume: BigInt!
   baseBalancePerShareX96: BigInt!
   sharePriceAfterX96: BigInt!
   cumBasePerLiquidityX96: BigInt!
