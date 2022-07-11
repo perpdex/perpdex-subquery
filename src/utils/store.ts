@@ -51,6 +51,7 @@ export async function getOrCreateProtocol(): Promise<Protocol> {
     protocol.chainId = ChainId;
     protocol.contractVersion = Version;
     protocol.takerVolume = BI_ZERO;
+    protocol.makerVolume = BI_ZERO;
     protocol.publicMarketCount = BI_ZERO;
     protocol.protocolFee = BI_ZERO;
     protocol.insuranceFundBalance = BI_ZERO;
@@ -117,6 +118,7 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
     market.quoteAmount = BI_ZERO;
     market.liquidity = BI_ZERO;
     market.takerVolume = BI_ZERO;
+    market.makerVolume = BI_ZERO;
     market.baseBalancePerShareX96 = BI_ZERO;
     market.sharePriceAfterX96 = BI_ZERO;
     market.cumBasePerLiquidityX96 = BI_ZERO;
