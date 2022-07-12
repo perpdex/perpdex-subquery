@@ -446,7 +446,7 @@ type Candle @entity {
 
   market: String!
   timeFormat: Int!
-  time: Date!
+  timestamp: BigInt!
 
   openX96: BigInt!
   highX96: BigInt!
@@ -455,8 +455,7 @@ type Candle @entity {
   baseAmount: BigInt!
   quoteAmount: BigInt!
 
-  "last updated block timestamp"
-  timestamp: BigInt!
+  updatedAt: BigInt!
 }
 
 type DaySummary @entity {

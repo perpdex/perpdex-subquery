@@ -142,7 +142,7 @@ export async function getOrCreateMarket(marketAddr: string): Promise<Market> {
 
 async function doCreateCandle(
   marketAddr: string,
-  time: Date,
+  time: bigint,
   timeFormat: number,
   priceX96: bigint,
   baseAmount: bigint,
@@ -153,7 +153,7 @@ async function doCreateCandle(
     ohlc = new Candle(`${marketAddr}-${timeFormat}-${time}`);
     ohlc.market = marketAddr;
     ohlc.timeFormat = timeFormat;
-    ohlc.time = time;
+    ohlc.timestamp = time;
     ohlc.openX96 = priceX96;
     ohlc.highX96 = priceX96;
     ohlc.lowX96 = priceX96;
@@ -169,17 +169,17 @@ async function doCreateCandle(
   ohlc.closeX96 = priceX96;
   ohlc.baseAmount += baseAmount;
   ohlc.quoteAmount += quoteAmount;
-  ohlc.timestamp = BigInt(time.getTime());
+  ohlc.updatedAt = time;
   await ohlc.save();
 }
 
-const roundTime = (time: Date, interval: number) => {
-  return new Date(Math.floor(time.getTime() / interval) * interval);
+const roundTime = (time: bigint, interval: number) => {
+  return BigInt(Math.floor(Number(time) / interval)) * BigInt(interval);
 };
 
 export async function createCandle(
   marketAddr: string,
-  time: Date,
+  time: bigint,
   sharePriceX96: bigint,
   baseBalancePerShareX96: bigint,
   baseShare: bigint,

@@ -297,7 +297,7 @@ export async function handleLiquidityAddedExchange(
 
   await createCandle(
     liquidityAddedExchange.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     liquidityAddedExchange.sharePriceAfterX96,
     liquidityAddedExchange.baseBalancePerShareX96,
     BI_ZERO,
@@ -394,7 +394,7 @@ export async function handleLiquidityRemovedExchange(
 
   await createCandle(
     liquidityRemovedExchange.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     liquidityRemovedExchange.sharePriceAfterX96,
     liquidityRemovedExchange.baseBalancePerShareX96,
     BI_ZERO,
@@ -505,7 +505,7 @@ export async function handlePositionLiquidated(
 
   await createCandle(
     positionLiquidated.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     positionLiquidated.sharePriceAfterX96,
     positionLiquidated.baseBalancePerShareX96,
     positionLiquidated.base,
@@ -597,7 +597,7 @@ export async function handlePositionChanged(
 
   await createCandle(
     positionChanged.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     positionChanged.sharePriceAfterX96,
     positionChanged.baseBalancePerShareX96,
     positionChanged.base,
