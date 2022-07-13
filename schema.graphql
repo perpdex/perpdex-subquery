@@ -405,7 +405,7 @@ type TraderMakerInfo @entity {
 }
 
 type PositionHistory @entity {
-  "format: <trader>-<market address>-<time>"
+  "format: <trader>-<market address>-<timestamp>"
   id: ID!
 
   trader: String!
@@ -422,7 +422,7 @@ type PositionHistory @entity {
 }
 
 type LiquidityHistory @entity {
-  "format: <trader>-<market address>-<time>"
+  "format: <trader>-<market address>-<timestamp>"
   id: ID!
 
   trader: String!
@@ -435,7 +435,7 @@ type LiquidityHistory @entity {
 }
 
 type Candle @entity {
-  "format: <market address>-<timeFormat>-<time>"
+  "format: <market address>-<timeFormat>-<timestamp>"
   id: ID!
 
   market: String!
