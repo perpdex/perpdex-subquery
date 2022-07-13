@@ -289,7 +289,7 @@ export async function handleLiquidityAddedExchange(
   await createLiquidityHistory(
     liquidityAddedExchange.trader,
     liquidityAddedExchange.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     liquidityAddedExchange.base,
     liquidityAddedExchange.quote,
     liquidityAddedExchange.liquidity
@@ -377,7 +377,7 @@ export async function handleLiquidityRemovedExchange(
 
   const daySummary = await getOrCreateDaySummary(
     event.args.trader,
-    event.blockTimestamp
+    BigInt(event.blockTimestamp.getTime())
   );
   daySummary.realizedPnl =
     daySummary.realizedPnl + liquidityRemovedExchange.realizedPnl;
@@ -386,7 +386,7 @@ export async function handleLiquidityRemovedExchange(
   await createLiquidityHistory(
     liquidityRemovedExchange.trader,
     liquidityRemovedExchange.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     negBI(liquidityRemovedExchange.base),
     negBI(liquidityRemovedExchange.quote),
     negBI(liquidityRemovedExchange.liquidity)
@@ -486,7 +486,7 @@ export async function handlePositionLiquidated(
 
   const daySummary = await getOrCreateDaySummary(
     event.args.trader,
-    event.blockTimestamp
+    BigInt(event.blockTimestamp.getTime())
   );
   daySummary.realizedPnl =
     daySummary.realizedPnl + positionLiquidated.realizedPnl;
@@ -495,7 +495,7 @@ export async function handlePositionLiquidated(
   await createPositionHistory(
     positionLiquidated.trader,
     positionLiquidated.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     positionLiquidated.base,
     positionLiquidated.baseBalancePerShareX96,
     positionLiquidated.quote,
@@ -579,7 +579,7 @@ export async function handlePositionChanged(
 
   const daySummary = await getOrCreateDaySummary(
     event.args.trader,
-    event.blockTimestamp
+    BigInt(event.blockTimestamp.getTime())
   );
   daySummary.realizedPnl = daySummary.realizedPnl + positionChanged.realizedPnl;
   daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
@@ -587,7 +587,7 @@ export async function handlePositionChanged(
   await createPositionHistory(
     positionChanged.trader,
     positionChanged.market,
-    event.blockTimestamp,
+    BigInt(event.blockTimestamp.getTime()),
     positionChanged.base,
     positionChanged.baseBalancePerShareX96,
     positionChanged.quote,

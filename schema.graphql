@@ -410,7 +410,7 @@ type PositionHistory @entity {
 
   trader: String!
   market: String!
-  time: Date!
+  timestamp: BigInt!
 
   baseBalanceShare: BigInt!
   baseBalancePerShareX96: BigInt!
@@ -419,9 +419,6 @@ type PositionHistory @entity {
   entryPrice: BigInt!
   realizedPnl: BigInt!
   protocolFee: BigInt!
-
-  "last updated block timestamp"
-  timestamp: BigInt!
 }
 
 type LiquidityHistory @entity {
@@ -430,14 +427,11 @@ type LiquidityHistory @entity {
 
   trader: String!
   market: String!
-  time: Date!
+  timestamp: BigInt!
 
   base: BigInt!
   quote: BigInt!
   liquidity: BigInt!
-
-  "last updated block timestamp"
-  timestamp: BigInt!
 }
 
 type Candle @entity {
@@ -465,10 +459,7 @@ type DaySummary @entity {
   trader: String!
   "integer portion of timeStamp divided by 8640000"
   dayID: Int!
-  time: Date!
+  timestamp: BigInt!
   "total pnl aggregated per day for trader"
   realizedPnl: BigInt!
-
-  "last updated block timestamp"
-  timestamp: BigInt!
 }

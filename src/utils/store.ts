@@ -204,7 +204,7 @@ export async function createCandle(
 export async function createPositionHistory(
   traderAddr: string,
   marketAddr: string,
-  time: Date,
+  timestamp: bigint,
   base: bigint,
   baseBalancePerShareX96: bigint,
   quote: bigint,
@@ -212,15 +212,15 @@ export async function createPositionHistory(
   protocolFee: bigint
 ): Promise<void> {
   let positionHistory = await PositionHistory.get(
-    `${traderAddr}-${marketAddr}-${time}`
+    `${traderAddr}-${marketAddr}-${timestamp}`
   );
   if (typeof positionHistory === "undefined") {
     positionHistory = new PositionHistory(
-      `${traderAddr}-${marketAddr}-${time}`
+      `${traderAddr}-${marketAddr}-${timestamp}`
     );
     positionHistory.trader = traderAddr;
     positionHistory.market = marketAddr;
-    positionHistory.time = time;
+    positionHistory.timestamp = timestamp;
     positionHistory.baseBalanceShare = BI_ZERO;
     positionHistory.baseBalancePerShareX96 = BI_ZERO;
     positionHistory.baseBalance = BI_ZERO;
@@ -240,28 +240,27 @@ export async function createPositionHistory(
     positionHistory.quoteBalance / positionHistory.baseBalance;
   positionHistory.realizedPnl += realizedPnl;
   positionHistory.protocolFee += protocolFee;
-  positionHistory.timestamp = BigInt(time.getTime());
   await positionHistory.save();
 }
 
 export async function createLiquidityHistory(
   traderAddr: string,
   marketAddr: string,
-  time: Date,
+  timestamp: bigint,
   base: bigint,
   quote: bigint,
   liquidity: bigint
 ): Promise<void> {
   let liquidityHistory = await LiquidityHistory.get(
-    `${traderAddr}-${marketAddr}-${time}`
+    `${traderAddr}-${marketAddr}-${timestamp}`
   );
   if (typeof liquidityHistory === "undefined") {
     liquidityHistory = new LiquidityHistory(
-      `${traderAddr}-${marketAddr}-${time}`
+      `${traderAddr}-${marketAddr}-${timestamp}`
     );
     liquidityHistory.trader = traderAddr;
     liquidityHistory.market = marketAddr;
-    liquidityHistory.time = time;
+    liquidityHistory.timestamp = timestamp;
     liquidityHistory.base = BI_ZERO;
     liquidityHistory.quote = BI_ZERO;
     liquidityHistory.liquidity = BI_ZERO;
@@ -269,21 +268,20 @@ export async function createLiquidityHistory(
   liquidityHistory.base += base;
   liquidityHistory.quote += quote;
   liquidityHistory.liquidity += liquidity;
-  liquidityHistory.timestamp = BigInt(time.getTime());
   await liquidityHistory.save();
 }
 
 export async function getOrCreateDaySummary(
   traderAddr: string,
-  time: Date
+  timestamp: bigint
 ): Promise<DaySummary> {
-  const dayID = Math.floor(time.getTime() / 8640000);
+  const dayID = Math.floor(Number(timestamp) / 8640000);
   let daySummary = await DaySummary.get(`${traderAddr}-${dayID}`);
   if (typeof daySummary === "undefined") {
     daySummary = new DaySummary(`${traderAddr}-${dayID}`);
     daySummary.trader = traderAddr;
     daySummary.dayID = dayID;
-    daySummary.time = time;
+    daySummary.timestamp = timestamp;
     daySummary.realizedPnl = BI_ZERO;
     daySummary.timestamp = BI_ZERO;
   }
