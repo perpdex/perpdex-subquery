@@ -157,7 +157,6 @@ async function doCreateCandle(
     ohlc.openX96 = priceX96;
     ohlc.highX96 = priceX96;
     ohlc.lowX96 = priceX96;
-    ohlc.timestamp = BI_ZERO;
     ohlc.baseAmount = BI_ZERO;
     ohlc.quoteAmount = BI_ZERO;
   }
