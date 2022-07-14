@@ -4,7 +4,7 @@
   "description": "The SubQuery project for PerpDEX",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -b",
+    "build": "subql build",
     "prepack": "rm -rf dist && npm build",
     "test": "jest",
     "codegen": "./node_modules/.bin/subql codegen",
@@ -50,5 +50,9 @@
     "*.graphql": [
       "prettier --write"
     ]
+  },
+  "exports": {
+    "frontierEvm": "./node_modules/@subql/contract-processors/dist/frontierEvm.js",
+    "chaintypes": "./src/chaintypes.js"
   }
 }
