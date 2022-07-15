@@ -236,7 +236,9 @@ export async function createPositionHistory(
     Q96;
   positionHistory.quoteBalance += quote;
   positionHistory.entryPrice =
-    positionHistory.quoteBalance / positionHistory.baseBalance;
+    positionHistory.baseBalance === BI_ZERO
+      ? BI_ZERO
+      : positionHistory.quoteBalance / positionHistory.baseBalance;
   positionHistory.realizedPnl += realizedPnl;
   positionHistory.protocolFee += protocolFee;
   await positionHistory.save();
