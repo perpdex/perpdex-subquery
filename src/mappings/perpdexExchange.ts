@@ -29,6 +29,7 @@ import {
 } from "../utils/store";
 import { negBI } from "../utils/math";
 import { BI_ZERO, Q96 } from "../utils/constant";
+import { getUnixtime } from "../utils/time";
 
 type DepositedArgs = [string, BigNumber] & {
   trader: string;
@@ -168,14 +169,14 @@ export async function handleDeposited(
     event.blockNumber,
     event.logIndex
   );
-  deposited.timestamp = BigInt(event.blockTimestamp.getTime());
+  deposited.timestamp = BigInt(getUnixtime(event));
 
   const trader = await getOrCreateTrader(event.args.trader);
   trader.collateralBalance = trader.collateralBalance + deposited.amount;
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+  trader.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await deposited.save();
   await trader.save();
@@ -195,14 +196,14 @@ export async function handleWithdrawn(
     event.blockNumber,
     event.logIndex
   );
-  withdrawn.timestamp = BigInt(event.blockTimestamp.getTime());
+  withdrawn.timestamp = BigInt(getUnixtime(event));
 
   const trader = await getOrCreateTrader(event.args.trader);
   trader.collateralBalance = trader.collateralBalance - withdrawn.amount;
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+  trader.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await withdrawn.save();
   await trader.save();
@@ -222,16 +223,16 @@ export async function handleProtocolFeeTransferred(
     event.blockNumber,
     event.logIndex
   );
-  protocolFeeTransferred.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocolFeeTransferred.timestamp = BigInt(getUnixtime(event));
 
   const trader = await getOrCreateTrader(event.args.trader);
   trader.collateralBalance =
     trader.collateralBalance + protocolFeeTransferred.amount;
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+  trader.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.protocolFee = protocol.protocolFee - protocolFeeTransferred.amount;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await protocolFeeTransferred.save();
   await trader.save();
@@ -262,17 +263,17 @@ export async function handleLiquidityAddedExchange(
     event.blockNumber,
     event.logIndex
   );
-  liquidityAddedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
+  liquidityAddedExchange.timestamp = BigInt(getUnixtime(event));
 
   const trader = await getOrCreateTrader(liquidityAddedExchange.trader);
   trader.markets.push(liquidityAddedExchange.market);
   trader.markets = [...new Set(trader.markets)]; // duplicate deletion
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+  trader.timestamp = BigInt(getUnixtime(event));
 
   const market = await getOrCreateMarket(liquidityAddedExchange.market);
   market.baseBalancePerShareX96 = liquidityAddedExchange.baseBalancePerShareX96;
   market.sharePriceAfterX96 = liquidityAddedExchange.sharePriceAfterX96;
-  market.timestamp = BigInt(event.blockTimestamp.getTime());
+  market.timestamp = BigInt(getUnixtime(event));
 
   const traderMakerInfo = await getOrCreateTraderMakerInfo(
     liquidityAddedExchange.trader,
@@ -284,12 +285,12 @@ export async function handleLiquidityAddedExchange(
     liquidityAddedExchange.cumBasePerLiquidityX96;
   traderMakerInfo.cumQuotePerLiquidityX96 =
     liquidityAddedExchange.cumQuotePerLiquidityX96;
-  traderMakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
+  traderMakerInfo.timestamp = BigInt(getUnixtime(event));
 
   await createLiquidityHistory(
     liquidityAddedExchange.trader,
     liquidityAddedExchange.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     liquidityAddedExchange.base,
     liquidityAddedExchange.quote,
     liquidityAddedExchange.liquidity
@@ -297,7 +298,7 @@ export async function handleLiquidityAddedExchange(
 
   await createCandle(
     liquidityAddedExchange.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     liquidityAddedExchange.sharePriceAfterX96,
     liquidityAddedExchange.baseBalancePerShareX96,
     BI_ZERO,
@@ -334,20 +335,20 @@ export async function handleLiquidityRemovedExchange(
     event.blockNumber,
     event.logIndex
   );
-  liquidityRemovedExchange.timestamp = BigInt(event.blockTimestamp.getTime());
+  liquidityRemovedExchange.timestamp = BigInt(getUnixtime(event));
 
   const trader = await getOrCreateTrader(liquidityRemovedExchange.trader);
   trader.markets.push(liquidityRemovedExchange.market);
   trader.markets = [...new Set(trader.markets)]; // duplicate deletion
   trader.collateralBalance =
     trader.collateralBalance + liquidityRemovedExchange.realizedPnl;
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+  trader.timestamp = BigInt(getUnixtime(event));
 
   const market = await getOrCreateMarket(liquidityRemovedExchange.market);
   market.baseBalancePerShareX96 =
     liquidityRemovedExchange.baseBalancePerShareX96;
   market.sharePriceAfterX96 = liquidityRemovedExchange.sharePriceAfterX96;
-  market.timestamp = BigInt(event.blockTimestamp.getTime());
+  market.timestamp = BigInt(getUnixtime(event));
 
   const traderTakerInfo = await getOrCreateTraderTakerInfo(
     liquidityRemovedExchange.trader,
@@ -367,7 +368,7 @@ export async function handleLiquidityRemovedExchange(
     traderTakerInfo.baseBalance === BI_ZERO
       ? BI_ZERO
       : traderTakerInfo.quoteBalance / traderTakerInfo.baseBalance;
-  traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
+  traderTakerInfo.timestamp = BigInt(getUnixtime(event));
 
   const traderMakerInfo = await getOrCreateTraderMakerInfo(
     liquidityRemovedExchange.trader,
@@ -375,20 +376,20 @@ export async function handleLiquidityRemovedExchange(
   );
   traderMakerInfo.liquidity =
     traderMakerInfo.liquidity - liquidityRemovedExchange.liquidity;
-  traderMakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
+  traderMakerInfo.timestamp = BigInt(getUnixtime(event));
 
   const daySummary = await getOrCreateDaySummary(
     event.args.trader,
-    BigInt(event.blockTimestamp.getTime())
+    BigInt(getUnixtime(event))
   );
   daySummary.realizedPnl =
     daySummary.realizedPnl + liquidityRemovedExchange.realizedPnl;
-  daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
+  daySummary.timestamp = BigInt(getUnixtime(event));
 
   await createLiquidityHistory(
     liquidityRemovedExchange.trader,
     liquidityRemovedExchange.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     negBI(liquidityRemovedExchange.base),
     negBI(liquidityRemovedExchange.quote),
     negBI(liquidityRemovedExchange.liquidity)
@@ -396,7 +397,7 @@ export async function handleLiquidityRemovedExchange(
 
   await createCandle(
     liquidityRemovedExchange.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     liquidityRemovedExchange.sharePriceAfterX96,
     liquidityRemovedExchange.baseBalancePerShareX96,
     BI_ZERO,
@@ -439,7 +440,7 @@ export async function handlePositionLiquidated(
     event.blockNumber,
     event.logIndex
   );
-  positionLiquidated.timestamp = BigInt(event.blockTimestamp.getTime());
+  positionLiquidated.timestamp = BigInt(getUnixtime(event));
 
   const trader = await getOrCreateTrader(positionLiquidated.trader);
   trader.markets.push(positionLiquidated.market);
@@ -448,19 +449,19 @@ export async function handlePositionLiquidated(
     trader.collateralBalance +
     positionLiquidated.realizedPnl -
     positionLiquidated.liquidationPenalty;
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+  trader.timestamp = BigInt(getUnixtime(event));
 
   const liquidator = await getOrCreateTrader(positionLiquidated.liquidator);
   liquidator.markets.push(positionLiquidated.market);
   liquidator.markets = [...new Set(liquidator.markets)]; // duplicate deletion
   liquidator.collateralBalance =
     liquidator.collateralBalance + positionLiquidated.liquidationReward;
-  liquidator.timestamp = BigInt(event.blockTimestamp.getTime());
+  liquidator.timestamp = BigInt(getUnixtime(event));
 
   const market = await getOrCreateMarket(positionLiquidated.market);
   market.baseBalancePerShareX96 = positionLiquidated.baseBalancePerShareX96;
   market.sharePriceAfterX96 = positionLiquidated.sharePriceAfterX96;
-  market.timestamp = BigInt(event.blockTimestamp.getTime());
+  market.timestamp = BigInt(getUnixtime(event));
 
   const traderTakerInfo = await getOrCreateTraderTakerInfo(
     event.args.trader,
@@ -480,26 +481,26 @@ export async function handlePositionLiquidated(
     traderTakerInfo.baseBalance === BI_ZERO
       ? BI_ZERO
       : traderTakerInfo.quoteBalance / traderTakerInfo.baseBalance;
-  traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
+  traderTakerInfo.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.protocolFee = protocol.protocolFee + positionLiquidated.protocolFee;
   protocol.insuranceFundBalance =
     protocol.insuranceFundBalance + positionLiquidated.insuranceFundReward;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   const daySummary = await getOrCreateDaySummary(
     event.args.trader,
-    BigInt(event.blockTimestamp.getTime())
+    BigInt(getUnixtime(event))
   );
   daySummary.realizedPnl =
     daySummary.realizedPnl + positionLiquidated.realizedPnl;
-  daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
+  daySummary.timestamp = BigInt(getUnixtime(event));
 
   await createPositionHistory(
     positionLiquidated.trader,
     positionLiquidated.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     positionLiquidated.base,
     positionLiquidated.baseBalancePerShareX96,
     positionLiquidated.quote,
@@ -509,7 +510,7 @@ export async function handlePositionLiquidated(
 
   await createCandle(
     positionLiquidated.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     positionLiquidated.sharePriceAfterX96,
     positionLiquidated.baseBalancePerShareX96,
     positionLiquidated.base,
@@ -545,19 +546,19 @@ export async function handlePositionChanged(
     event.blockNumber,
     event.logIndex
   );
-  positionChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+  positionChanged.timestamp = BigInt(getUnixtime(event));
 
   const trader = await getOrCreateTrader(positionChanged.trader);
   trader.markets.push(positionChanged.market);
   trader.markets = [...new Set(trader.markets)]; // duplicate deletion
   trader.collateralBalance =
     trader.collateralBalance + positionChanged.realizedPnl;
-  trader.timestamp = BigInt(event.blockTimestamp.getTime());
+  trader.timestamp = BigInt(getUnixtime(event));
 
   const market = await getOrCreateMarket(positionChanged.market);
   market.baseBalancePerShareX96 = positionChanged.baseBalancePerShareX96;
   market.sharePriceAfterX96 = positionChanged.sharePriceAfterX96;
-  market.timestamp = BigInt(event.blockTimestamp.getTime());
+  market.timestamp = BigInt(getUnixtime(event));
 
   const traderTakerInfo = await getOrCreateTraderTakerInfo(
     positionChanged.trader,
@@ -577,23 +578,23 @@ export async function handlePositionChanged(
     traderTakerInfo.baseBalance === BI_ZERO
       ? BI_ZERO
       : traderTakerInfo.quoteBalance / traderTakerInfo.baseBalance;
-  traderTakerInfo.timestamp = BigInt(event.blockTimestamp.getTime());
+  traderTakerInfo.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.protocolFee = protocol.protocolFee + positionChanged.protocolFee;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   const daySummary = await getOrCreateDaySummary(
     event.args.trader,
-    BigInt(event.blockTimestamp.getTime())
+    BigInt(getUnixtime(event))
   );
   daySummary.realizedPnl = daySummary.realizedPnl + positionChanged.realizedPnl;
-  daySummary.timestamp = BigInt(event.blockTimestamp.getTime());
+  daySummary.timestamp = BigInt(getUnixtime(event));
 
   await createPositionHistory(
     positionChanged.trader,
     positionChanged.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     positionChanged.base,
     positionChanged.baseBalancePerShareX96,
     positionChanged.quote,
@@ -603,7 +604,7 @@ export async function handlePositionChanged(
 
   await createCandle(
     positionChanged.market,
-    BigInt(event.blockTimestamp.getTime()),
+    BigInt(getUnixtime(event)),
     positionChanged.sharePriceAfterX96,
     positionChanged.baseBalancePerShareX96,
     positionChanged.base,
@@ -630,13 +631,11 @@ export async function handleMaxMarketsPerAccountChanged(
     event.blockNumber,
     event.logIndex
   );
-  maxMarketsPerAccountChanged.timestamp = BigInt(
-    event.blockTimestamp.getTime()
-  );
+  maxMarketsPerAccountChanged.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.maxMarketsPerAccount = maxMarketsPerAccountChanged.value;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await maxMarketsPerAccountChanged.save();
   await protocol.save();
@@ -654,11 +653,11 @@ export async function handleImRatioChanged(
     event.blockNumber,
     event.logIndex
   );
-  imRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+  imRatioChanged.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.imRatio = imRatioChanged.value;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await imRatioChanged.save();
   await protocol.save();
@@ -676,11 +675,11 @@ export async function handleMmRatioChanged(
     event.blockNumber,
     event.logIndex
   );
-  mmRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+  mmRatioChanged.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.mmRatio = mmRatioChanged.value;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await mmRatioChanged.save();
   await protocol.save();
@@ -699,14 +698,12 @@ export async function handleLiquidationRewardConfigChanged(
     event.blockNumber,
     event.logIndex
   );
-  liquidationRewardConfigChanged.timestamp = BigInt(
-    event.blockTimestamp.getTime()
-  );
+  liquidationRewardConfigChanged.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.rewardRatio = liquidationRewardConfigChanged.rewardRatio;
   protocol.smoothEmaTime = liquidationRewardConfigChanged.smoothEmaTime;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await liquidationRewardConfigChanged.save();
   await protocol.save();
@@ -724,11 +721,11 @@ export async function handleProtocolFeeRatioChanged(
     event.blockNumber,
     event.logIndex
   );
-  protocolFeeRatioChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocolFeeRatioChanged.timestamp = BigInt(getUnixtime(event));
 
   const protocol = await getOrCreateProtocol();
   protocol.protocolFeeRatio = protocolFeeRatioChanged.value;
-  protocol.timestamp = BigInt(event.blockTimestamp.getTime());
+  protocol.timestamp = BigInt(getUnixtime(event));
 
   await protocolFeeRatioChanged.save();
   await protocol.save();
@@ -747,10 +744,10 @@ export async function handleIsMarketAllowedChanged(
     event.blockNumber,
     event.logIndex
   );
-  isMarketAllowedChanged.timestamp = BigInt(event.blockTimestamp.getTime());
+  isMarketAllowedChanged.timestamp = BigInt(getUnixtime(event));
 
   const market = await getOrCreateMarket(isMarketAllowedChanged.market);
-  market.timestamp = BigInt(event.blockTimestamp.getTime());
+  market.timestamp = BigInt(getUnixtime(event));
 
   // TODO: check if already exists
   await createNewMarketDatasource({ address: isMarketAllowedChanged.market });
