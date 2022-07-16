@@ -276,7 +276,7 @@ export async function getOrCreateDaySummary(
   traderAddr: string,
   timestamp: bigint
 ): Promise<DaySummary> {
-  const dayID = Math.floor(Number(timestamp) / 8640000);
+  const dayID = Math.floor(Number(timestamp) / (24 * 60 * 60));
   let daySummary = await DaySummary.get(`${traderAddr}-${dayID}`);
   if (typeof daySummary === "undefined") {
     daySummary = new DaySummary(`${traderAddr}-${dayID}`);
