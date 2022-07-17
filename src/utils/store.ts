@@ -20,7 +20,7 @@ import {
   Q96,
 } from "./constant";
 import { ChainId, Network, Version } from "../constants/index";
-import { mulDiv } from "./math";
+import { mulDiv, abs } from "./math";
 
 export function getBlockNumberLogIndex(
   blockNumber: number,
@@ -166,8 +166,8 @@ async function doCreateCandle(
     ohlc.lowX96 = priceX96;
   }
   ohlc.closeX96 = priceX96;
-  ohlc.baseAmount += baseAmount;
-  ohlc.quoteAmount += quoteAmount;
+  ohlc.baseAmount += abs(baseAmount);
+  ohlc.quoteAmount += abs(quoteAmount);
   ohlc.updatedAt = time;
   await ohlc.save();
 }
